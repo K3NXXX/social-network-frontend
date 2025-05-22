@@ -11,26 +11,34 @@ export interface RegisterCredentials {
   confirmPassword: string;
 }
 
+export interface User {
+  id: string;
+  username: string | null;
+  email: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string | null;
+  gender: string | null;
+  avatarUrl: string | null;
+  bio: string | null;
+  location: string | null;
+  isOnline: boolean;
+  lastLogin: string | null;
+  amountOfPosts: number;
+  isActive: string;
+  isVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AuthResponse {
+  user: User;
   accessToken: string;
-  refreshToken: string;
-  user: {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-  };
 }
 
 export interface AuthState {
-  user: {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-  } | null;
+  user: User | null;
   accessToken: string | null;
-  refreshToken: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;

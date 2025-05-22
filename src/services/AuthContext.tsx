@@ -11,7 +11,6 @@ interface AuthContextType extends AuthState {
 const initialAuthState: AuthState = {
   user: null,
   accessToken: null,
-  refreshToken: null,
   isAuthenticated: false,
   loading: true,
   error: null,
@@ -38,14 +37,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const loadUser = async () => {
       try {
         const accessToken = authService.getAccessToken();
-        const refreshToken = authService.getRefreshToken();
         const user = authService.getCurrentUser();
         
         if (accessToken && user) {
           setAuth({
             user,
             accessToken,
-            refreshToken,
             isAuthenticated: true,
             loading: false,
             error: null,
@@ -76,7 +73,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setAuth({
         user: response.user,
         accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
         isAuthenticated: true,
         loading: false,
         error: null,
@@ -99,7 +95,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setAuth({
         user: response.user,
         accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
         isAuthenticated: true,
         loading: false,
         error: null,

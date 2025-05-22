@@ -13,6 +13,7 @@ import {
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../services/AuthContext';
 import Logo from '../../components/auth/Logo';
+import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -71,13 +72,10 @@ const Login: React.FC = () => {
         email: formData.email,
         password: formData.password,
       });
-      navigate('/'); // Redirect to home page after successful login
+      navigate('/');
     } catch (error) {
-      if (error instanceof Error) {
-        setSubmitError(error.message);
-      } else {
-        setSubmitError('An unexpected error occurred');
-      }
+      logErrorDetails(error);
+      setSubmitError(formatErrorMessage(error));
     }
   };
 

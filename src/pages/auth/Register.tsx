@@ -13,6 +13,7 @@ import {
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../services/AuthContext';
 import Logo from '../../components/auth/Logo';
+import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -107,13 +108,10 @@ const Register: React.FC = () => {
         password: formData.password,
         confirmPassword: formData.confirmPassword
       });
-      navigate('/'); // Redirect to home page after successful registration
+      navigate('/');
     } catch (error) {
-      if (error instanceof Error) {
-        setSubmitError(error.message);
-      } else {
-        setSubmitError('Виникла несподівана помилка');
-      }
+      logErrorDetails(error);
+      setSubmitError(formatErrorMessage(error));
     }
   };
 

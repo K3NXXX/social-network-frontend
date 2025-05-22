@@ -6,15 +6,13 @@ import Register from './pages/auth/Register';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { ThemeProvider, createTheme } from '@mui/material';
 
-// Placeholder Home component until you build the actual home page
 const Home = () => <div>Головна сторінка СоцМережі</div>;
 
 function App() {
-  // Create theme with primary color based on the screenshot
   const theme = createTheme({
     palette: {
       primary: {
-        main: '#6969cb', // Purple color from the screenshot
+        main: '#6969cb',
       },
     },
     components: {
@@ -33,17 +31,13 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            {/* Public routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             
-            {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<Home />} />
-              {/* Add other protected routes here */}
             </Route>
             
-            {/* Redirect to login if no route matches */}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>

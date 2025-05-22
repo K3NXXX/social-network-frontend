@@ -1,14 +1,12 @@
 import axios from 'axios';
 
-// Create axios instance with default config
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://vetra-8c5dfe3bdee7.herokuapp.com',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add request interceptor to add auth token
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
@@ -22,14 +20,12 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Add response interceptor to handle token expiration
 axiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Token expired or invalid
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
