@@ -1,6 +1,6 @@
 :root {
   --primary-color: #6969cb;
-  --background-color: #f5f7fa;
+  --background-color: #f8f8fc;
   --text-color: #333;
   --border-color: #e0e0e0;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -24,8 +24,9 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
+    'Helvetica Neue', sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
   line-height: 1.6;
@@ -57,9 +58,11 @@ button {
   background-color: #1a1a1a;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -70,9 +73,11 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }

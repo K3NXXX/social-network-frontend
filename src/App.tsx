@@ -22,7 +22,16 @@ function App() {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: '20px',
+            borderRadius: '10px',
+            fontWeight: 'bolder',
+            textTransform: 'none',
+          },
+        },
+      },
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            borderRadius: '10px',
           },
         },
       },
@@ -35,7 +44,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          
+
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Navigate to="/feed" replace />} />
             <Route path="/profile/:username" element={<ProfilePage />} />
@@ -44,7 +53,7 @@ function App() {
             <Route path="/chats" element={<ChatsPage />} />
             <Route path="/search" element={<SearchPage />} />
           </Route>
-          
+
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>
