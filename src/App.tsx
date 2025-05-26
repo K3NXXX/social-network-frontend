@@ -1,9 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import { AuthProvider } from './services/AuthContext';
 import { ThemeProvider, createTheme } from '@mui/material';
-import LoginPage from './pages/auth/Login';
-import RegisterPage from './pages/auth/Register';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
 import ProfilePage from './pages/ProfilePage';
 import FriendsListPage from './pages/FriendsListPage';
 import ChatsPage from './pages/ChatsPage';
@@ -32,22 +32,21 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            
-            <Route element={<ProtectedRoute />}>
-              <Route path="/profile/:username" element={<ProfilePage />} />
-              <Route path="/feed" element={<FeedPage />} />
-              <Route path="/friends" element={<FriendsListPage />} />
-              <Route path="/chats" element={<ChatsPage />} />
-              <Route path="/search" element={<SearchPage />} />
-            </Route>
-            
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Navigate to="/feed" replace />} />
+            <Route path="/profile/:username" element={<ProfilePage />} />
+            <Route path="/feed" element={<FeedPage />} />
+            <Route path="/friends" element={<FriendsListPage />} />
+            <Route path="/chats" element={<ChatsPage />} />
+            <Route path="/search" element={<SearchPage />} />
+          </Route>
+          
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
       </AuthProvider>
     </ThemeProvider>
   );
