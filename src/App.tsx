@@ -1,12 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import { AuthProvider } from './services/AuthContext';
-import Login from './pages/auth/Login';
-import Register from './pages/auth/Register';
-import ProtectedRoute from './components/auth/ProtectedRoute';
 import { ThemeProvider, createTheme } from '@mui/material';
-
-const Home = () => <div>Головна сторінка СоцМережі</div>;
+import LoginPage from './pages/auth/Login';
+import RegisterPage from './pages/auth/Register';
+import ProfilePage from './pages/ProfilePage';
+import FriendsListPage from './pages/FriendsListPage';
+import ChatsPage from './pages/ChatsPage';
+import SearchPage from './pages/SearchPage';
+import FeedPage from './pages/FeedPage';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 function App() {
   const theme = createTheme({
@@ -31,11 +34,15 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             
             <Route element={<ProtectedRoute />}>
-              <Route path="/" element={<Home />} />
+              <Route path="/profile/:username" element={<ProfilePage />} />
+              <Route path="/feed" element={<FeedPage />} />
+              <Route path="/friends" element={<FriendsListPage />} />
+              <Route path="/chats" element={<ChatsPage />} />
+              <Route path="/search" element={<SearchPage />} />
             </Route>
             
             <Route path="*" element={<Navigate to="/login" replace />} />
