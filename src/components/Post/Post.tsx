@@ -6,57 +6,31 @@ import PostComments from './PostComments';
 import PostContent from './PostContent';
 import PostHeader from './PostHeader';
 
-const mockPost = {
-  id: 'e6eda8d9-00aa-4cb2-acc8-353859aa47d6',
-  content: 'my dog',
-  privacy: 'PUBLIC',
-  photo: null,
-  userId: '2b0edd10-2ebb-4f22-9922-b60af3318dd0',
-  createdAt: '2025-05-23T11:46:15.462Z',
-  updatedAt: '2025-05-23T11:46:15.462Z',
-  user: {
-    firstName: 'denys',
-    lastName: 'pavlov',
-    username: null,
-    avatarUrl: null,
-  },
-  comments: [],
-  likes: [],
-};
+import type { PostType } from '../../types/post';
 
-const Post: React.FC = () => {
-  const post = mockPost;
+interface Props {
+  post: PostType;
+}
+
+const Post: React.FC<Props> = ({ post }) => {
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes.length);
   const [showComments, setShowComments] = useState(false);
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      content: 'Чудово!',
-      createdAt: '1 год. тому',
-      user: { firstName: 'Олег', lastName: 'Семенюк', avatarUrl: null },
-    },
-    {
-      id: 2,
-      content: 'Підтримую ідею.',
-      createdAt: '45 хв. тому',
-      user: { firstName: 'Ірина', lastName: 'Коваль', avatarUrl: null },
-    },
-  ]);
+  const [comments, setComments] = useState(post.comments ?? []);
 
   const handleToggleLike = () => {
-    setLiked((prev) => !prev);
-    setLikesCount((prev) => (liked ? prev - 1 : prev + 1));
+    setLiked((prev: boolean) => !prev);
+    setLikesCount((prev: number) => (liked ? prev - 1 : prev + 1));
   };
 
   const handleAddComment = (text: string) => {
     setComments((prev) => [
       ...prev,
       {
-        id: prev.length + 1,
+        id: `temp-${prev.length + 1}`, // temporary
         content: text,
         createdAt: 'щойно',
-        user: { firstName: 'Я', lastName: '', avatarUrl: null },
+        user: { firstName: 'Я', lastName: '', avatarUrl: null, username: null },
       },
     ]);
   };
