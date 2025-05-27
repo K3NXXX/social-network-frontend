@@ -1,23 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import api from '../../api/axios';
+import React from 'react';
 import Post from './Post';
 import { Box, CircularProgress } from '@mui/material';
-
 import type { PostType } from '../../types/post';
 
-const PostsList: React.FC = () => {
-  const [posts, setPosts] = useState<PostType[]>([]);
-  const [loading, setLoading] = useState(true);
+type Props = {
+  posts: PostType[];
+  loading: boolean;
+};
 
-  useEffect(() => {
-    api
-      .get('/api/posts')
-      .then((res) => setPosts(res.data))
-      .catch((err) => console.error('Failed to fetch posts:', err))
-      .finally(() => setLoading(false));
-  }, []);
+const PostsList: React.FC<Props> = ({ posts, loading }) => {
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
-  if (loading) return <CircularProgress />;
+  if (!posts.length) {
+    return (
+      <Box textAlign="center" mt={4}>
+        <p>Постів ще немає.</p>
+      </Box>
+    );
+  }
 
   return (
     <Box>
