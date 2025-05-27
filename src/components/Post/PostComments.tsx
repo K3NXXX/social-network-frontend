@@ -3,12 +3,7 @@ import { Avatar, Box, Divider, IconButton, Stack, TextField } from '@mui/materia
 import SendIcon from '@mui/icons-material/Send';
 import Comment from './Comment';
 
-interface CommentType {
-  id: number;
-  content: string;
-  createdAt: string;
-  user: { firstName: string; lastName: string; avatarUrl: string | null };
-}
+import type { CommentType } from '../../types/post';
 
 interface Props {
   comments: CommentType[];

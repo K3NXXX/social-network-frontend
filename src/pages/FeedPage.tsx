@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import Post from '../components/Post/Post';
+import PostsList from '../components/Post/PostList';
 
 const FeedPage: React.FC = () => {
   return (
@@ -53,8 +53,7 @@ const FeedPage: React.FC = () => {
         </CardActions>
       </Card>
 
-      <Post />
-      <Post />
+      <PostsList />
     </Box>
   );
 };
