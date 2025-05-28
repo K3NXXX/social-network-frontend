@@ -76,6 +76,10 @@ const FeedPage: React.FC = () => {
     }
   };
 
+  const handleDelete = (postId: string) => {
+    setPosts((prev) => prev.filter((post) => post.id !== postId));
+  };
+
   return (
     <Box
       component="main"
@@ -147,7 +151,7 @@ const FeedPage: React.FC = () => {
         </CardActions>
       </Card>
 
-      <PostsList posts={posts} loading={loading} />
+      <PostsList posts={posts} loading={loading} onDelete={handleDelete} />
     </Box>
   );
 };

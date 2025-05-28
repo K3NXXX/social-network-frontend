@@ -6,9 +6,10 @@ import type { PostType } from '../../types/post';
 type Props = {
   posts: PostType[];
   loading: boolean;
+  onDelete: (postId: string) => void;
 };
 
-const PostsList: React.FC<Props> = ({ posts, loading }) => {
+const PostsList: React.FC<Props> = ({ posts, loading, onDelete }) => {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
@@ -28,7 +29,7 @@ const PostsList: React.FC<Props> = ({ posts, loading }) => {
   return (
     <Box>
       {posts.map((post) => (
-        <Post key={post.id} post={post} />
+        <Post key={post.id} post={post} onDelete={onDelete} />
       ))}
     </Box>
   );
