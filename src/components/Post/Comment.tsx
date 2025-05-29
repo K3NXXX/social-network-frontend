@@ -1,17 +1,18 @@
 import React from 'react';
 import { Avatar, Box, Typography, Stack, Button } from '@mui/material';
+import type { CommentType } from '../../types/post';
 
 interface CommentProps {
-  user: string;
-  text: string;
-  timeAgo: string;
-  avatarUrl?: string;
+  comment: CommentType;
 }
 
-const Comment: React.FC<CommentProps> = ({ user, text, timeAgo, avatarUrl }) => {
+const Comment: React.FC<CommentProps> = ({ comment }) => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-      <Avatar src={avatarUrl}>{!avatarUrl && user[0]}</Avatar>
+      <Avatar src={comment.user?.avatarUrl ?? undefined}>
+        {!comment.user?.avatarUrl &&
+          `${comment.user?.firstName?.[0]?.toUpperCase() ?? ''}${comment.user?.lastName?.[0]?.toUpperCase() ?? ''}`}
+      </Avatar>
       <Box sx={{ width: '100%' }}>
         <Box
           sx={{
@@ -27,14 +28,14 @@ const Comment: React.FC<CommentProps> = ({ user, text, timeAgo, avatarUrl }) => 
             fontWeight="bold"
             sx={{ textAlign: 'left', display: 'block' }}
           >
-            {user}
+            {`${comment.user?.firstName} ${comment.user?.lastName}`}
           </Typography>
           <Typography variant="body2" sx={{ textAlign: 'left', display: 'block' }}>
-            {text}
+            {comment.content}
           </Typography>
         </Box>
         <Stack direction="row" spacing={2} sx={{ color: 'text.secondary' }}>
-          <Typography variant="caption">{timeAgo}</Typography>
+          <Typography variant="caption">{comment.createdAt}</Typography>
           <Button
             variant="text"
             size="small"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Divider } from '@mui/material';
 
 import PostActions from './PostActions';
@@ -20,29 +20,29 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes.length);
   const [showComments, setShowComments] = useState(false);
-  const [comments, setComments] = useState(post.comments ?? []);
+  const [comments, setComments] = useState([]);
+  //console.log(post)
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const res = await axiosInstance.get(`api/comments/post/${post.id}`);
+        setComments(res.data);
+      } catch (error) {
+        console.error('Could not load comments', error);
+      }
+    };
+
+    fetchComments();
+  }, [post.id]);
 
   const handleToggleLike = () => {
     setLiked((prev: boolean) => !prev);
     setLikesCount((prev: number) => (liked ? prev - 1 : prev + 1));
   };
 
-  const handleAddComment = (text: string) => {
-    setComments((prev) => [
-      ...prev,
-      {
-        id: `temp-${prev.length + 1}`, // temporary
-        content: text,
-        createdAt: 'щойно',
-        user: {
-          id: `id-temp-${prev.length + 1}`,
-          firstName: 'Я',
-          lastName: '',
-          avatarUrl: null,
-          username: null,
-        },
-      },
-    ]);
+  const handleAddComment = () => {
+    //setComments();
   };
 
   const handleDeletePost = async () => {

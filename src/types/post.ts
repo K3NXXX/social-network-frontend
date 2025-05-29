@@ -9,8 +9,14 @@ export interface User {
 export interface CommentType {
   id: string;
   content: string;
+  userId: string;
+  postId: string;
+  parentId: string | null;
   createdAt: string;
+  updatedAt: string;
   user: User;
+  likes: Like[];
+  replies: CommentType[];
 }
 
 interface Like {
