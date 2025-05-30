@@ -4,9 +4,10 @@ import type { CommentType } from '../../types/post';
 
 interface CommentProps {
   comment: CommentType;
+  onReplyClick?: () => void;
 }
 
-const Comment: React.FC<CommentProps> = ({ comment }) => {
+const Comment: React.FC<CommentProps> = ({ comment, onReplyClick }) => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
       <Avatar src={comment.user?.avatarUrl ?? undefined}>
@@ -40,6 +41,7 @@ const Comment: React.FC<CommentProps> = ({ comment }) => {
             variant="text"
             size="small"
             sx={{ p: 0, fontSize: 12, textTransform: 'none', color: '#757575' }}
+            onClick={onReplyClick}
           >
             Відповісти
           </Button>

@@ -1,28 +1,52 @@
 import React, { useState } from 'react';
-import { Avatar, Box, Button, Divider, IconButton, Stack, TextField } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import Comment from './Comment';
 
 import type { CommentType } from '../../types/post';
 import { useAuth } from '../../services/AuthContext';
+import axiosInstance from '../../services/axiosConfig';
 
 interface Props {
   comments: CommentType[];
-  onAddComment: (text: string) => void;
+  postId: string;
+  onAddComment: (comment: CommentType) => void;
 }
 
-const PostComments: React.FC<Props> = ({ comments, onAddComment }) => {
+const PostComments: React.FC<Props> = ({ comments, postId, onAddComment }) => {
   const { user } = useAuth();
   const [newComment, setNewComment] = useState('');
   const [visibleReplies, setVisibleReplies] = useState<Set<string>>(new Set());
+  const [replyingTo, setReplyingTo] = useState<CommentType | null>(null);
+  const [repliesMap, setRepliesMap] = useState<{ [key: string]: CommentType[] }>({});
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!newComment.trim()) return;
-    onAddComment(newComment);
+    try {
+      const res = await axiosInstance.post(`/api/comments`, {
+        content: newComment,
+        postId,
+        parentId: replyingTo?.id ?? null,
+      });
+      const createdComment = res.data;
+      onAddComment(createdComment);
+    } catch (error) {
+      console.error('Could not add comment', error);
+    }
     setNewComment('');
+    setReplyingTo(null);
   };
 
-  const toggleReplies = (commentId: string) => {
+  const toggleReplies = async (commentId: string) => {
     setVisibleReplies((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(commentId)) {
@@ -32,6 +56,16 @@ const PostComments: React.FC<Props> = ({ comments, onAddComment }) => {
       }
       return newSet;
     });
+
+    if (!repliesMap[commentId]) {
+      try {
+        const res = await axiosInstance.get(`/api/comments/${commentId}/replies`);
+        const replies = res.data;
+        setRepliesMap((prev) => ({ ...prev, [commentId]: replies }));
+      } catch (error) {
+        console.error('Error loading replies', error);
+      }
+    }
   };
 
   return (
@@ -43,7 +77,7 @@ const PostComments: React.FC<Props> = ({ comments, onAddComment }) => {
           .map((c) => (
             <Box key={c.id}>
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                <Comment comment={c} />
+                <Comment comment={c} onReplyClick={() => setReplyingTo(c)} />
 
                 {c.replies && c.replies.length > 0 && (
                   <Button size="small" onClick={() => toggleReplies(c.id)} sx={{ mt: 1, ml: 7 }}>
@@ -56,14 +90,53 @@ const PostComments: React.FC<Props> = ({ comments, onAddComment }) => {
 
               {visibleReplies.has(c.id) && (
                 <Stack spacing={1} sx={{ ml: 7, mt: 1 }}>
-                  {c.replies.map((reply) => (
-                    <Comment key={reply.id} comment={reply} />
+                  {(repliesMap[c.id] || []).map((reply) => (
+                    <Box key={reply.id}>
+                      <Comment
+                        key={reply.id}
+                        comment={reply}
+                        onReplyClick={() => setReplyingTo(reply)}
+                      />
+                      {reply.replies && reply.replies.length > 0 && (
+                        <Button
+                          size="small"
+                          onClick={() => toggleReplies(reply.id)}
+                          sx={{ mt: 1, ml: 7 }}
+                        >
+                          {visibleReplies.has(reply.id)
+                            ? 'Сховати відповіді'
+                            : `Показати відповіді (${reply.replies.length})`}
+                        </Button>
+                      )}
+                    </Box>
                   ))}
                 </Stack>
               )}
             </Box>
           ))}
       </Stack>
+
+      {replyingTo && (
+        <Box
+          sx={{
+            mt: 2,
+            p: 1,
+            borderRadius: 2,
+            backgroundColor: '#f1f1f7',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography variant="body2">
+            Відповідь на коментар <strong>{replyingTo.content}</strong> від:{' '}
+            <strong>{`${replyingTo.user.firstName} ${replyingTo.user.lastName}`}</strong>
+          </Typography>
+          <Button size="small" onClick={() => setReplyingTo(null)}>
+            Скасувати
+          </Button>
+        </Box>
+      )}
 
       <Stack direction="row" spacing={1} alignItems="center" mt={2}>
         <Avatar src={user?.avatarUrl ?? undefined}>
