@@ -85,21 +85,24 @@ export const authService = {
 
   async logout(): Promise<void> {
     try {
-      const token = this.getAccessToken();
-      if (token) {
-        await axiosInstance.post(AUTH_ENDPOINTS.LOGOUT);
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
+     
+      axiosInstance.post(AUTH_ENDPOINTS.LOGOUT).catch(error => {
+        console.error('Logout request error:', error);
+      });
     } finally {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('user');
+      window.location.href = '/login';
     }
   },
 
   async refreshToken(): Promise<AuthResponse | null> {
     try {
-      const response = await axiosInstance.post(AUTH_ENDPOINTS.REFRESH);
+      const response = await axios.post(
+        `${axiosInstance.defaults.baseURL}${AUTH_ENDPOINTS.REFRESH}`,
+        {},
+        { withCredentials: true } 
+      );
       
       if (response.data && response.data.accessToken) {
         localStorage.setItem('accessToken', response.data.accessToken);
@@ -120,7 +123,11 @@ export const authService = {
   getCurrentUser(): any {
     const userStr = localStorage.getItem('user');
     if (userStr) {
-      return JSON.parse(userStr);
+      try {
+        return JSON.parse(userStr);
+      } catch {
+        return null;
+      }
     }
     return null;
   },

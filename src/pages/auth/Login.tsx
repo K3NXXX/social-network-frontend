@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { 
   Box, 
   TextField, 
@@ -14,65 +15,58 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../services/AuthContext';
 import Logo from '../../components/auth/Logo';
 import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
+import { useForm, Controller } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
+
+// Interface for form input values
+interface LoginFormInputs {
+  email: string;
+  password: string;
+}
 
 const Login: React.FC = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const [formErrors, setFormErrors] = useState({
-    email: '',
-    password: '',
-  });
   const [submitError, setSubmitError] = useState<string | null>(null);
-  
   const { login, loading } = useAuth();
   const navigate = useNavigate();
 
-  const validateForm = () => {
-    let valid = true;
-    const errors = {
+  // Initialize React Hook Form
+  const { 
+    control, 
+    handleSubmit, 
+    formState: { errors } 
+  } = useForm<LoginFormInputs>({
+    defaultValues: {
       email: '',
-      password: '',
-    };
+      password: ''
+    },
+    mode: 'onBlur' // Validate on blur
+  });
 
-    if (!formData.email) {
-      errors.email = 'Email is required';
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Email is invalid';
-      valid = false;
-    }
-
-    if (!formData.password) {
-      errors.password = 'Password is required';
-      valid = false;
-    }
-
-    setFormErrors(errors);
-    return valid;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Form submission handler
+  const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     setSubmitError(null);
-
-    if (!validateForm()) return;
-
+    
     try {
       await login({
-        email: formData.email,
-        password: formData.password,
+        email: data.email,
+        password: data.password,
       });
-      navigate('/');
+      
+      // Make sure authentication state is up to date before navigating
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        // Add token to default headers to ensure subsequent requests include it
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        console.log('Login successful, token set in headers:', { tokenExists: !!token });
+        
+        // Wait a moment for state to update before navigating
+        setTimeout(() => {
+          navigate('/feed');
+        }, 100);
+      } else {
+        console.error('Login appeared successful but no token was stored');
+        setSubmitError('Authentication failed. Please try again.');
+      }
     } catch (error) {
       logErrorDetails(error);
       setSubmitError(formatErrorMessage(error));
@@ -111,36 +105,54 @@ const Login: React.FC = () => {
             </Alert>
           )}
           
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Електронна пошта"
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1, width: '100%' }}>
+            <Controller
               name="email"
-              autoComplete="email"
-              autoFocus
-              value={formData.email}
-              onChange={handleChange}
-              error={!!formErrors.email}
-              helperText={formErrors.email}
-              disabled={loading}
+              control={control}
+              rules={{
+                required: 'Email is required',
+                pattern: {
+                  value: /\S+@\S+\.\S+/,
+                  message: 'Email is invalid'
+                }
+              }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Електронна пошта"
+                  autoComplete="email"
+                  autoFocus
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
+                  disabled={loading}
+                />
+              )}
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
+            <Controller
               name="password"
-              label="Пароль"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={formData.password}
-              onChange={handleChange}
-              error={!!formErrors.password}
-              helperText={formErrors.password}
-              disabled={loading}
+              control={control}
+              rules={{
+                required: 'Password is required'
+              }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  margin="normal"
+                  required
+                  fullWidth
+                  label="Пароль"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  error={!!errors.password}
+                  helperText={errors.password?.message}
+                  disabled={loading}
+                />
+              )}
             />
             <Button
               type="submit"
