@@ -1,45 +1,21 @@
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../../services/AuthContext';
-import { CircularProgress, Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
+import { useAuth } from '../../services/AuthContext.tsx';
 
 const ProtectedRoute: React.FC = () => {
-  const { isAuthenticated, loading, accessToken } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
-  
-  const storedToken = localStorage.getItem('accessToken');
-  const hasToken = Boolean(storedToken || accessToken);
-  
-  console.log('ProtectedRoute state:', {
-    isAuthenticated,
-    loading,
-    accessToken: !!accessToken,
-    storedToken: !!storedToken,
-    hasToken,
-    path: location.pathname
-  });
-  
-    
-  if (loading && hasToken) {
+
+  if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
         <CircularProgress />
       </Box>
     );
   }
-  
- 
-  if (!isAuthenticated && !hasToken) {
-    console.log('Not authenticated, redirecting to login', {
-      isAuthenticated,
-      hasToken,
-      from: location.pathname
-    });
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
