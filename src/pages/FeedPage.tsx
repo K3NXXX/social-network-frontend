@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Card,
   CardContent,
@@ -16,6 +16,7 @@ import PostsList from '../components/Post/PostList';
 import { useAuth } from '../services/AuthContext';
 import axiosInstance from '../services/axiosConfig';
 import type { PostType } from '../types/post';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 
 const FeedPage: React.FC = () => {
   const { user } = useAuth();
@@ -24,21 +25,44 @@ const FeedPage: React.FC = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [posts, setPosts] = useState<PostType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const take = 5;
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+
+  const fetchPosts = async (pageNumber = 1) => {
+    try {
+      const res = await axiosInstance.get('/api/posts', {
+        params: {
+          page: pageNumber,
+          take,
+        },
+      });
+      const { data, page: currentPage, lastPage } = res.data;
+
+      setPosts((prev) => (pageNumber === 1 ? data : [...prev, ...data]));
+      setPage(currentPage);
+      setLastPage(lastPage);
+    } catch (err) {
+      console.error('Failed to fetch posts:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await axiosInstance.get('/api/posts');
-        setPosts(res.data);
-      } catch (err) {
-        console.error('Failed to fetch posts:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchPosts();
   }, []);
+
+  useIntersectionObserver(
+    loaderRef,
+    () => {
+      if (page < lastPage && !loading) {
+        fetchPosts(page + 1);
+      }
+    },
+    { threshold: 1 }
+  );
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -152,6 +176,8 @@ const FeedPage: React.FC = () => {
       </Card>
 
       <PostsList posts={posts} loading={loading} onDelete={handleDelete} />
+
+      <div ref={loaderRef} style={{ height: '1px' }} />
     </Box>
   );
 };

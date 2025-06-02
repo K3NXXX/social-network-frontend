@@ -1,40 +1,102 @@
-import React from 'react';
-import { Avatar, Box, Typography, Stack, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { Avatar, Box, Typography, Stack, Button, TextField } from '@mui/material';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/Favorite';
+
 import type { CommentType } from '../../types/post';
 
 interface CommentProps {
   comment: CommentType;
   onReplyClick?: () => void;
+  onDeleteClick?: () => void;
+  isOwner: boolean;
+  onEditClick?: () => void;
+  isEditing: boolean;
+  editContent: string;
+  onEditContentChange: (value: string) => void;
+  onConfirmEdit: () => void;
 }
 
-const Comment: React.FC<CommentProps> = ({ comment, onReplyClick }) => {
+const Comment: React.FC<CommentProps> = ({
+  comment,
+  onReplyClick,
+  onDeleteClick,
+  isOwner,
+  onEditClick,
+  isEditing,
+  editContent,
+  onEditContentChange,
+  onConfirmEdit,
+}) => {
+  const [liked, setLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0); //comment.likes.length ||
+
+  const handleToggleLike = () => {
+    setLiked((prev: boolean) => !prev);
+    setLikesCount((prev: number) => (liked ? prev - 1 : prev + 1));
+  };
+
   return (
-    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, width: '100%' }}>
       <Avatar src={comment.user?.avatarUrl ?? undefined}>
         {!comment.user?.avatarUrl &&
           `${comment.user?.firstName?.[0]?.toUpperCase() ?? ''}${comment.user?.lastName?.[0]?.toUpperCase() ?? ''}`}
       </Avatar>
       <Box sx={{ width: '100%' }}>
-        <Box
-          sx={{
-            bgcolor: '#f9f9fa',
-            borderRadius: 2,
-            p: 1.2,
-            mb: 0.5,
-            maxWidth: '100%',
-          }}
-        >
-          <Typography
-            variant="subtitle2"
-            fontWeight="bold"
-            sx={{ textAlign: 'left', display: 'block' }}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box
+            sx={{
+              bgcolor: '#f9f9fa',
+              borderRadius: 2,
+              p: 1.2,
+              mb: 0.5,
+              flex: 1,
+            }}
           >
-            {`${comment.user?.firstName} ${comment.user?.lastName}`}
-          </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'left', display: 'block' }}>
-            {comment.content}
-          </Typography>
+            <Typography
+              variant="subtitle2"
+              fontWeight="bold"
+              sx={{ textAlign: 'left', display: 'block' }}
+            >
+              {`${comment.user?.firstName} ${comment.user?.lastName}`}
+            </Typography>
+
+            {isEditing ? (
+              <Stack spacing={1}>
+                <TextField
+                  multiline
+                  fullWidth
+                  value={editContent}
+                  onChange={(e) => onEditContentChange(e.target.value)}
+                  size="small"
+                  sx={{ backgroundColor: '#fff' }}
+                />
+                <Stack direction="row" spacing={1}>
+                  <Button variant="contained" size="small" onClick={onConfirmEdit}>
+                    Зберегти
+                  </Button>
+                </Stack>
+              </Stack>
+            ) : (
+              <Typography variant="body2" sx={{ textAlign: 'left', display: 'block' }}>
+                {comment.content}
+              </Typography>
+            )}
+          </Box>
+
+          <Button
+            startIcon={liked ? <FavoriteIcon color="primary" /> : <FavoriteBorderIcon />}
+            sx={{
+              fontWeight: 'bold',
+              textTransform: 'none',
+              color: liked ? 'primary' : '#757575',
+            }}
+            onClick={handleToggleLike}
+          >
+            {likesCount}
+          </Button>
         </Box>
+
         <Stack direction="row" spacing={2} sx={{ color: 'text.secondary' }}>
           <Typography variant="caption">{comment.createdAt}</Typography>
           <Button
@@ -45,13 +107,26 @@ const Comment: React.FC<CommentProps> = ({ comment, onReplyClick }) => {
           >
             Відповісти
           </Button>
-          <Button
-            variant="text"
-            size="small"
-            sx={{ p: 0, fontSize: 12, textTransform: 'none', color: '#757575' }}
-          >
-            Подобається
-          </Button>
+          {isOwner && (
+            <>
+              <Button
+                variant="text"
+                size="small"
+                sx={{ p: 0, fontSize: 12, textTransform: 'none', color: '#757575' }}
+                onClick={onDeleteClick}
+              >
+                Видалити
+              </Button>
+              <Button
+                variant="text"
+                size="small"
+                sx={{ p: 0, fontSize: 12, textTransform: 'none', color: '#757575' }}
+                onClick={onEditClick}
+              >
+                Редагувати
+              </Button>
+            </>
+          )}
         </Stack>
       </Box>
     </Box>

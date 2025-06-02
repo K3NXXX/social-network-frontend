@@ -34,4 +34,10 @@ export interface PostType {
   user: User;
   comments: CommentType[];
   likes: Like[];
+  _count: PostCount;
+}
+
+export interface PostCount {
+  comments: number;
+  likes: number;
 }

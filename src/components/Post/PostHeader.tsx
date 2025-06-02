@@ -11,7 +11,6 @@ import {
   Typography,
 } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ShareIcon from '@mui/icons-material/Share';
 import type { User } from '../../types/post';
@@ -21,10 +20,9 @@ interface Props {
   createdAt: string;
   isOwner: boolean;
   onDelete: () => void;
-  onEdit: () => void;
 }
 
-const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdit }) => {
+const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -39,11 +37,6 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
   const handleDeleteClick = () => {
     handleMenuClose();
     onDelete();
-  };
-
-  const handleEditClick = () => {
-    handleMenuClose();
-    onEdit();
   };
 
   return (
@@ -84,12 +77,6 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
 
         {isOwner && [
           <Divider key="divider" />,
-          <MenuItem key="edit" onClick={handleEditClick}>
-            <ListItemIcon>
-              <EditIcon fontSize="small" />
-            </ListItemIcon>
-            Редагувати
-          </MenuItem>,
           <MenuItem key="delete" onClick={handleDeleteClick} sx={{ color: 'error.main' }}>
             <ListItemIcon>
               <DeleteIcon fontSize="small" color="error" />

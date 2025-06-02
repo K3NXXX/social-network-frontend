@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Avatar,
   Box,
@@ -20,14 +20,24 @@ interface Props {
   comments: CommentType[];
   postId: string;
   onAddComment: (comment: CommentType) => void;
+  onDeleteComment: (commentId: string) => void;
+  hasMore: boolean;
 }
 
-const PostComments: React.FC<Props> = ({ comments, postId, onAddComment }) => {
+const PostComments: React.FC<Props> = ({
+  comments,
+  postId,
+  onAddComment,
+  onDeleteComment,
+  hasMore,
+}) => {
   const { user } = useAuth();
   const [newComment, setNewComment] = useState('');
   const [visibleReplies, setVisibleReplies] = useState<Set<string>>(new Set());
   const [replyingTo, setReplyingTo] = useState<CommentType | null>(null);
-  const [repliesMap, setRepliesMap] = useState<{ [key: string]: CommentType[] }>({});
+  const [editingComment, setEditingComment] = useState<CommentType | null>(null);
+  const [editContent, setEditContent] = useState('');
+  const loaderRef = useRef<HTMLDivElement | null>(null);
 
   const handleSend = async () => {
     if (!newComment.trim()) return;
@@ -56,16 +66,37 @@ const PostComments: React.FC<Props> = ({ comments, postId, onAddComment }) => {
       }
       return newSet;
     });
+  };
 
-    if (!repliesMap[commentId]) {
-      try {
-        const res = await axiosInstance.get(`/api/comments/${commentId}/replies`);
-        const replies = res.data;
-        setRepliesMap((prev) => ({ ...prev, [commentId]: replies }));
-      } catch (error) {
-        console.error('Error loading replies', error);
-      }
+  const handleDelete = async (commentId: string) => {
+    try {
+      const res = await axiosInstance.delete(`/api/comments/${commentId}`);
+      console.log(res);
+      onDeleteComment(commentId);
+    } catch (error) {
+      console.error('Error loading replies', error);
     }
+  };
+
+  const handleEdit = async () => {
+    if (!editingComment) return;
+    try {
+      const res = await axiosInstance.patch(`/api/comments/${editingComment.id}`, {
+        content: editContent,
+      });
+      const updatedComment = res.data;
+      onDeleteComment(editingComment.id);
+      onAddComment(updatedComment);
+    } catch (error) {
+      console.error('Could not update comment', error);
+    }
+    setEditingComment(null);
+    setEditContent('');
+  };
+
+  const handleEditClick = (comment: CommentType) => {
+    setEditingComment(comment);
+    setEditContent(comment.content);
   };
 
   return (
@@ -77,7 +108,17 @@ const PostComments: React.FC<Props> = ({ comments, postId, onAddComment }) => {
           .map((c) => (
             <Box key={c.id}>
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                <Comment comment={c} onReplyClick={() => setReplyingTo(c)} />
+                <Comment
+                  comment={c}
+                  onReplyClick={() => setReplyingTo(c)}
+                  onDeleteClick={() => handleDelete(c.id)}
+                  isOwner={c.user?.id === user?.id}
+                  onEditClick={() => handleEditClick(c)}
+                  isEditing={editingComment?.id === c.id}
+                  editContent={editContent}
+                  onEditContentChange={(value) => setEditContent(value)}
+                  onConfirmEdit={handleEdit}
+                />
 
                 {c.replies && c.replies.length > 0 && (
                   <Button size="small" onClick={() => toggleReplies(c.id)} sx={{ mt: 1, ml: 7 }}>
@@ -90,24 +131,19 @@ const PostComments: React.FC<Props> = ({ comments, postId, onAddComment }) => {
 
               {visibleReplies.has(c.id) && (
                 <Stack spacing={1} sx={{ ml: 7, mt: 1 }}>
-                  {(repliesMap[c.id] || []).map((reply) => (
+                  {(c.replies || []).map((reply) => (
                     <Box key={reply.id}>
                       <Comment
-                        key={reply.id}
                         comment={reply}
                         onReplyClick={() => setReplyingTo(reply)}
+                        onDeleteClick={() => handleDelete(reply.id)}
+                        isOwner={reply.user?.id === user?.id}
+                        onEditClick={() => handleEditClick(reply)}
+                        isEditing={editingComment?.id === reply.id}
+                        editContent={editContent}
+                        onEditContentChange={(value) => setEditContent(value)}
+                        onConfirmEdit={handleEdit}
                       />
-                      {reply.replies && reply.replies.length > 0 && (
-                        <Button
-                          size="small"
-                          onClick={() => toggleReplies(reply.id)}
-                          sx={{ mt: 1, ml: 7 }}
-                        >
-                          {visibleReplies.has(reply.id)
-                            ? 'Сховати відповіді'
-                            : `Показати відповіді (${reply.replies.length})`}
-                        </Button>
-                      )}
                     </Box>
                   ))}
                 </Stack>
@@ -115,6 +151,7 @@ const PostComments: React.FC<Props> = ({ comments, postId, onAddComment }) => {
             </Box>
           ))}
       </Stack>
+      {hasMore && <div ref={loaderRef} style={{ height: '1px' }} />}
 
       {replyingTo && (
         <Box
