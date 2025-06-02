@@ -1,15 +1,16 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Box, ThemeProvider, createTheme } from '@mui/material';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
-import { AuthProvider } from './services/AuthContext';
-import { ThemeProvider, createTheme } from '@mui/material';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import Header from './components/Header/Header';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
-import ProfilePage from './pages/ProfilePage';
-import FriendsListPage from './pages/FriendsListPage';
 import ChatsPage from './pages/ChatsPage';
-import SearchPage from './pages/SearchPage';
 import FeedPage from './pages/FeedPage';
-import ProtectedRoute from './components/auth/ProtectedRoute';
+import FriendsListPage from './pages/FriendsListPage';
+import ProfilePage from './pages/ProfilePage';
+import SearchPage from './pages/SearchPage';
+import { AuthProvider } from './services/AuthContext';
 
 function App() {
   const theme = createTheme({
@@ -17,6 +18,9 @@ function App() {
       primary: {
         main: '#6969cb',
       },
+    },
+    typography: {
+      fontFamily: '"Ubuntu", sans-serif',
     },
     components: {
       MuiButton: {
@@ -41,21 +45,30 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+        <Box
+          sx={{
+            maxWidth: '1230px',
+            margin: '0 auto',
+            padding: '0 15px',
+          }}
+        >
+          <Header />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Navigate to="/feed" replace />} />
-            <Route path="/profile/:username" element={<ProfilePage />} />
-            <Route path="/feed" element={<FeedPage />} />
-            <Route path="/friends" element={<FriendsListPage />} />
-            <Route path="/chats" element={<ChatsPage />} />
-            <Route path="/search" element={<SearchPage />} />
-          </Route>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<Navigate to="/feed" replace />} />
+              <Route path="/profile/:username" element={<ProfilePage />} />
+              <Route path="/feed" element={<FeedPage />} />
+              <Route path="/friends" element={<FriendsListPage />} />
+              <Route path="/chats" element={<ChatsPage />} />
+              <Route path="/search" element={<SearchPage />} />
+            </Route>
 
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </Box>
       </AuthProvider>
     </ThemeProvider>
   );
