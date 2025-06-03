@@ -43,7 +43,7 @@ export const sidebarList: ISidebarList[] = [
   {
     id: 5,
     icon: PersonOutlineIcon,
-    label: 'Мій профіль',
+    label: 'Профіль',
     url: PAGES.PROFILE,
   },
   {

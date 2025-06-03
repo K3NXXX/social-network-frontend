@@ -1,11 +1,15 @@
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Box, Typography } from '@mui/material';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { sidebarList } from '../../lists/sidebar.list';
 import Logo from '../../ui/Logo';
 
 export default function Sidebar() {
   const { pathname } = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
 
   return (
     <Box
@@ -13,22 +17,24 @@ export default function Sidebar() {
         position: 'sticky',
         top: 0,
         height: '100vh',
-        width: '300px',
+        width: isCollapsed ? '80px' : '300px', // ширина залежить від стану
         background: '#181424',
         padding: '20px',
         display: 'flex',
         flexDirection: 'column',
         zIndex: 500,
+        transition: 'width 0.3s ease', // плавна анімація
+        overflow: 'hidden',
       }}
     >
       <Box
         mb={3}
         display="flex"
-        justifyContent="space-between"
+        justifyContent={isCollapsed ? 'center' : 'space-between'} // центруємо іконку, якщо колапс
         alignItems="center"
-        padding="0 12px"
+        padding={isCollapsed ? '0' : '0 12px'}
       >
-        <Logo />
+        {!isCollapsed && <Logo />} {/* Логотип ховаємо при колапсі */}
         <Box
           sx={{
             cursor: 'pointer',
@@ -39,9 +45,19 @@ export default function Sidebar() {
             '&:hover': {
               backgroundColor: '#2a2340',
             },
+            display: 'flex',
+            justifyContent: 'center',
           }}
+          onClick={toggleCollapse}
         >
-          <ArrowForwardIosIcon sx={{ color: 'white', fontSize: '14px' }} />
+          <ArrowForwardIosIcon
+            sx={{
+              color: 'white',
+              fontSize: '14px',
+              transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)', // поворот стрілочки
+              transition: 'transform 0.3s ease',
+            }}
+          />
         </Box>
       </Box>
 
@@ -51,12 +67,12 @@ export default function Sidebar() {
           .map((item) => {
             const isActivePath = pathname === item.url;
             return (
-              <Link key={item.id} to={item.url}>
+              <Link key={item.id} to={item.url} style={{ textDecoration: 'none', width: '100%' }}>
                 <Box
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '20px',
+                    gap: isCollapsed ? 0 : '20px', // зменшуємо відступи при колапсі
                     padding: '10px 8px',
                     borderRadius: 4,
                     width: '100%',
@@ -65,10 +81,13 @@ export default function Sidebar() {
                     '&:hover': {
                       backgroundColor: '#2a2340',
                     },
+                    justifyContent: isCollapsed ? 'center' : 'flex-start', // центр іконок при колапсі
                   }}
                 >
                   <item.icon sx={{ color: 'white', fontSize: '30px' }} />
-                  <Typography sx={{ color: 'white', fontSize: '17px' }}>{item.label}</Typography>
+                  {!isCollapsed && (
+                    <Typography sx={{ color: 'white', fontSize: '17px' }}>{item.label}</Typography>
+                  )}
                 </Box>
               </Link>
             );
@@ -83,17 +102,20 @@ export default function Sidebar() {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '20px',
                 padding: '10px 8px',
                 borderRadius: 4,
                 width: '100%',
+                gap: isCollapsed ? 0 : '20px',
+                justifyContent: isCollapsed ? 'center' : 'flex-start',
                 '&:hover': {
                   backgroundColor: '#2a2340',
                 },
               }}
             >
               <item.icon sx={{ color: 'white', fontSize: '30px' }} />
-              <Typography sx={{ color: 'white', fontSize: '17px' }}>{item.label}</Typography>
+              {!isCollapsed && (
+                <Typography sx={{ color: 'white', fontSize: '17px' }}>{item.label}</Typography>
+              )}
             </Box>
           </Link>
         ))}
