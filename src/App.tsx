@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Header from './components/Header/Header';
+import Sidebar from './components/Sidebar/Sidebar';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import ChatsPage from './pages/ChatsPage';
@@ -20,7 +21,7 @@ function App() {
       },
     },
     typography: {
-      fontFamily: '"Ubuntu", sans-serif',
+      fontFamily: '"Roboto", sans-serif',
     },
     components: {
       MuiButton: {
@@ -45,29 +46,26 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>
-        <Box
-          sx={{
-            maxWidth: '1230px',
-            margin: '0 auto',
-            padding: '0 15px',
-          }}
-        >
-          <Header />
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+        <Box display="flex">
+          <Sidebar />
+          <Box sx={{ width: '100%' }}>
+            <Header />
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-            <Route element={<ProtectedRoute />}>
-              <Route path="/" element={<Navigate to="/feed" replace />} />
-              <Route path="/profile/:username" element={<ProfilePage />} />
-              <Route path="/feed" element={<FeedPage />} />
-              <Route path="/friends" element={<FriendsListPage />} />
-              <Route path="/chats" element={<ChatsPage />} />
-              <Route path="/search" element={<SearchPage />} />
-            </Route>
+              <Route element={<ProtectedRoute />}>
+                <Route path="/" element={<Navigate to="/feed" replace />} />
+                <Route path="/profile/:username" element={<ProfilePage />} />
+                <Route path="/feed" element={<FeedPage />} />
+                <Route path="/friends" element={<FriendsListPage />} />
+                <Route path="/chats" element={<ChatsPage />} />
+                <Route path="/search" element={<SearchPage />} />
+              </Route>
 
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
+              <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+          </Box>
         </Box>
       </AuthProvider>
     </ThemeProvider>
