@@ -153,7 +153,12 @@ export default function Header() {
               }}
             >
               {searchResults.map((result) => (
-                <SearchItem key={result.id} result={result} />
+                <SearchItem
+                  key={result.id}
+                  result={result}
+                  setSearchValue={setSearchValue}
+                  setSearchResults={setSearchResults}
+                />
               ))}
             </Box>
           )}
