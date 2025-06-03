@@ -4,11 +4,34 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Card, InputAdornment, TextField, Typography } from '@mui/material';
-import { useState } from 'react';
+import debounce from 'lodash/debounce';
+import { useCallback, useEffect, useState } from 'react';
+import { userService } from '../../services/userService';
+import type { SearchUsers } from '../../types/user';
 import Logo from '../../ui/Logo';
+import SearchItem from '../../ui/SearchItem';
 
 export default function Header() {
   const [searchValue, setSearchValue] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchUsers[] | []>([]);
+
+  const debounceSearch = useCallback(
+    debounce(async (value: string) => {
+      if (value.trim().length < 2) return setSearchResults([]);
+      try {
+        const data = await userService.searchUsers(value);
+        setSearchResults(data);
+      } catch {
+        setSearchResults([]);
+      }
+    }, 500),
+    []
+  );
+
+  useEffect(() => {
+    debounceSearch(searchValue);
+  }, [searchValue, debounceSearch]);
+
   return (
     <Card
       sx={{
@@ -18,13 +41,62 @@ export default function Header() {
         position: 'sticky',
         top: '0',
         zIndex: 500,
+        overflow: 'visible',
       }}
     >
-      <Box display="grid" gridTemplateColumns="repeat(3,1fr)" alignItems="center">
+      <Box display="flex" justifyContent="space-between" alignItems="center">
         <Box justifySelf="start">
           <Logo />
         </Box>
-        <Box justifySelf="center">
+
+        <Box position="relative" display="flex" alignItems="center" gap="0 20px">
+          <Box justifySelf="end" display="flex" gap="0 30px">
+            <Box sx={{ cursor: 'pointer' }} position="relative">
+              <NotificationsNoneIcon sx={{ cursor: 'pointer' }} />
+              <Box
+                sx={{
+                  width: 20,
+                  height: 20,
+                  backgroundColor: '#9885f4',
+                  borderRadius: 50,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                top="-11px"
+                right="-14px"
+                position="absolute"
+              >
+                <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '13px' }}>
+                  3
+                </Typography>
+              </Box>
+            </Box>
+            <Box sx={{ cursor: 'pointer' }} position="relative" display="flex" alignItems="center">
+              <ChatBubbleOutlineIcon sx={{ fontSize: '20px' }} />
+              <Box
+                sx={{
+                  width: 20,
+                  height: 20,
+                  backgroundColor: '#9885f4',
+                  borderRadius: 50,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                top="-11px"
+                right="-18px"
+                position="absolute"
+              >
+                <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '13px' }}>
+                  1
+                </Typography>
+              </Box>
+            </Box>
+            <Box sx={{ cursor: 'pointer' }}>
+              <PersonOutlineIcon sx={{ cursor: 'pointer' }} />
+            </Box>
+          </Box>
           <TextField
             placeholder="Пошук..."
             variant="outlined"
@@ -47,7 +119,7 @@ export default function Header() {
               sx: {
                 borderRadius: '20px',
                 padding: 0,
-                width: '400px',
+                width: '350px',
                 '& input': {
                   padding: '1.5px 0px',
                 },
@@ -64,49 +136,27 @@ export default function Header() {
               },
             }}
           />
-        </Box>
-        <Box justifySelf="end" display="flex" gap="0 30px">
-          <Box sx={{ cursor: 'pointer' }} position="relative">
-            <NotificationsNoneIcon sx={{ cursor: 'pointer' }} />
+          {searchResults.length > 0 && (
             <Box
               sx={{
-                width: 20,
-                height: 20,
-                backgroundColor: '#9885f4',
-                borderRadius: 50,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
+                position: 'absolute',
+                left: 150,
+                width: '70%',
+                top: '60px',
+                bgcolor: '#181424',
+                boxShadow: 3,
+                borderRadius: '10px',
+                zIndex: 1000,
+                padding: '10px',
+                maxHeight: '700px',
+                overflowY: 'auto',
               }}
-              top="-11px"
-              right="-14px"
-              position="absolute"
             >
-              <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '13px' }}>3</Typography>
+              {searchResults.map((result) => (
+                <SearchItem key={result.id} result={result} />
+              ))}
             </Box>
-          </Box>
-          <Box sx={{ cursor: 'pointer' }} position="relative" display="flex" alignItems="center">
-            <ChatBubbleOutlineIcon sx={{ fontSize: '20px' }} />
-            <Box
-              sx={{
-                width: 20,
-                height: 20,
-                backgroundColor: '#9885f4',
-                borderRadius: 50,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              top="-11px"
-              right="-18px"
-              position="absolute"
-            >
-              <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '13px' }}>1</Typography>
-            </Box>
-          </Box>
-          <Box sx={{ cursor: 'pointer' }}>
-            <PersonOutlineIcon sx={{ cursor: 'pointer' }} />
-          </Box>
+          )}
         </Box>
       </Box>
     </Card>
