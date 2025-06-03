@@ -1,15 +1,23 @@
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { PAGES } from '../../constants/pages.constants';
 import { sidebarList } from '../../lists/sidebar.list';
+import { authService } from '../../services/authService';
 import Logo from '../../ui/Logo';
 
 export default function Sidebar() {
-  const { pathname } = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
+
+  const logout = () => {
+    authService.logout();
+    navigate(PAGES.LOGIN, { replace: true });
+  };
 
   return (
     <Box
@@ -17,24 +25,24 @@ export default function Sidebar() {
         position: 'sticky',
         top: 0,
         height: '100vh',
-        width: isCollapsed ? '80px' : '300px', // ширина залежить від стану
+        width: isCollapsed ? '80px' : '300px',
         background: '#181424',
         padding: '20px',
         display: 'flex',
         flexDirection: 'column',
         zIndex: 500,
-        transition: 'width 0.3s ease', // плавна анімація
+        transition: 'width 0.3s ease',
         overflow: 'hidden',
       }}
     >
       <Box
         mb={3}
         display="flex"
-        justifyContent={isCollapsed ? 'center' : 'space-between'} // центруємо іконку, якщо колапс
+        justifyContent={isCollapsed ? 'center' : 'space-between'}
         alignItems="center"
         padding={isCollapsed ? '0' : '0 12px'}
       >
-        {!isCollapsed && <Logo />} {/* Логотип ховаємо при колапсі */}
+        {!isCollapsed && <Logo />}
         <Box
           sx={{
             cursor: 'pointer',
@@ -54,7 +62,7 @@ export default function Sidebar() {
             sx={{
               color: 'white',
               fontSize: '14px',
-              transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)', // поворот стрілочки
+              transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)',
               transition: 'transform 0.3s ease',
             }}
           />
@@ -72,7 +80,7 @@ export default function Sidebar() {
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: isCollapsed ? 0 : '20px', // зменшуємо відступи при колапсі
+                    gap: isCollapsed ? 0 : '20px',
                     padding: '10px 8px',
                     borderRadius: 4,
                     width: '100%',
@@ -81,7 +89,7 @@ export default function Sidebar() {
                     '&:hover': {
                       backgroundColor: '#2a2340',
                     },
-                    justifyContent: isCollapsed ? 'center' : 'flex-start', // центр іконок при колапсі
+                    justifyContent: isCollapsed ? 'center' : 'flex-start',
                   }}
                 >
                   <item.icon sx={{ color: 'white', fontSize: '30px' }} />
@@ -111,6 +119,7 @@ export default function Sidebar() {
                   backgroundColor: '#2a2340',
                 },
               }}
+              onClick={logout}
             >
               <item.icon sx={{ color: 'white', fontSize: '30px' }} />
               {!isCollapsed && (

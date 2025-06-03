@@ -1,9 +1,10 @@
 import { Box, ThemeProvider, createTheme } from '@mui/material';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Header from './components/Header/Header';
 import Sidebar from './components/Sidebar/Sidebar';
+import { PAGES } from './constants/pages.constants';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import ChatsPage from './pages/ChatsPage';
@@ -12,8 +13,11 @@ import FriendsListPage from './pages/FriendsListPage';
 import ProfilePage from './pages/ProfilePage';
 import SearchPage from './pages/SearchPage';
 import { AuthProvider } from './services/AuthContext';
+import NotificationPage from './pages/NotificationsPage';
 
 function App() {
+  const { pathname } = useLocation();
+  const hideLayout = pathname === PAGES.LOGIN || pathname === PAGES.REGISTER;
   const theme = createTheme({
     palette: {
       primary: {
@@ -47,23 +51,22 @@ function App() {
     <ThemeProvider theme={theme}>
       <AuthProvider>
         <Box display="flex">
-          <Sidebar />
+          {!hideLayout && <Sidebar />}
           <Box sx={{ width: '100%' }}>
-            <Header />
+            {!hideLayout && <Header />}
             <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-
+              <Route path={PAGES.LOGIN} element={<Login />} />
+              <Route path={PAGES.REGISTER} element={<Register />} />
               <Route element={<ProtectedRoute />}>
-                <Route path="/" element={<Navigate to="/feed" replace />} />
-                <Route path="/profile/:username" element={<ProfilePage />} />
-                <Route path="/feed" element={<FeedPage />} />
-                <Route path="/friends" element={<FriendsListPage />} />
-                <Route path="/chats" element={<ChatsPage />} />
-                <Route path="/search" element={<SearchPage />} />
+                <Route path="/" element={<Navigate to={PAGES.HOME} replace />} />
+                <Route path={PAGES.PROFILE} element={<ProfilePage />} />
+                <Route path={PAGES.HOME} element={<FeedPage />} />
+                <Route path={PAGES.FRIENDS} element={<FriendsListPage />} />
+                <Route path={PAGES.CHATS} element={<ChatsPage />} />
+                <Route path={PAGES.SEARCH} element={<SearchPage />} />
+                <Route path={PAGES.NOTIFICATIONS} element={<NotificationPage />} />
               </Route>
-
-              <Route path="*" element={<Navigate to="/login" replace />} />
+              <Route path="*" element={<Navigate to={PAGES.LOGIN} replace />} />
             </Routes>
           </Box>
         </Box>
