@@ -1,81 +1,178 @@
-import { Box, Typography, Avatar, TextField, IconButton } from '@mui/material';
-import React, { useState, useRef, useEffect } from 'react';
-import ChatBar from '../components/ChatBar';
-import Message from '../components/Message';
-import sendIcon from '../assets/paper-plane.svg';
+import { Box, Typography, Select, MenuItem, type SelectChangeEvent } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
+import ChatBar from '../components/chats/ChatBar';
+import ChatScreen from '../components/chats/ChatScreen';
+import { chatsService } from '../services/chatsService';
+import type { ChatPreview, UserPreview, UserPreviewWithStatus } from '../types/chats';
+import { io, Socket } from 'socket.io-client';
 
 const ChatsPage: React.FC = () => {
-  const [selectedChat, setSelectedChat] = useState<null | string>(null);
+  const [selectedChat, setSelectedChat] = useState<ChatPreview | null>(null);
+  const [chats, setChats] = useState<ChatPreview[]>([]);
 
-  const handleChatSelect = (chatId: string) => {
-    setSelectedChat(chatId);
-  };
+  const socketRef = useRef<Socket | null>(null);
+  const lastChatIdRef = useRef<string | null>(null); // для leave_chat івента
 
-  //тестові дані
-  const currentUserId = 'user1';
-  const [messages, setMessages] = useState([
-    { senderId: 'user1', content: 'Привіт!' },
-    { senderId: 'user2', content: 'Привіт! Як ти?' },
-    { senderId: 'user1', content: 'Все ок. Чим займаєшся сьогодні?' },
-    {
-      senderId: 'user2',
-      content:
-        'Та нічого особливого. Вирішив трохи попрацювати над сайтом, потім, можливо, вийду на прогулянку, якщо не буде дощу.',
-    },
-    { senderId: 'user1', content: 'Звучить добре.' },
-    {
-      senderId: 'user1',
-      content:
-        'До речі, я нарешті додивився той фільм, про який ти говорив. Дуже сподобався фінал, хоча було трохи затягнуто в середині.',
-    },
-    {
-      senderId: 'user2',
-      content:
-        'Я ж казав, варто було додивитись. Атмосфера просто шикарна, а головний герой дуже харизматичний.',
-    },
-    { senderId: 'user1', content: 'Так, актор справді крутий. Як думаєш, буде продовження?' },
-    {
-      senderId: 'user2',
-      content:
-        'Сумніваюсь. Хіба що у вигляді приквелу або серіалу. Але загалом, думаю, історія завершена.',
-    },
-    {
-      senderId: 'user1',
-      content:
-        'Окей. До речі, я ще знайшов інтерв’ю з режисером, він пояснює багато речей, які спочатку були незрозумілими. Якщо цікаво — можу скинути.',
-    },
-    {
-      senderId: 'user2',
-      content:
-        'Було б супер! Я люблю дивитись такі розбори після перегляду фільму — іноді розумієш зовсім інше, ніж під час перегляду.',
-    },
-    { senderId: 'user1', content: 'Добре, зараз знайду.' },
-    { senderId: 'user2', content: '👌' },
-  ]);
+  const [friends, setFriends] = useState<UserPreview[]>([]);
+  const [selectedFriendId, setSelectedFriendId] = useState('');
 
-  const [messageInput, setMessageInput] = useState('');
-
-  const handleSendMessage = (content: string) => {
-    if (content.length === 0) return;
-    setMessages([...messages, { senderId: 'user1', content: content }]);
-    setMessageInput('');
-  };
-
-  const scrollRef = useRef<HTMLDivElement>(null);
+  //якщо з другом раніше чата не було-
+  const [newChatFriend, setNewChatFriend] = useState<UserPreview | undefined>(undefined);
+  const newChatFriendRef = useRef<UserPreview | undefined>(undefined);
+  useEffect(() => {
+    newChatFriendRef.current = newChatFriend;
+  }, [newChatFriend]);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    //завантажуємо дані про чати при відкритті сторінки
+    const loadChats = async () => {
+      try {
+        const data = await chatsService.fetchChats();
+        setChats(data);
+      } catch (error) {
+        console.error('Error fetching chats:', error);
+      }
+    };
+
+    const loadFriends = async () => {
+      try {
+        const data = await chatsService.fetchAllUsers();
+        setFriends(data);
+      } catch (error) {
+        console.error('Error fetching friends:', error);
+      }
+    };
+
+    loadChats();
+    loadFriends();
+
+    //події з веб-сокетами
+    socketRef.current = io('https://vetra-8c5dfe3bdee7.herokuapp.com', {
+      path: '/socket.io',
+      withCredentials: true,
+      auth: {
+        token: localStorage.getItem('accessToken'),
+      },
+      transports: ['websocket'],
+    });
+
+    socketRef.current.on('connect', () => {
+      console.log('Socket connected:', socketRef.current?.id);
+    });
+
+    socketRef.current.on('disconnect', () => {
+      console.log('Socket disconnected');
+    });
+
+    return () => {
+      //вихід зі сторінки чатів
+      socketRef.current?.disconnect();
+      if (lastChatIdRef.current) {
+        console.log('leaving chat: ', lastChatIdRef.current, ' and chats page');
+        socketRef.current?.emit('leave_chat', lastChatIdRef.current);
+      }
+    };
+  }, []);
+
+  //івенти join_chat / leave_chat коли користувач відкриває і міняє чати
+  useEffect(() => {
+    if (!selectedChat) return;
+
+    if (lastChatIdRef.current && lastChatIdRef.current !== selectedChat.chatId) {
+      console.log('leaving chat: ', lastChatIdRef.current);
+      socketRef.current?.emit('leave_chat', lastChatIdRef.current);
     }
-  }, [messages]);
+
+    lastChatIdRef.current = selectedChat.chatId;
+    console.log('joining chat: ', selectedChat.chatId);
+    socketRef.current?.emit('join_chat', selectedChat.chatId);
+  }, [selectedChat]);
+
+  const handleSelectChange = async (event: SelectChangeEvent) => {
+    const friendId = event.target.value;
+    setSelectedFriendId(friendId);
+    const chat = await findChat(friendId);
+    if (chat) setSelectedChat(chat);
+    else {
+      setSelectedChat(null);
+      setNewChatFriend(friends.find((friend) => friend.id === friendId));
+    }
+  };
+
+  //івент chat_created
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (!socket) return;
+    if (!socket.connected) socket.connect();
+
+    const handleChatCreated = (newChatId: string) => {
+      const friend = newChatFriendRef.current;
+      if (!friend) {
+        console.log('no new chat friend!', friend);
+        return;
+      }
+      console.log('creating a new chat: ', newChatId);
+      const currentUser: UserPreviewWithStatus = JSON.parse(localStorage.getItem('user') || '');
+      const newChatData: ChatPreview = {
+        chatId: newChatId,
+        name: null,
+        isGroup: false,
+        lastMessage: null,
+        participants: [currentUser, { ...friend, isOnline: false }],
+      };
+      setChats((chats) => [newChatData, ...chats]);
+      setSelectedChat(newChatData);
+      lastChatIdRef.current = newChatData.chatId;
+      socket.emit('join_chat', newChatData.chatId);
+    };
+
+    socket.on('chat_created', handleChatCreated);
+
+    return () => {
+      socket.off('chat_created', handleChatCreated);
+    };
+  }, [socketRef.current]);
+
+  const findChat = async (friendId: string) => {
+    //знаходить чат з другом за його id.
+    //дописати з пагінацією, (якщо чат не загрузився на фронті, але на сервері знайшовся)
+    const foundChat =
+      chats.find((chat) => chat.participants.find((user) => user.id === friendId)) || null;
+    if (!foundChat) {
+      try {
+        const data = await chatsService.fetchChat(friendId);
+        if (data) {
+          console.log('found the chat on the backend:', data);
+          //the data is a ChatDetails chat (or not?)
+          const fetchedChat: ChatPreview = {
+            chatId: data.id,
+            name: null,
+            isGroup: data.isGroup,
+            lastMessage: null,
+            participants: data.participants.map((p) => ({
+              ...p,
+              //probably not the best idea???
+              isOnline: false,
+            })),
+          };
+          setChats((chats) => [fetchedChat, ...chats]);
+          return fetchedChat;
+        } else return null;
+      } catch (error) {
+        console.error(`Error fetching chat with ${friendId}:`, error);
+      }
+    } else return foundChat;
+  };
 
   return (
     <Box
       sx={{
         display: 'flex',
-        minHeight: '100vh',
-        minWidth: '100vw',
-        overflow: 'hidden',
+        height: '91.7%',
+        // я намагався зробити, щоб сторінка просто займала доступне вертикальне місце,
+        // але для цього батьківській компоненті треба додати display: flex, flexDirection: column
+        // від яких усі інші сторінки попливуть(
+        // flex: 1,
       }}
     >
       {/* бічна панель */}
@@ -83,179 +180,50 @@ const ChatsPage: React.FC = () => {
         sx={{
           width: '20%',
           bgcolor: 'white',
-          minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
           borderRight: '1px solid #dedede',
         }}
       >
+        <Select
+          value={selectedFriendId}
+          onChange={handleSelectChange}
+          displayEmpty
+          sx={{ width: '80%', alignSelf: 'center', marginTop: '5%' }}
+        >
+          <MenuItem value="" disabled>
+            Select a friend to message:
+          </MenuItem>
+          {friends.map((friend, index) => {
+            return (
+              <MenuItem key={index} value={friend.id}>
+                {`${friend.firstName} ${friend.lastName}`}
+              </MenuItem>
+            );
+          })}
+        </Select>
         <Typography
           variant="body1"
-          sx={{ fontSize: 25, fontWeight: 'bold', margin: '30% 0 5% 5%', color: 'black' }}
+          sx={{ fontSize: 25, fontWeight: 'bold', margin: '30% 0 5% 0%', color: 'black' }}
         >
           Чати
         </Typography>
-        {/* sx={{ flexGrow: 1, overflowY: 'scroll' }} */}
         <Box>
-          {['1', '2', '3', '4', '5', '6', '7', '8'].map((chatId) => (
+          {chats.map((chat, i) => (
             <ChatBar
-              key={chatId}
-              chatId={chatId}
-              onSelect={handleChatSelect}
-              sx={selectedChat === chatId ? { bgcolor: '#e6e6e6' } : null}
+              key={i}
+              data={chat}
+              onSelect={() => {
+                setNewChatFriend(undefined);
+                setSelectedChat(chat);
+              }}
+              sx={selectedChat?.chatId === chat.chatId ? { bgcolor: '#e6e6e6' } : null}
+              socketRef={socketRef}
             />
           ))}
         </Box>
       </Box>
-
-      {/* чат */}
-      {!selectedChat ? (
-        <Box
-          sx={{
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            bgcolor: 'white',
-          }}
-        >
-          <Typography variant="h6" color="text.secondary">
-            Виберіть чат, щоб почати спілкування
-          </Typography>
-        </Box>
-      ) : (
-        <Box
-          sx={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100vh',
-            bgcolor: 'white',
-          }}
-        >
-          <Box
-            sx={{
-              width: '100%',
-              height: 70,
-              borderBottom: '1px solid #dedede',
-              display: 'flex',
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                px: 1.5,
-              }}
-            >
-              <Avatar
-                sx={{
-                  width: 45,
-                  height: 45,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  bgcolor: '#9885f4',
-                  color: 'white',
-                }}
-              >
-                <Typography variant="body1" component="p" sx={{ fontSize: '14px' }}>
-                  ІП
-                </Typography>
-              </Avatar>
-            </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-              }}
-            >
-              <Typography
-                variant="body1"
-                component="p"
-                sx={{ color: 'black', fontWeight: 'bold', fontSize: '16px' }}
-              >
-                {' '}
-                Ім'я Прізвище{' '}
-              </Typography>
-              <Typography variant="body1" component="p" sx={{ color: 'grey', fontSize: '14px' }}>
-                {' '}
-                Востаннє в мережі 1 год. тому
-              </Typography>
-            </Box>
-          </Box>
-          <Box
-            ref={scrollRef}
-            sx={{
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              overflowY: 'auto',
-              flex: 1,
-            }}
-          >
-            {messages.map(({ senderId, content }, index) => (
-              <Message
-                key={index}
-                content={content}
-                isFromCurrentUser={senderId === currentUserId}
-              />
-            ))}
-          </Box>
-          <Box
-            sx={{
-              width: '100%',
-              height: '4.5rem',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Box
-              sx={{
-                width: '95%',
-                height: '70%',
-                marginBottom: '0.5rem',
-                display: 'flex',
-              }}
-            >
-              <TextField
-                variant="outlined"
-                sx={{
-                  flex: 1,
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '30px',
-                    '& fieldset': {
-                      border: '1px solid #dedede',
-                    },
-                  },
-                  color: '#dedede',
-                }}
-                placeholder="Напишіть своє повідомлення тут..."
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-              ></TextField>
-              <IconButton
-                onClick={() => handleSendMessage(messageInput)}
-                sx={{
-                  width: 50,
-                  height: '100%',
-                  borderRadius: '35%',
-                  border: '1px solid #dedede',
-                  marginLeft: '10px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <img src={sendIcon} alt="send" style={{ width: 24, height: 24 }} />
-              </IconButton>
-            </Box>
-          </Box>
-        </Box>
-      )}
+      <ChatScreen selectedChat={selectedChat} socketRef={socketRef} newChatFriend={newChatFriend} />
     </Box>
   );
 };
