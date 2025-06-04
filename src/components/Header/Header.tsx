@@ -98,6 +98,7 @@ export default function Header() {
             </Box>
           </Box>
           <TextField
+            autoComplete="off"
             placeholder="Пошук..."
             variant="outlined"
             value={searchValue}
