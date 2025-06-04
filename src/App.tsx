@@ -10,10 +10,11 @@ import Register from './pages/auth/Register';
 import ChatsPage from './pages/ChatsPage';
 import FeedPage from './pages/FeedPage';
 import FriendsListPage from './pages/FriendsListPage';
+import NotificationPage from './pages/NotificationsPage';
 import ProfilePage from './pages/ProfilePage';
 import SearchPage from './pages/SearchPage';
+import UserPublicProfile from './pages/UserPublicProfile';
 import { AuthProvider } from './services/AuthContext';
-import NotificationPage from './pages/NotificationsPage';
 
 function App() {
   const { pathname } = useLocation();
@@ -65,6 +66,7 @@ function App() {
                 <Route path={PAGES.CHATS} element={<ChatsPage />} />
                 <Route path={PAGES.SEARCH} element={<SearchPage />} />
                 <Route path={PAGES.NOTIFICATIONS} element={<NotificationPage />} />
+                <Route path={`${PAGES.VIEW_PUBLIC_PROFILE}/:id`} element={<UserPublicProfile />} />
               </Route>
               <Route path="*" element={<Navigate to={PAGES.LOGIN} replace />} />
             </Routes>

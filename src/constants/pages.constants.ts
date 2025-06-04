@@ -7,4 +7,5 @@ export const PAGES = {
   SEARCH: '/search',
   NOTIFICATIONS: '/notifications',
   PROFILE: '/profile',
+  VIEW_PUBLIC_PROFILE: '/user/profile',
 };

@@ -113,3 +113,15 @@ h6 {
 .read-the-docs {
   color: #888;
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #745cee;
+}
