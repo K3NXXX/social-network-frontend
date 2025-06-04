@@ -36,14 +36,10 @@ const ChatBar: React.FC<ChatBarProps> = ({ data, onSelect, sx, socketRef }) => {
 
   useEffect(() => {
     const socket = socketRef.current;
-    if (!socket) {
-      console.log('returning from the socket on ChatBar');
-      return;
-    }
+    if (!socket) return;
 
     const handleGetMessage = (message: any) => {
       if (message.chatId === data.chatId) {
-        console.log('handling getting a message (chatbar): ', message);
         setNewMessage({
           id: message.id,
           content: message.content,

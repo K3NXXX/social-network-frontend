@@ -2,6 +2,13 @@ import axios from 'axios';
 import axiosInstance from './axiosConfig';
 import type { ChatDetails, ChatPreview, MessageData, UserPreview } from '../types/chats';
 
+const ENDPOINTS = {
+  CHAT: 'api/chat/',
+  CHATS: 'api/chat/i',
+  MESSAGES: 'api/chat/messages/',
+  USERS: 'api/user/all',
+};
+
 export const chatsService = {
   getUser(): any {
     const userString = localStorage.getItem('user');
@@ -10,7 +17,7 @@ export const chatsService = {
 
   async fetchChats(): Promise<ChatPreview[]> {
     try {
-      const response = await axiosInstance.get(`api/chat/i`);
+      const response = await axiosInstance.get(ENDPOINTS.CHATS);
       console.log('data about chats:', response.data);
       return response.data;
     } catch (error) {
@@ -33,7 +40,7 @@ export const chatsService = {
 
   async fetchMessages(receiverId: string): Promise<MessageData[]> {
     try {
-      const response = await axiosInstance.get(`api/chat/messages/${receiverId}`);
+      const response = await axiosInstance.get(`${ENDPOINTS.MESSAGES}${receiverId}`);
       console.log('data about messages:', response.data);
       return response.data;
     } catch (error) {
@@ -56,7 +63,7 @@ export const chatsService = {
 
   async fetchAllUsers(): Promise<UserPreview[]> {
     try {
-      const response = await axiosInstance.get(`api/user/all`);
+      const response = await axiosInstance.get(ENDPOINTS.USERS);
       console.log('data about users:', response.data);
       return response.data;
     } catch (error) {
@@ -79,7 +86,7 @@ export const chatsService = {
 
   async fetchChat(receiverId: string): Promise<ChatDetails> {
     try {
-      const response = await axiosInstance.get(`api/chat/${receiverId}`);
+      const response = await axiosInstance.get(`${ENDPOINTS.CHAT}${receiverId}`);
       console.log('data about the chat:', response.data);
       return response.data;
     } catch (error) {

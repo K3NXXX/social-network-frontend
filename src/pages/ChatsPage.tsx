@@ -1,4 +1,4 @@
-import { Box, Typography, Select, MenuItem, type SelectChangeEvent } from '@mui/material';
+import { Box, Typography, Select, MenuItem, type SelectChangeEvent, Avatar } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import ChatBar from '../components/chats/ChatBar';
 import ChatScreen from '../components/chats/ChatScreen';
@@ -7,23 +7,31 @@ import type { ChatPreview, UserPreview, UserPreviewWithStatus } from '../types/c
 import { io, Socket } from 'socket.io-client';
 
 const ChatsPage: React.FC = () => {
+  const currentUser = chatsService.getUser();
+
   const [selectedChat, setSelectedChat] = useState<ChatPreview | null>(null);
   const [chats, setChats] = useState<ChatPreview[]>([]);
 
   const socketRef = useRef<Socket | null>(null);
   const lastChatIdRef = useRef<string | null>(null); // для leave_chat івента
 
-  const [friends, setFriends] = useState<UserPreview[]>([]);
-  const [selectedFriendId, setSelectedFriendId] = useState('');
+  const [users, setUsers] = useState<UserPreview[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState(''); // для елемента Select
 
-  //якщо з другом раніше чата не було-
-  const [newChatFriend, setNewChatFriend] = useState<UserPreview | undefined>(undefined);
-  const newChatFriendRef = useRef<UserPreview | undefined>(undefined);
+  //якщо з користувачем раніше чата не було-
+  const [newChatUser, setNewChatUser] = useState<UserPreview | undefined>(undefined);
+  const newChatUserRef = useRef<UserPreview | undefined>(undefined);
+
+  //висота Header для обчислення висоти цього екрана
+  const [headerHeight, setHeaderHeight] = useState(0);
   useEffect(() => {
-    newChatFriendRef.current = newChatFriend;
-  }, [newChatFriend]);
+    newChatUserRef.current = newChatUser;
+  }, [newChatUser]);
 
   useEffect(() => {
+    const headerEl = document.querySelector('.MuiCard-root');
+    if (headerEl) setHeaderHeight(Number.parseInt(getComputedStyle(headerEl).height));
+
     //завантажуємо дані про чати при відкритті сторінки
     const loadChats = async () => {
       try {
@@ -34,17 +42,17 @@ const ChatsPage: React.FC = () => {
       }
     };
 
-    const loadFriends = async () => {
+    const loadUsers = async () => {
       try {
         const data = await chatsService.fetchAllUsers();
-        setFriends(data);
+        setUsers(data);
       } catch (error) {
-        console.error('Error fetching friends:', error);
+        console.error('Error fetching users:', error);
       }
     };
 
     loadChats();
-    loadFriends();
+    loadUsers();
 
     //події з веб-сокетами
     socketRef.current = io('https://vetra-8c5dfe3bdee7.herokuapp.com', {
@@ -68,7 +76,6 @@ const ChatsPage: React.FC = () => {
       //вихід зі сторінки чатів
       socketRef.current?.disconnect();
       if (lastChatIdRef.current) {
-        console.log('leaving chat: ', lastChatIdRef.current, ' and chats page');
         socketRef.current?.emit('leave_chat', lastChatIdRef.current);
       }
     };
@@ -79,23 +86,21 @@ const ChatsPage: React.FC = () => {
     if (!selectedChat) return;
 
     if (lastChatIdRef.current && lastChatIdRef.current !== selectedChat.chatId) {
-      console.log('leaving chat: ', lastChatIdRef.current);
       socketRef.current?.emit('leave_chat', lastChatIdRef.current);
     }
 
     lastChatIdRef.current = selectedChat.chatId;
-    console.log('joining chat: ', selectedChat.chatId);
     socketRef.current?.emit('join_chat', selectedChat.chatId);
   }, [selectedChat]);
 
   const handleSelectChange = async (event: SelectChangeEvent) => {
-    const friendId = event.target.value;
-    setSelectedFriendId(friendId);
-    const chat = await findChat(friendId);
+    const userId = event.target.value;
+    setSelectedUserId(userId);
+    const chat = await findChat(userId);
     if (chat) setSelectedChat(chat);
     else {
       setSelectedChat(null);
-      setNewChatFriend(friends.find((friend) => friend.id === friendId));
+      setNewChatUser(users.find((user) => user.id === userId));
     }
   };
 
@@ -106,11 +111,8 @@ const ChatsPage: React.FC = () => {
     if (!socket.connected) socket.connect();
 
     const handleChatCreated = (newChatId: string) => {
-      const friend = newChatFriendRef.current;
-      if (!friend) {
-        console.log('no new chat friend!', friend);
-        return;
-      }
+      const friend = newChatUserRef.current;
+      if (!friend) return;
       console.log('creating a new chat: ', newChatId);
       const currentUser: UserPreviewWithStatus = JSON.parse(localStorage.getItem('user') || '');
       const newChatData: ChatPreview = {
@@ -143,7 +145,7 @@ const ChatsPage: React.FC = () => {
         const data = await chatsService.fetchChat(friendId);
         if (data) {
           console.log('found the chat on the backend:', data);
-          //the data is a ChatDetails chat (or not?)
+          //the data should be a ChatDetails chat
           const fetchedChat: ChatPreview = {
             chatId: data.id,
             name: null,
@@ -151,7 +153,7 @@ const ChatsPage: React.FC = () => {
             lastMessage: null,
             participants: data.participants.map((p) => ({
               ...p,
-              //probably not the best idea???
+              //not the best idea but it will reset the chat
               isOnline: false,
             })),
           };
@@ -168,17 +170,17 @@ const ChatsPage: React.FC = () => {
     <Box
       sx={{
         display: 'flex',
-        height: '91.7%',
+        height: `calc(${window.innerHeight}px - ${headerHeight}px)`,
         // я намагався зробити, щоб сторінка просто займала доступне вертикальне місце,
         // але для цього батьківській компоненті треба додати display: flex, flexDirection: column
         // від яких усі інші сторінки попливуть(
-        // flex: 1,
       }}
     >
       {/* бічна панель */}
       <Box
         sx={{
-          width: '20%',
+          width: '320px',
+          flexShrink: 0,
           bgcolor: 'white',
           display: 'flex',
           flexDirection: 'column',
@@ -186,18 +188,43 @@ const ChatsPage: React.FC = () => {
         }}
       >
         <Select
-          value={selectedFriendId}
+          value={selectedUserId}
           onChange={handleSelectChange}
           displayEmpty
-          sx={{ width: '80%', alignSelf: 'center', marginTop: '5%' }}
+          sx={{ width: '90%', alignSelf: 'center', marginTop: '5%' }}
         >
           <MenuItem value="" disabled>
-            Select a friend to message:
+            Виберіть, кому написати:
           </MenuItem>
-          {friends.map((friend, index) => {
+          {users.map((user, index) => {
+            if (user.id === currentUser.id) return;
             return (
-              <MenuItem key={index} value={friend.id}>
-                {`${friend.firstName} ${friend.lastName}`}
+              <MenuItem key={index} value={user.id}>
+                <Box display={'flex'} sx={{ width: '260px' }}>
+                  <Avatar
+                    src={user?.avatarUrl ?? undefined}
+                    sx={{
+                      height: 40,
+                      bgcolor: '#9885f4',
+                      fontSize: 12,
+                      marginRight: 1,
+                    }}
+                  >
+                    {user?.avatarUrl
+                      ? null
+                      : `${user?.firstName[0].toUpperCase()}${user?.lastName[0].toUpperCase()}`}
+                  </Avatar>
+                  <Typography
+                    sx={{
+                      color: 'black',
+                      fontWeight: 500,
+                      fontSize: '20px',
+                      alignSelf: 'center',
+                    }}
+                  >
+                    {`${user?.firstName} ${user?.lastName}`}
+                  </Typography>
+                </Box>
               </MenuItem>
             );
           })}
@@ -214,7 +241,7 @@ const ChatsPage: React.FC = () => {
               key={i}
               data={chat}
               onSelect={() => {
-                setNewChatFriend(undefined);
+                setNewChatUser(undefined);
                 setSelectedChat(chat);
               }}
               sx={selectedChat?.chatId === chat.chatId ? { bgcolor: '#e6e6e6' } : null}
@@ -223,7 +250,7 @@ const ChatsPage: React.FC = () => {
           ))}
         </Box>
       </Box>
-      <ChatScreen selectedChat={selectedChat} socketRef={socketRef} newChatFriend={newChatFriend} />
+      <ChatScreen selectedChat={selectedChat} socketRef={socketRef} newChatUser={newChatUser} />
     </Box>
   );
 };
