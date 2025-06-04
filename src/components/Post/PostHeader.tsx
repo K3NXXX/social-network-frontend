@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Avatar,
   Box,
@@ -13,17 +13,22 @@ import {
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ShareIcon from '@mui/icons-material/Share';
+import EditIcon from '@mui/icons-material/Edit';
 import type { User } from '../../types/post';
+import { formatCreatedAt } from '../../utils/dateUtils';
 
 interface Props {
   user: User;
   createdAt: string;
   isOwner: boolean;
   onDelete: () => void;
+  onEdit?: () => void;
 }
 
-const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete }) => {
+const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdit }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [, setCurrentTime] = useState(Date.now());
+
   const open = Boolean(anchorEl);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -38,6 +43,21 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete }) => 
     handleMenuClose();
     onDelete();
   };
+
+  const handleEditClick = () => {
+    handleMenuClose();
+    if (onEdit) {
+      onEdit();
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -59,7 +79,7 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete }) => 
             color="text.secondary"
             sx={{ textAlign: 'left', display: 'block' }}
           >
-            {new Date(createdAt).toLocaleString()}
+            {formatCreatedAt(createdAt)}
           </Typography>
         </Box>
       </Stack>
@@ -76,6 +96,12 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete }) => 
         </MenuItem>
 
         {isOwner && [
+          <MenuItem key="edit" onClick={handleEditClick}>
+            <ListItemIcon>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
+            Редагувати
+          </MenuItem>,
           <Divider key="divider" />,
           <MenuItem key="delete" onClick={handleDeleteClick} sx={{ color: 'error.main' }}>
             <ListItemIcon>
