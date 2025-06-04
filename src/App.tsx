@@ -51,7 +51,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>
-        <Box display="flex" sx={{ width: '100vw', height: '100vh' }}>
+        <Box display="flex" sx={{ width: '100%', minHeight: '100vh' }}>
           {!hideLayout && <Sidebar />}
           <Box sx={{ width: '100%' }}>
             {!hideLayout && <Header />}

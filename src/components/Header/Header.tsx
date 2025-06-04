@@ -6,12 +6,12 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Box, Card, InputAdornment, TextField, Typography } from '@mui/material';
 import debounce from 'lodash/debounce';
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { PAGES } from '../../constants/pages.constants';
 import { userService } from '../../services/userService';
 import type { SearchUsers } from '../../types/user';
 import Logo from '../../ui/Logo';
 import SearchItem from '../../ui/SearchItem';
-import { PAGES } from '../../constants/pages.constants';
-import { Link } from 'react-router-dom';
 
 export default function Header() {
   const [searchValue, setSearchValue] = useState('');

@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  Card,
-  CardContent,
-  CardActions,
-  Avatar,
-  TextField,
-  Button,
-  Stack,
-  Divider,
-  Box,
-} from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import SendIcon from '@mui/icons-material/Send';
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Divider,
+  Stack,
+  TextField,
+} from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
 import PostsList from '../components/Post/PostList';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { useAuth } from '../services/AuthContext';
 import axiosInstance from '../services/axiosConfig';
 import type { PostType } from '../types/post';
-import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 
 const FeedPage: React.FC = () => {
   const { user } = useAuth();
