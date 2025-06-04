@@ -1,19 +1,14 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box } from '@mui/material';
 import PostsList from '../components/Post/PostList';
-import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
-import { postService } from '../services/postService';
-import CreatePostCard from '../components/Post/CreatePostCard';
 import { usePosts } from '../hooks/usePosts';
+import { postService } from '../services/postService';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 
-const FeedPage: React.FC = () => {
+const DiscoverPage: React.FC = () => {
   const { posts, setPosts, page, lastPage, loading, fetchPosts, loaderRef } = usePosts(
-    postService.fetchFeedPosts
+    postService.fetchDiscoverPosts
   );
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
 
   useIntersectionObserver(
     loaderRef,
@@ -40,8 +35,6 @@ const FeedPage: React.FC = () => {
         py: 4,
       }}
     >
-      <CreatePostCard onPostCreated={(newPost) => setPosts((prev) => [newPost, ...prev])} />
-
       <Box
         sx={{
           width: '100%',
@@ -52,9 +45,9 @@ const FeedPage: React.FC = () => {
         <PostsList posts={posts} loading={loading} onDelete={handleDelete} />
       </Box>
 
-      <div ref={loaderRef} style={{ height: '1px' }} />
+      <div ref={loaderRef} style={{ height: 1 }} />
     </Box>
   );
 };
 
-export default FeedPage;
+export default DiscoverPage;

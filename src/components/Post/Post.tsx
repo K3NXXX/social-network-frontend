@@ -8,8 +8,9 @@ import PostHeader from './PostHeader';
 
 import type { CommentType, PostType } from '../../types/post';
 import { useAuth } from '../../services/AuthContext';
-import axiosInstance from '../../services/axiosConfig';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { postService } from '../../services/postService';
+import EditPostModal from './EditPostModal';
 
 interface Props {
   post: PostType;
@@ -18,7 +19,7 @@ interface Props {
 
 const Post: React.FC<Props> = ({ post, onDelete }) => {
   const { user } = useAuth();
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(post.liked);
   const [likesCount, setLikesCount] = useState(post._count.likes);
   const [commentsCount, setCommentsCount] = useState(post._count.comments);
   const [showComments, setShowComments] = useState(false);
@@ -27,23 +28,25 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
   const [lastPage, setLastPage] = useState(1);
   const take = 5;
   const loaderRef = useRef<HTMLDivElement | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [currentPost, setCurrentPost] = useState(post);
 
   const fetchComments = async (pageNumber = 1) => {
     try {
-      const res = await axiosInstance.get(`api/comments/post/${post.id}`, {
-        params: { page: pageNumber, take },
-      });
-
+      const res = await postService.fetchPostComments(post.id, pageNumber, take);
       if (pageNumber === 1) {
-        setComments(res.data.data);
+        setComments(res.data);
       } else {
-        setComments((prev) => [...prev, ...res.data.data]);
+        setComments((prev) => {
+          const existingIds = new Set(prev.map((c) => c.id));
+          const newComments = res.data.filter((c) => !existingIds.has(c.id));
+          return [...prev, ...newComments];
+        });
       }
-
-      setPage(res.data.page);
-      setLastPage(res.data.totalPages);
+      setPage(res.page);
+      setLastPage(res.totalPages);
     } catch (error) {
-      console.error('Could not load comments', error);
+      console.error(error);
     }
   };
 
@@ -59,9 +62,14 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
     }
   });
 
-  const handleToggleLike = () => {
-    setLiked((prev: boolean) => !prev);
-    setLikesCount((prev: number) => (liked ? prev - 1 : prev + 1));
+  const handleToggleLike = async () => {
+    try {
+      const { liked } = await postService.toggleLike(post.id);
+      setLiked(liked);
+      setLikesCount((prev) => (liked ? prev + 1 : prev - 1));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleAddComment = (newComment: CommentType) => {
@@ -69,6 +77,8 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
       if (newComment.parentId) {
         return prevComments.map((comment) => {
           if (comment.id === newComment.parentId) {
+            console.log(comment, newComment);
+
             return {
               ...comment,
               replies: [...(comment.replies || []), newComment],
@@ -77,6 +87,7 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
           return comment;
         });
       } else {
+        console.log([...prevComments, { ...newComment, replies: [] }]);
         return [...prevComments, { ...newComment, replies: [] }];
       }
     });
@@ -85,51 +96,61 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
 
   const handleDeletePost = async () => {
     try {
-      const result = await axiosInstance.delete(`/api/posts/${post.id}`);
-      console.log(result.data.message); // make a notification later
+      const message = await postService.deletePost(post.id);
+      console.log(message);
       onDelete(post.id);
     } catch (err) {
-      console.error('Error deleting post:', err);
+      console.error(err);
     }
   };
 
-  // const handleDeleteComment = (commentId: string) => {
-  //   const countCommentsToDelete = (comments: CommentType[], id: string): number => {
-  //     let count = 0;
-  //     for (const comment of comments) {
-  //       if (comment.id === id) {
-  //         count += 1;
-  //         if (comment.replies && comment.replies.length) {
-  //           count += comment.replies.reduce((acc, reply) => acc + countCommentsToDelete([reply], reply.id), 0);
-  //         }
-  //       } else if (comment.replies && comment.replies.length) {
-  //         count += countCommentsToDelete(comment.replies, id);
-  //       }
-  //     }
-  //     return count;
-  //   };
+  const handleDeleteComment = (commentId: string) => {
+    setComments((prevComments) =>
+      prevComments
+        .filter((comment) => comment.id !== commentId)
+        .map((comment) => ({
+          ...comment,
+          replies: comment.replies?.filter((reply) => reply.id !== commentId) || [],
+        }))
+    );
+    setCommentsCount((prev) => prev - 1);
+  };
 
-  //   const deleteCommentRecursive = (comments: CommentType[], id: string): CommentType[] => {
-  //     return comments
-  //       .filter((comment) => comment.id !== id)
-  //       .map((comment) => ({
-  //         ...comment,
-  //         replies: comment.replies ? deleteCommentRecursive(comment.replies, id) : [],
-  //       }));
-  //   };
+  const handleAddReplies = (parentId: string, replies: CommentType[]) => {
+    setComments((prevComments) =>
+      prevComments.map((comment) => {
+        if (comment.id === parentId) {
+          return {
+            ...comment,
+            replies,
+          };
+        }
+        return comment;
+      })
+    );
+  };
 
-  //   const countToRemove = countCommentsToDelete(comments, commentId);
-  //   setCommentsCount((prev) => prev - countToRemove);
+  const handleUpdateComment = (updatedComment: CommentType) => {
+    setComments((prevComments) =>
+      prevComments.map((comment) => {
+        if (comment.id === updatedComment.id) {
+          return { ...comment, ...updatedComment };
+        }
+        if (comment.replies) {
+          return {
+            ...comment,
+            replies: comment.replies.map((reply) =>
+              reply.id === updatedComment.id ? { ...reply, ...updatedComment } : reply
+            ),
+          };
+        }
+        return comment;
+      })
+    );
+  };
 
-  //   setComments((prevComments) => deleteCommentRecursive(prevComments, commentId));
-  // };
-
-  const handleDeleteComment = async () => {
-    try {
-      fetchComments();
-    } catch (error) {
-      console.error('Could not delete comment', error);
-    }
+  const handleUpdatePost = (updatedPost: PostType) => {
+    setCurrentPost(updatedPost);
   };
 
   return (
@@ -137,8 +158,16 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
       <PostHeader
         user={post.user}
         createdAt={post.createdAt}
-        isOwner={post.userId === user?.id}
+        isOwner={post.user.id === user?.id}
         onDelete={handleDeletePost}
+        onEdit={() => setEditOpen(true)}
+      />
+
+      <EditPostModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        post={currentPost}
+        onUpdate={handleUpdatePost}
       />
 
       <PostContent content={post.content} photo={post.photo} />
@@ -161,6 +190,9 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
           onAddComment={handleAddComment}
           onDeleteComment={handleDeleteComment}
           hasMore={page < lastPage}
+          onAddReplies={handleAddReplies}
+          onLoadMore={handleLoadMoreComments}
+          onUpdateComment={handleUpdateComment}
         />
       )}
     </Card>
