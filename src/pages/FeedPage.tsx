@@ -36,6 +36,9 @@ const FeedPage: React.FC = () => {
           fetchFeedPosts(feedPage + 1);
         } else if (feedPage === feedLastPage && !loadingFeed) {
           setShowDiscover(true);
+          if (discoverPage === 1 && discoverPosts.length === 0) {
+            fetchDiscoverPosts(1);
+          }
         }
       } else {
         if (discoverPage < discoverLastPage && !loadingDiscover) {
@@ -78,7 +81,7 @@ const FeedPage: React.FC = () => {
         )}
       </Box>
 
-      <div ref={loaderRef} style={{ height: '1px' }} />
+      {feedLastPage > 1 && <div ref={loaderRef} style={{ height: '1px' }} />}
     </Box>
   );
 };
