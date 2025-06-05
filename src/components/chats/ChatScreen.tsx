@@ -53,7 +53,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
       };
       loadMessages();
     }
-  }, [selectedChat, otherUser]);
+  }, [selectedChat]);
 
   useEffect(() => {
     const socket = socketRef.current;
@@ -91,7 +91,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
       socket.off('message_seen', handleMessageSeen);
       socket.off('message', handleGetMessage);
     };
-  }, [socketRef]);
+  }, [socketRef.current]);
 
   const handleSendMessage = (content: string) => {
     if (content.length === 0) {
@@ -118,10 +118,8 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      console.log('key pressed:', e.key);
       if (e.key === 'Enter') {
         if (!newChatUserRef.current && !selectedChatRef.current) {
-          console.log('no chat/user selected');
           return;
         }
         handleSendMessage(messageInputRef.current);
@@ -133,7 +131,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  });
+  }, []);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
