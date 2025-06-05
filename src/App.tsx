@@ -1,4 +1,4 @@
-import { Box, ThemeProvider, createTheme } from '@mui/material';
+import { Box, createTheme, ThemeProvider } from '@mui/material';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -15,6 +15,7 @@ import ProfilePage from './pages/ProfilePage';
 import SearchPage from './pages/SearchPage';
 import UserPublicProfile from './pages/UserPublicProfile';
 import { AuthProvider } from './services/AuthContext';
+import EditProfilePage from './pages/EditProfilePage.tsx';
 
 function App() {
   const { pathname } = useLocation();
@@ -61,6 +62,7 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 <Route path="/" element={<Navigate to={PAGES.HOME} replace />} />
                 <Route path={PAGES.PROFILE} element={<ProfilePage />} />
+                <Route path={PAGES.EDIT_PROFILE} element={<EditProfilePage />} />
                 <Route path={PAGES.HOME} element={<FeedPage />} />
                 <Route path={PAGES.FRIENDS} element={<FriendsListPage />} />
                 <Route path={PAGES.CHATS} element={<ChatsPage />} />
