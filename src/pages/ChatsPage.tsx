@@ -231,7 +231,7 @@ const ChatsPage: React.FC = () => {
         </Select>
         <Typography
           variant="body1"
-          sx={{ fontSize: 25, fontWeight: 'bold', margin: '30% 0 5% 0%', color: 'black' }}
+          sx={{ fontSize: 25, fontWeight: 'bold', margin: '10% 0 2% 0', color: 'black' }}
         >
           Чати
         </Typography>
