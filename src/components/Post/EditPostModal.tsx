@@ -39,7 +39,7 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
-      <DialogTitle>Edit Post</DialogTitle>
+      <DialogTitle>Редагування поста</DialogTitle>
       <DialogContent>
         <TextField
           multiline
@@ -50,14 +50,23 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
           sx={{ my: 2 }}
         />
         {post.photo && !removePhoto && (
-          <Box sx={{ mb: 2 }}>
-            <img src={post.photo} alt="post" style={{ maxWidth: '100%', borderRadius: 8 }} />
-            <Button color="error" onClick={() => setRemovePhoto(true)}>
+          <Box sx={{ mb: 2, textAlign: 'center' }}>
+            <img
+              src={post.photo}
+              alt="post"
+              style={{
+                maxWidth: '300px',
+                maxHeight: '200px',
+                borderRadius: 8,
+                objectFit: 'contain',
+              }}
+            />
+            <Button color="error" onClick={() => setRemovePhoto(true)} sx={{ mt: 1 }} fullWidth>
               Видалити фото
             </Button>
           </Box>
         )}
-        <Button variant="contained" component="label">
+        <Button variant="contained" component="label" fullWidth>
           Завантажити нове фото
           <input
             hidden

@@ -72,7 +72,8 @@ export const postService = {
     lastPage: number;
   }> {
     try {
-      const response = await axiosInstance.get(POST_ENDPOINTS.FEED_POSTS, {
+      // ТИМЧАСОВА ЗАГЛУШКА. тут має бути FEED_POSTS
+      const response = await axiosInstance.get(POST_ENDPOINTS.POSTS, {
         params: { page: pageNumber, take },
       });
       return response.data;
