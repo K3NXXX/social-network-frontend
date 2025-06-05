@@ -33,7 +33,7 @@ export function usePosts(
 
   useEffect(() => {
     fetchPosts(1);
-  }, [fetchFunction]);
+  }, []);
 
   return { posts, setPosts, page, lastPage, loading, fetchPosts, loaderRef };
 }

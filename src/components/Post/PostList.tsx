@@ -10,7 +10,7 @@ type Props = {
 };
 
 const PostsList: React.FC<Props> = ({ posts, loading, onDelete }) => {
-  if (loading) {
+  if (!posts.length && loading) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
         <CircularProgress />
@@ -18,7 +18,7 @@ const PostsList: React.FC<Props> = ({ posts, loading, onDelete }) => {
     );
   }
 
-  if (!posts.length) {
+  if (!posts.length && !loading) {
     return (
       <Box textAlign="center" mt={4}>
         <p>Постів ще немає.</p>
