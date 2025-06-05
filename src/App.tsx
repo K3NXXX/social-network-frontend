@@ -35,6 +35,28 @@ function App() {
             borderRadius: '10px',
             fontWeight: 'bolder',
             textTransform: 'none',
+            '&:focus': {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+            '&:focus-visible': {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+          },
+        },
+      },
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            '&:focus': {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+            '&:focus-visible': {
+              outline: 'none',
+              boxShadow: 'none',
+            },
           },
         },
       },

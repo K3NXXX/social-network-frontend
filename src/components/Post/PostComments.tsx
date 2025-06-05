@@ -198,18 +198,31 @@ const PostComments: React.FC<Props> = ({
           sx={{
             mt: 2,
             p: 1,
+            borderLeft: '4px solid #6969cb',
             borderRadius: 2,
             backgroundColor: '#f1f1f7',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            gap: 8,
+            flexWrap: 'wrap',
           }}
         >
-          <Typography variant="body2">
-            Відповідь на коментар <strong>{replyingTo.content}</strong> від:{' '}
-            <strong>{`${replyingTo.user.firstName} ${replyingTo.user.lastName}`}</strong>
-          </Typography>
-          <Button size="small" onClick={() => setReplyingTo(null)}>
+          <Box sx={{ textAlign: 'left' }}>
+            <Typography variant="subtitle2" color="primary" sx={{ mb: 0.5 }}>
+              Відповідь на коментар
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>{`${replyingTo.user.firstName} ${replyingTo.user.lastName}`}</strong>: "
+              {replyingTo.content}"
+            </Typography>
+          </Box>
+          <Button
+            size="small"
+            color="error"
+            onClick={() => setReplyingTo(null)}
+            sx={{ alignSelf: 'center' }}
+          >
             Скасувати
           </Button>
         </Box>

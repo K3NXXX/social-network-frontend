@@ -62,7 +62,7 @@ const FeedPage: React.FC = () => {
         flexDirection: 'column',
         alignItems: 'center',
         minHeight: '100vh',
-        py: 4,
+        py: 3,
       }}
     >
       <CreatePostCard onPostCreated={(newPost) => setFeedPosts((prev) => [newPost, ...prev])} />

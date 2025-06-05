@@ -45,7 +45,7 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
   };
 
   return (
-    <Card sx={{ width: '100%', maxWidth: '1000px', mx: 'auto', p: 2, mb: 3 }}>
+    <Card sx={{ width: '100%', maxWidth: '1000px', mx: 'auto', p: 1, mb: 3 }}>
       <CardContent sx={{ pb: 1 }}>
         <Stack direction="row" spacing={2} alignItems="flex-start">
           <Avatar src={user?.avatarUrl ?? undefined}>
