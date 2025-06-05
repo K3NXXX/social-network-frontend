@@ -1,19 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box } from '@mui/material';
 import PostsList from '../components/Post/PostList';
-import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
-import { postService } from '../services/postService';
 import CreatePostCard from '../components/Post/CreatePostCard';
 import { usePosts } from '../hooks/usePosts';
+import { postService } from '../services/postService';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 
-const FeedPage: React.FC = () => {
+const UserPostsPage: React.FC = () => {
   const { posts, setPosts, page, lastPage, loading, fetchPosts, loaderRef } = usePosts(
-    postService.fetchFeedPosts
+    postService.fetchUserPosts
   );
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
 
   useIntersectionObserver(
     loaderRef,
@@ -31,7 +27,6 @@ const FeedPage: React.FC = () => {
 
   return (
     <Box
-      component="main"
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -41,20 +36,12 @@ const FeedPage: React.FC = () => {
       }}
     >
       <CreatePostCard onPostCreated={(newPost) => setPosts((prev) => [newPost, ...prev])} />
-
-      <Box
-        sx={{
-          width: '100%',
-          maxWidth: '1000px',
-          mx: 'auto',
-        }}
-      >
+      <Box sx={{ width: '100%', maxWidth: '1000px', mx: 'auto' }}>
         <PostsList posts={posts} loading={loading} onDelete={handleDelete} />
       </Box>
-
-      <div ref={loaderRef} style={{ height: '1px' }} />
+      <div ref={loaderRef} style={{ height: 1 }} />
     </Box>
   );
 };
 
-export default FeedPage;
+export default UserPostsPage;

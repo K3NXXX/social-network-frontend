@@ -15,7 +15,7 @@ export interface CommentType {
   createdAt: string;
   updatedAt: string;
   user: User;
-  likes: Like[];
+  _count: CommentsCount;
   replies: CommentType[];
 }
 
@@ -35,9 +35,15 @@ export interface PostType {
   comments: CommentType[];
   likes: Like[];
   _count: PostCount;
+  liked: boolean;
 }
 
 export interface PostCount {
   comments: number;
+  likes: number;
+}
+
+export interface CommentsCount {
+  replies: number;
   likes: number;
 }

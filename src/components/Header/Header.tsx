@@ -6,6 +6,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Box, Card, InputAdornment, TextField, Typography } from '@mui/material';
 import debounce from 'lodash/debounce';
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { PAGES } from '../../constants/pages.constants';
 import { userService } from '../../services/userService';
 import type { SearchUsers } from '../../types/user';
 import Logo from '../../ui/Logo';
@@ -73,25 +75,27 @@ export default function Header() {
               </Box>
             </Box>
             <Box sx={{ cursor: 'pointer' }} position="relative" display="flex" alignItems="center">
-              <ChatBubbleOutlineIcon sx={{ fontSize: '20px' }} />
-              <Box
-                sx={{
-                  width: 20,
-                  height: 20,
-                  backgroundColor: '#9885f4',
-                  borderRadius: 50,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                top="-11px"
-                right="-18px"
-                position="absolute"
-              >
-                <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '13px' }}>
-                  1
-                </Typography>
-              </Box>
+              <Link to={PAGES.CHATS} style={{ textDecoration: 'none' }}>
+                <ChatBubbleOutlineIcon sx={{ fontSize: '20px', color: 'black' }} />
+                <Box
+                  sx={{
+                    width: 20,
+                    height: 20,
+                    backgroundColor: '#9885f4',
+                    borderRadius: 50,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                  top="-11px"
+                  right="-18px"
+                  position="absolute"
+                >
+                  <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '13px' }}>
+                    1
+                  </Typography>
+                </Box>
+              </Link>
             </Box>
             <Box sx={{ cursor: 'pointer' }}>
               <PersonOutlineIcon sx={{ cursor: 'pointer' }} />

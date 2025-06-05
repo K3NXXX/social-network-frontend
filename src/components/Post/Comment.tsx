@@ -4,6 +4,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/Favorite';
 
 import type { CommentType } from '../../types/post';
+import { formatCreatedAt } from '../../utils/dateUtils';
 
 interface CommentProps {
   comment: CommentType;
@@ -29,7 +30,7 @@ const Comment: React.FC<CommentProps> = ({
   onConfirmEdit,
 }) => {
   const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(0); //comment.likes.length ||
+  const [likesCount, setLikesCount] = useState(comment._count?.likes || 0);
 
   const handleToggleLike = () => {
     setLiked((prev: boolean) => !prev);
@@ -98,7 +99,7 @@ const Comment: React.FC<CommentProps> = ({
         </Box>
 
         <Stack direction="row" spacing={2} sx={{ color: 'text.secondary' }}>
-          <Typography variant="caption">{comment.createdAt}</Typography>
+          <Typography variant="caption">{formatCreatedAt(comment.createdAt)}</Typography>
           <Button
             variant="text"
             size="small"

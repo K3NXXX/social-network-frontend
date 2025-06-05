@@ -1,5 +1,7 @@
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import type { SvgIconTypeMap } from '@mui/material';
@@ -36,18 +38,24 @@ export const sidebarList: ISidebarList[] = [
   },
   {
     id: 4,
+    icon: ChatBubbleOutlineIcon,
+    label: 'Чати',
+    url: PAGES.CHATS,
+  },
+  {
+    id: 5,
     icon: SearchIcon,
     label: 'Пошук',
     url: PAGES.SEARCH,
   },
   {
-    id: 5,
+    id: 6,
     icon: PersonOutlineIcon,
     label: 'Профіль',
     url: PAGES.PROFILE,
   },
   {
-    id: 6,
+    id: 7,
     icon: ExitToAppIcon,
     label: 'Вихід',
     url: PAGES.LOGIN,

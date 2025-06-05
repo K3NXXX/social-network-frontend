@@ -71,7 +71,7 @@ export default function Sidebar() {
 
       <Box sx={{ flexGrow: 1 }}>
         {sidebarList
-          .filter((item) => item.id !== 6)
+          .filter((item) => item.id !== 7)
           .map((item) => {
             const isActivePath = pathname === item.url;
             return (
@@ -103,7 +103,7 @@ export default function Sidebar() {
       </Box>
 
       {sidebarList
-        .filter((item) => item.id === 6)
+        .filter((item) => item.id === 7)
         .map((item) => (
           <Link key={item.id} to={item.url} style={{ textDecoration: 'none' }}>
             <Box
