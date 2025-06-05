@@ -8,4 +8,5 @@ export const PAGES = {
   NOTIFICATIONS: '/notifications',
   PROFILE: '/profile',
   VIEW_PUBLIC_PROFILE: '/user/profile',
+  EDIT_PROFILE: '/profile/edit',
 };
