@@ -36,10 +36,25 @@ export interface AuthResponse {
   accessToken: string;
 }
 
+export interface RegisterResponse {
+  message: string;
+  email: string;
+}
+
+export interface VerificationResponse {
+  message: string;
+  user: User;
+  accessToken: string;
+}
+
+export interface ResendVerificationResponse {
+  message: string;
+}
+
 export interface AuthState {
   user: User | null;
   accessToken: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
-} 
+}

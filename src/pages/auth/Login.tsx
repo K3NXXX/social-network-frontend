@@ -1,78 +1,49 @@
 import React, { useState } from 'react';
-import { 
-  Box, 
-  TextField, 
-  Button, 
-  Typography, 
-  Container, 
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Container,
   Paper,
   Link,
   Alert,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../services/AuthContext';
 import Logo from '../../components/auth/Logo';
 import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
+import { useForm, Controller } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
+
+interface LoginFormInputs {
+  email: string;
+  password: string;
+}
 
 const Login: React.FC = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const [formErrors, setFormErrors] = useState({
-    email: '',
-    password: '',
-  });
   const [submitError, setSubmitError] = useState<string | null>(null);
-  
   const { login, loading } = useAuth();
   const navigate = useNavigate();
 
-  const validateForm = () => {
-    let valid = true;
-    const errors = {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormInputs>({
+    defaultValues: {
       email: '',
       password: '',
-    };
+    },
+    mode: 'onBlur',
+  });
 
-    if (!formData.email) {
-      errors.email = 'Email is required';
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Email is invalid';
-      valid = false;
-    }
-
-    if (!formData.password) {
-      errors.password = 'Password is required';
-      valid = false;
-    }
-
-    setFormErrors(errors);
-    return valid;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitError(null);
-
-    if (!validateForm()) return;
-
+  const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
-      await login({
-        email: formData.email,
-        password: formData.password,
-      });
-      navigate('/');
+      setSubmitError(null);
+      await login(data);
+      navigate('/feed');
     } catch (error) {
       logErrorDetails(error);
       setSubmitError(formatErrorMessage(error));
@@ -90,7 +61,7 @@ const Login: React.FC = () => {
           justifyContent: 'center',
         }}
       >
-        <Paper 
+        <Paper
           elevation={3}
           sx={{
             p: 4,
@@ -110,37 +81,64 @@ const Login: React.FC = () => {
               {submitError}
             </Alert>
           )}
-          
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Електронна пошта"
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+            sx={{ mt: 1, width: '100%' }}
+          >
+            <Controller
               name="email"
-              autoComplete="email"
-              autoFocus
-              value={formData.email}
-              onChange={handleChange}
-              error={!!formErrors.email}
-              helperText={formErrors.email}
-              disabled={loading}
+              control={control}
+              rules={{
+                required: "Електронна пошта обов'язкова",
+                pattern: {
+                  value: /\S+@\S+\.\S+/,
+                  message: 'Невірний формат електронної пошти',
+                },
+              }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Електронна пошта"
+                  autoComplete="email"
+                  autoFocus
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
+                  disabled={loading}
+                />
+              )}
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
+            <Controller
               name="password"
-              label="Пароль"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={formData.password}
-              onChange={handleChange}
-              error={!!formErrors.password}
-              helperText={formErrors.password}
-              disabled={loading}
+              control={control}
+              rules={{
+                required: "Пароль обов'язковий",
+                minLength: {
+                  value: 6,
+                  message: 'Пароль має бути не менше 6 символів',
+                },
+              }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  margin="normal"
+                  required
+                  fullWidth
+                  label="Пароль"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  error={!!errors.password}
+                  helperText={errors.password?.message}
+                  disabled={loading}
+                />
+              )}
             />
             <Button
               type="submit"
@@ -153,7 +151,7 @@ const Login: React.FC = () => {
             </Button>
             <Box sx={{ textAlign: 'center' }}>
               <Link component={RouterLink} to="/register" variant="body2">
-                {"Немає облікового запису? Зареєструватись"}
+                {'Немає облікового запису? Зареєструватись'}
               </Link>
             </Box>
           </Box>
@@ -163,4 +161,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login; 
+export default Login;

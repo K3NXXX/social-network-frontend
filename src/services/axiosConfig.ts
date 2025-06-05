@@ -1,10 +1,17 @@
 import axios from 'axios';
 
+// You can switch between local and production URLs
+const BASE_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3000' // Change this to your local backend port
+    : 'https://vetra-8c5dfe3bdee7.herokuapp.com';
+
 const axiosInstance = axios.create({
-  baseURL: 'https://vetra-8c5dfe3bdee7.herokuapp.com',
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000, // 10 second timeout
 });
 
 axiosInstance.interceptors.request.use(
@@ -16,23 +23,35 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.error('Request error:', error);
     return Promise.reject(error);
   }
 );
 
 axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.code === 'ECONNABORTED') {
+      console.error('Request timeout - server took too long to respond');
+      return Promise.reject(new Error('Сервер не відповідає. Будь ласка, спробуйте пізніше.'));
+    }
+
+    if (!error.response) {
+      console.error('Network error - no response from server:', error);
+      return Promise.reject(
+        new Error("Немає з'єднання з сервером. Перевірте, чи сервер запущено.")
+      );
+    }
+
+    if (error.response.status === 401) {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
       window.location.href = '/login';
     }
+
     return Promise.reject(error);
   }
 );
 
-export default axiosInstance; 
+export default axiosInstance;
