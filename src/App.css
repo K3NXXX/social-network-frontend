@@ -124,4 +124,5 @@ h6 {
 
 ::-webkit-scrollbar-thumb {
   background-color: #745cee;
+  border-radius: 20px;
 }

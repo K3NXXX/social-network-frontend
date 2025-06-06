@@ -4,7 +4,7 @@ export default function GlobalLoader() {
   return (
     <Box
       sx={{
-        minHeight: '100%',
+        minHeight: '70vh',
         width: '100%',
         display: 'flex',
         alignItems: 'center',

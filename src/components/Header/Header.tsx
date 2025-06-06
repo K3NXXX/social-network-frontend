@@ -6,7 +6,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Box, Card, InputAdornment, TextField, Typography } from '@mui/material';
 import debounce from 'lodash/debounce';
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
 import { userService } from '../../services/userService';
 import type { SearchUsers } from '../../types/user';
@@ -16,7 +16,7 @@ import SearchItem from '../../ui/SearchItem';
 export default function Header() {
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState<SearchUsers[] | []>([]);
-
+  const navigate = useNavigate();
   const debounceSearch = useCallback(
     debounce(async (value: string) => {
       if (value.trim().length < 2) return setSearchResults([]);
@@ -97,7 +97,7 @@ export default function Header() {
                 </Box>
               </Link>
             </Box>
-            <Box sx={{ cursor: 'pointer' }}>
+            <Box onClick={() => navigate(PAGES.PROFILE)} sx={{ cursor: 'pointer' }}>
               <PersonOutlineIcon sx={{ cursor: 'pointer' }} />
             </Box>
           </Box>

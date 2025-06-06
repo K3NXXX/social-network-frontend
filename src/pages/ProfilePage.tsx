@@ -1,4 +1,3 @@
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import {
   Avatar,
   Box,
@@ -11,37 +10,22 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ShowFollowersForm from '../components/users/ShowFollowersForm.tsx';
 import { usePosts } from '../hooks/usePosts.tsx';
 import { useAuth } from '../services/AuthContext.tsx';
 import axiosInstance from '../services/axiosConfig.ts';
 import { postService } from '../services/postService.ts';
-import type { UserPublicProfile } from '../types/user.ts';
 import GlobalLoader from '../ui/GlobalLoader.tsx';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
 
-interface IProfilePageProps {
-  isPublicProfile: boolean;
-  publicUserData: UserPublicProfile;
-  toggleFollowUser: (id: string) => void;
-  isFollowing: boolean;
-  isThisMe: boolean;
-}
-
-export default function ProfilePage({
-  isPublicProfile,
-  publicUserData,
-  toggleFollowUser,
-  isFollowing,
-  isThisMe,
-}: IProfilePageProps) {
+export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { logout } = useAuth();
   const [tab, setTab] = useState(0);
-  const displayedTabs =
-    isPublicProfile && !isThisMe ? ['Пости', 'Позначене'] : ['Пости', 'Збережене', 'Позначене'];
-
+  const [error, setError] = useState<string | null>(null);
+  const [isShowFollowersFormOpened, setIsShowFollowersFormOpened] = useState(true);
+  const { logout } = useAuth();
+  const displayedTabs = ['Пости', 'Збережене', 'Позначене'];
   const navigate = useNavigate();
 
   const {
@@ -54,8 +38,6 @@ export default function ProfilePage({
     loaderRef,
   } = usePosts(postService.fetchUserPosts);
 
-  const displayedPosts = isPublicProfile ? publicUserData?.posts || [] : posts;
-
   const handleChangeTab = (_: any, newValue: number) => {
     setTab(newValue);
   };
@@ -64,7 +46,6 @@ export default function ProfilePage({
     const fetchProfile = async () => {
       try {
         const response = await axiosInstance.get('/api/user/profile');
-        console.log(response.data);
         setProfile(response.data);
       } catch (err: any) {
         console.error('Profile fetch error:', err);
@@ -104,16 +85,10 @@ export default function ProfilePage({
         </Box>
         <Box flex={1}>
           <Box display="flex" alignItems="center" flexWrap="wrap" position={'relative'}>
-            {isPublicProfile ? (
-              <Typography fontSize="18px" fontWeight={400}>
-                {publicUserData.firstName} {publicUserData.lastName}
-              </Typography>
-            ) : (
-              <Typography fontSize="18px" fontWeight={400}>
-                {profile.firstName} {profile.lastName}
-              </Typography>
-            )}
-            {(isPublicProfile ? publicUserData?.username : profile?.username) && (
+            <Typography fontSize="18px" fontWeight={400}>
+              {profile.firstName} {profile.lastName}
+            </Typography>
+            {profile?.username && (
               <Typography
                 fontSize="14px"
                 fontWeight={600}
@@ -122,84 +97,62 @@ export default function ProfilePage({
                 left={0}
                 color="#737373"
               >
-                @{isPublicProfile ? publicUserData?.username : profile?.username}
+                @{profile?.username}
               </Typography>
             )}
             <Box display="flex" gap={1} ml={4}>
-              {isPublicProfile && !isThisMe ? (
-                <NoOutlineButton
-                  onClickCapture={() => toggleFollowUser(publicUserData.id)}
-                  variant="contained"
-                  size="small"
-                  sx={{ backgroundColor: isFollowing ? '#737373' : '' }}
-                >
-                  Стежити
-                </NoOutlineButton>
-              ) : (
-                <NoOutlineButton
-                  variant="contained"
-                  size="small"
-                  onClick={() => navigate('/profile/edit')}
-                >
-                  Редагувати профіль
-                </NoOutlineButton>
-              )}
+              <NoOutlineButton
+                variant="contained"
+                size="small"
+                onClick={() => navigate('/profile/edit')}
+              >
+                Редагувати профіль
+              </NoOutlineButton>
 
-              {isPublicProfile && !isThisMe ? (
-                <NoOutlineButton variant="contained" size="small">
-                  Повідомлення
-                </NoOutlineButton>
-              ) : (
-                <NoOutlineButton variant="contained" size="small">
-                  Переглянути архів
-                </NoOutlineButton>
-              )}
-              {isPublicProfile && (
-                <Box
-                  sx={{
-                    backgroundColor: '#aaaaaa',
-                    padding: '5px',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <MoreHorizIcon sx={{ color: 'white' }} />
-                </Box>
-              )}
+              <NoOutlineButton variant="contained" size="small">
+                Переглянути архів
+              </NoOutlineButton>
             </Box>
           </Box>
 
           <Box display="flex" gap={4} marginTop="32px" marginBottom="20px">
             <Box display="flex" gap={0.5}>
               <Typography fontWeight="bold" fontSize="15px">
-                {isPublicProfile ? publicUserData.posts.length : profile.posts.length}
+                {posts.length}
               </Typography>
               <Typography color="#737373" fontSize="15px">
                 публікацій
               </Typography>
             </Box>
 
-            <Box display="flex" gap={0.5}>
+            <Box
+              onClick={() => {
+                setIsShowFollowersFormOpened(true);
+              }}
+              display="flex"
+              gap={0.5}
+              sx={{ cursor: 'pointer' }}
+            >
               <Typography fontWeight="bold" fontSize="15px">
-                {isPublicProfile ? publicUserData.followers : profile.followers}
+                {profile.followers}
               </Typography>
               <Typography color="#737373" fontSize="15px">
-                підписників
+                читачі
               </Typography>
             </Box>
 
             <Box display="flex" gap={0.5}>
               <Typography fontWeight="bold" fontSize="15px">
-                {isPublicProfile ? publicUserData.following : profile.following}
+                {profile.following}
               </Typography>
               <Typography color="#737373" fontSize="15px">
-                підписок
+                стежить
               </Typography>
             </Box>
           </Box>
 
           <Box display="flex" flexDirection="column" alignSelf="start" textAlign="justify">
-            <Typography> {isPublicProfile ? publicUserData.bio : profile.bio}</Typography>
+            <Typography> {profile.bio}</Typography>
           </Box>
         </Box>
       </Box>
@@ -245,13 +198,13 @@ export default function ProfilePage({
         <Box mt={2}>
           {tab === 0 && (
             <>
-              {displayedPosts.length === 0 && !postLoading ? (
+              {posts.length === 0 && !postLoading ? (
                 <Typography align="center" color="#737373">
                   Немає публікацій.
                 </Typography>
               ) : (
                 <Box display="flex" flexDirection="column" gap={2}>
-                  {displayedPosts.map((post: any) => (
+                  {posts.map((post: any) => (
                     <Box
                       key={post.id}
                       sx={{
@@ -332,6 +285,13 @@ export default function ProfilePage({
           )}
         </Box>
       </Box>
+      {isShowFollowersFormOpened && (
+        <ShowFollowersForm
+          onClose={() => setIsShowFollowersFormOpened(false)}
+          isOpened={isShowFollowersFormOpened}
+          userId={profile.id}
+        />
+      )}
     </Container>
   );
 }
