@@ -1,3 +1,4 @@
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import {
   Avatar,
   Box,
@@ -15,17 +16,34 @@ import { usePosts } from '../hooks/usePosts.tsx';
 import { useAuth } from '../services/AuthContext.tsx';
 import axiosInstance from '../services/axiosConfig.ts';
 import { postService } from '../services/postService.ts';
+import type { UserPublicProfile } from '../types/user.ts';
 import GlobalLoader from '../ui/GlobalLoader.tsx';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
 
-export default function ProfilePage() {
+interface IProfilePageProps {
+  isPublicProfile: boolean;
+  publicUserData: UserPublicProfile;
+  toggleFollowUser: (id: string) => void;
+  isFollowing: boolean;
+  isThisMe: boolean;
+}
+
+export default function ProfilePage({
+  isPublicProfile,
+  publicUserData,
+  toggleFollowUser,
+  isFollowing,
+  isThisMe,
+}: IProfilePageProps) {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [isShowFollowersFormOpened, setIsShowFollowersFormOpened] = useState(true);
+  const [isShowFollowersFormOpened, setIsShowFollowersFormOpened] = useState(false);
   const { logout } = useAuth();
-  const displayedTabs = ['Пости', 'Збережене', 'Позначене'];
+  const displayedTabs =
+    isPublicProfile && !isThisMe ? ['Пости', 'Позначене'] : ['Пости', 'Збережене', 'Позначене'];
+
   const navigate = useNavigate();
 
   const {
@@ -38,6 +56,8 @@ export default function ProfilePage() {
     loaderRef,
   } = usePosts(postService.fetchUserPosts);
 
+  // const displayedPosts = isPublicProfile ? publicUserData?.posts || [] : posts;
+  const displayedPosts = posts;
   const handleChangeTab = (_: any, newValue: number) => {
     setTab(newValue);
   };
@@ -46,6 +66,7 @@ export default function ProfilePage() {
     const fetchProfile = async () => {
       try {
         const response = await axiosInstance.get('/api/user/profile');
+        console.log(response.data);
         setProfile(response.data);
       } catch (err: any) {
         console.error('Profile fetch error:', err);
@@ -85,10 +106,16 @@ export default function ProfilePage() {
         </Box>
         <Box flex={1}>
           <Box display="flex" alignItems="center" flexWrap="wrap" position={'relative'}>
-            <Typography fontSize="18px" fontWeight={400}>
-              {profile.firstName} {profile.lastName}
-            </Typography>
-            {profile?.username && (
+            {isPublicProfile ? (
+              <Typography fontSize="18px" fontWeight={400}>
+                {publicUserData.firstName} {publicUserData.lastName}
+              </Typography>
+            ) : (
+              <Typography fontSize="18px" fontWeight={400}>
+                {profile.firstName} {profile.lastName}
+              </Typography>
+            )}
+            {(isPublicProfile ? publicUserData?.username : profile?.username) && (
               <Typography
                 fontSize="14px"
                 fontWeight={600}
@@ -97,28 +124,57 @@ export default function ProfilePage() {
                 left={0}
                 color="#737373"
               >
-                @{profile?.username}
+                @{isPublicProfile ? publicUserData?.username : profile?.username}
               </Typography>
             )}
             <Box display="flex" gap={1} ml={4}>
-              <NoOutlineButton
-                variant="contained"
-                size="small"
-                onClick={() => navigate('/profile/edit')}
-              >
-                Редагувати профіль
-              </NoOutlineButton>
+              {isPublicProfile && !isThisMe ? (
+                <NoOutlineButton
+                  onClickCapture={() => toggleFollowUser(publicUserData.id)}
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: isFollowing ? '#737373' : '' }}
+                >
+                  Стежити
+                </NoOutlineButton>
+              ) : (
+                <NoOutlineButton
+                  variant="contained"
+                  size="small"
+                  onClick={() => navigate('/profile/edit')}
+                >
+                  Редагувати профіль
+                </NoOutlineButton>
+              )}
 
-              <NoOutlineButton variant="contained" size="small">
-                Переглянути архів
-              </NoOutlineButton>
+              {isPublicProfile && !isThisMe ? (
+                <NoOutlineButton variant="contained" size="small">
+                  Повідомлення
+                </NoOutlineButton>
+              ) : (
+                <NoOutlineButton variant="contained" size="small">
+                  Переглянути архів
+                </NoOutlineButton>
+              )}
+              {isPublicProfile && (
+                <Box
+                  sx={{
+                    backgroundColor: '#aaaaaa',
+                    padding: '5px',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <MoreHorizIcon sx={{ color: 'white' }} />
+                </Box>
+              )}
             </Box>
           </Box>
 
           <Box display="flex" gap={4} marginTop="32px" marginBottom="20px">
             <Box display="flex" gap={0.5}>
               <Typography fontWeight="bold" fontSize="15px">
-                {posts.length}
+                {isPublicProfile ? publicUserData.posts.length : profile.posts.length}
               </Typography>
               <Typography color="#737373" fontSize="15px">
                 публікацій
@@ -134,25 +190,25 @@ export default function ProfilePage() {
               sx={{ cursor: 'pointer' }}
             >
               <Typography fontWeight="bold" fontSize="15px">
-                {profile.followers}
+                {isPublicProfile ? publicUserData.followers : profile.followers}
               </Typography>
               <Typography color="#737373" fontSize="15px">
-                читачі
+                підписників
               </Typography>
             </Box>
 
             <Box display="flex" gap={0.5}>
               <Typography fontWeight="bold" fontSize="15px">
-                {profile.following}
+                {isPublicProfile ? publicUserData.following : profile.following}
               </Typography>
               <Typography color="#737373" fontSize="15px">
-                стежить
+                підписок
               </Typography>
             </Box>
           </Box>
 
           <Box display="flex" flexDirection="column" alignSelf="start" textAlign="justify">
-            <Typography> {profile.bio}</Typography>
+            <Typography> {isPublicProfile ? publicUserData.bio : profile.bio}</Typography>
           </Box>
         </Box>
       </Box>
@@ -198,13 +254,13 @@ export default function ProfilePage() {
         <Box mt={2}>
           {tab === 0 && (
             <>
-              {posts.length === 0 && !postLoading ? (
+              {displayedPosts.length === 0 && !postLoading ? (
                 <Typography align="center" color="#737373">
                   Немає публікацій.
                 </Typography>
               ) : (
                 <Box display="flex" flexDirection="column" gap={2}>
-                  {posts.map((post: any) => (
+                  {displayedPosts.map((post: any) => (
                     <Box
                       key={post.id}
                       sx={{
