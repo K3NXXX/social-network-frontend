@@ -20,7 +20,8 @@ const PostContent: React.FC<Props> = ({ content, photo }) => (
           width: '100%',
           borderRadius: 2,
           maxHeight: 500,
-          objectFit: 'cover',
+          objectFit: 'contain',
+          objectPosition: 'center',
           mt: 1,
         }}
       />
