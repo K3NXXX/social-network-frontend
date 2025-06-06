@@ -2,12 +2,13 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { Avatar, Box, Container, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import UserPosts from '../components/Post/UserPosts.tsx';
+import ShowFollowersForm from '../components/users/ShowFollowersForm.tsx';
 import { useAuth } from '../services/AuthContext.tsx';
 import axiosInstance from '../services/axiosConfig.ts';
 import type { UserPublicProfile } from '../types/user.ts';
 import GlobalLoader from '../ui/GlobalLoader.tsx';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
-import UserPosts from '../components/Post/UserPosts.tsx';
 
 interface IProfilePageProps {
   isPublicProfile: boolean;
@@ -27,6 +28,7 @@ export default function ProfilePage({
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isShowFollowersFormOpened, setIsShowFollowersFormOpened] = useState(false);
   const { logout } = useAuth();
   const [tab, setTab] = useState(0);
   const displayedTabs =
@@ -158,13 +160,19 @@ export default function ProfilePage({
                 публікацій
               </Typography>
             </Box>
-
-            <Box display="flex" gap={0.5}>
+            <Box
+              onClick={() => {
+                setIsShowFollowersFormOpened(true);
+              }}
+              display="flex"
+              gap={0.5}
+              sx={{ cursor: 'pointer' }}
+            >
               <Typography fontWeight="bold" fontSize="15px">
                 {isPublicProfile ? publicUserData.followers : profile.followers}
               </Typography>
               <Typography color="#737373" fontSize="15px">
-                підписників
+                читачі
               </Typography>
             </Box>
 
@@ -242,6 +250,13 @@ export default function ProfilePage({
           )}
         </Box>
       </Box>
+      {isShowFollowersFormOpened && (
+        <ShowFollowersForm
+          onClose={() => setIsShowFollowersFormOpened(false)}
+          isOpened={isShowFollowersFormOpened}
+          userId={profile.id}
+        />
+      )}
     </Container>
   );
 }
