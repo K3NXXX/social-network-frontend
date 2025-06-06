@@ -74,10 +74,13 @@ export default function ProfilePage({
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth={false} sx={{ maxWidth: '935px', py: 4 }}>
       <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} alignItems="center" gap={4}>
         <Box width={220} display="flex" justifyContent="center" alignItems="center">
-          <Avatar src={profile.avatarUrl} sx={{ width: 120, height: 120 }} />
+          <Avatar
+            src={isPublicProfile ? publicUserData?.avatarUrl : profile?.avatarUrl}
+            sx={{ width: 120, height: 120 }}
+          />
         </Box>
         <Box flex={1}>
           <Box display="flex" alignItems="center" flexWrap="wrap" position={'relative'}>
@@ -222,11 +225,7 @@ export default function ProfilePage({
         <Box mt={2}>
           {tab === 0 && (
             <>
-              <UserPosts
-                profile={profile}
-                isPublicProfile={isPublicProfile}
-                publicUserData={publicUserData}
-              />
+              <UserPosts isPublicProfile={isPublicProfile} publicUserData={publicUserData} />
             </>
           )}
 

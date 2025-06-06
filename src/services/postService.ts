@@ -4,6 +4,7 @@ import type { CommentType, PostType } from '../types/post';
 const POST_ENDPOINTS = {
   POSTS: '/api/posts',
   USER_POSTS: '/api/posts/user',
+  PUBLIC_USER_POSTS: (id: string) => `/api/posts/user/${id}`,
   FEED_POSTS: '/api/posts/feed',
   DISCOVER_POSTS: '/api/posts/discover',
   SINGLE_POST: (id: string) => `/api/posts/${id}`,
@@ -54,6 +55,26 @@ export const postService = {
   }> {
     try {
       const response = await axiosInstance.get(POST_ENDPOINTS.USER_POSTS, {
+        params: { page: pageNumber, take },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch user posts:', error);
+      throw error;
+    }
+  },
+
+  async fetchPublicUserPosts(
+    userId: string,
+    pageNumber = 1,
+    take = 5
+  ): Promise<{
+    data: PostType[];
+    page: number;
+    lastPage: number;
+  }> {
+    try {
+      const response = await axiosInstance.get(POST_ENDPOINTS.PUBLIC_USER_POSTS(userId), {
         params: { page: pageNumber, take },
       });
       return response.data;

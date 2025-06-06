@@ -4,10 +4,6 @@ import {
   Button,
   CircularProgress,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   FormControl,
   List,
   ListItem,
@@ -37,15 +33,11 @@ const sidebarItems = [
 export default function EditProfileLayout() {
   const [profile, setProfile] = useState<any>(null);
   const [name, setName] = useState<any>(null);
-
   const [activeSection, setActiveSection] = useState('edit');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [submitLoading, setSubmitLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [openPasswordModal, setOpenPasswordModal] = useState(false);
 
   const { logout } = useAuth();
 
@@ -55,8 +47,7 @@ export default function EditProfileLayout() {
     setProfile((prev: any) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (password: string) => {
-    setSubmitLoading(true);
+  const handleSubmit = async () => {
     try {
       const updateProfile = allowedFields.reduce(
         (acc, key) => {
@@ -68,10 +59,7 @@ export default function EditProfileLayout() {
         {} as Record<string, any>
       );
 
-      await axiosInstance.patch('/api/user/profile', {
-        ...updateProfile,
-        currentPassword: password,
-      });
+      await axiosInstance.patch('/api/user/profile', updateProfile);
 
       await fetchProfile();
       setMessage('Профіль успішно оновлено!');
@@ -81,8 +69,6 @@ export default function EditProfileLayout() {
       setMessage(msg);
       setMessageType('error');
     } finally {
-      setSubmitLoading(false);
-      setCurrentPassword('');
       setTimeout(() => {
         setMessage('');
         setMessageType(null);
@@ -165,257 +151,185 @@ export default function EditProfileLayout() {
   }
 
   return (
-    <>
-      <Container maxWidth={false}>
-        {message && (
-          <Box
-            sx={{
-              position: 'fixed',
-              top: 20,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              backgroundColor: messageType === 'success' ? '#d0f0d0' : '#ffe0e0',
-              color: messageType === 'success' ? '#005500' : '#aa0000',
-              border: '1px solid',
-              borderColor: messageType === 'success' ? '#91e291' : '#f5a4a4',
-              borderRadius: '12px',
-              px: 3,
-              py: 1.5,
-              boxShadow: 3,
-              zIndex: 1300,
-              animation: 'slideDown 0.3s ease-out',
-            }}
-          >
-            <Typography fontSize="14px" fontWeight={500}>
-              {message}
-            </Typography>
-          </Box>
-        )}
+    <Container maxWidth={false}>
+      {message && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 20,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: messageType === 'success' ? '#d0f0d0' : '#ffe0e0',
+            color: messageType === 'success' ? '#005500' : '#aa0000',
+            border: '1px solid',
+            borderColor: messageType === 'success' ? '#91e291' : '#f5a4a4',
+            borderRadius: '12px',
+            px: 3,
+            py: 1.5,
+            boxShadow: 3,
+            zIndex: 1300,
+            animation: 'slideDown 0.3s ease-out',
+          }}
+        >
+          <Typography fontSize="14px" fontWeight={500}>
+            {message}
+          </Typography>
+        </Box>
+      )}
 
-        <Box display="flex">
-          <Box
-            sx={{
-              width: 240,
-              minHeight: '100vh',
-              borderRight: '1px solid #e0e0e0',
-              px: 2,
-            }}
-          >
-            <Typography textAlign="start" px="10px" fontSize="18px" fontWeight="bold" my={2}>
-              Settings
-            </Typography>
-            <List sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2 }}>
-              {sidebarItems.map((item) => (
-                <ListItem key={item.key} disablePadding>
-                  <ListItemButton
-                    onClick={() => setActiveSection(item.key)}
-                    disableRipple
-                    sx={{
-                      borderRadius: '10px',
-                      backgroundColor: activeSection === item.key ? 'action.hover' : 'transparent',
-                      color: 'black',
-                      '&:hover': {
-                        backgroundColor:
-                          activeSection === item.key ? 'action.hover' : 'action.hover',
-                      },
-                    }}
-                  >
-                    <ListItemText
-                      primary={item.label}
-                      primaryTypographyProps={{
-                        fontSize: '14px',
-                        fontWeight: 400,
-                      }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          </Box>
-
-          <Container maxWidth="sm">
-            {activeSection === 'edit' && (
-              <>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  gap={2}
-                  mt={2}
-                  mb="32px"
-                  bgcolor="action.hover"
-                  p="16px"
-                  borderRadius="16px"
+      <Box display="flex">
+        <Box
+          sx={{
+            width: 240,
+            minHeight: '100vh',
+            borderRight: '1px solid #e0e0e0',
+            px: 2,
+          }}
+        >
+          <Typography textAlign="start" px="10px" fontSize="18px" fontWeight="bold" my={2}>
+            Settings
+          </Typography>
+          <List sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2 }}>
+            {sidebarItems.map((item) => (
+              <ListItem key={item.key} disablePadding>
+                <ListItemButton
+                  onClick={() => setActiveSection(item.key)}
+                  disableRipple
+                  sx={{
+                    borderRadius: '10px',
+                    backgroundColor: activeSection === item.key ? 'action.hover' : 'transparent',
+                    color: 'black',
+                    '&:hover': {
+                      backgroundColor: activeSection === item.key ? 'action.hover' : 'action.hover',
+                    },
+                  }}
                 >
-                  <Box display="flex">
-                    <Avatar
-                      src={profile.avatarUrl}
-                      sx={{ width: 60, height: 60, border: '1px solid #999' }}
-                    />
-                    <Box
-                      display="flex"
-                      flexDirection="column"
-                      alignItems="start"
-                      justifyContent="center"
-                      ml="16px"
-                    >
-                      <Typography fontSize="16px" fontWeight={700}>
-                        {name}
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontSize: '14px',
+                      fontWeight: 400,
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+
+        <Container maxWidth="sm">
+          {activeSection === 'edit' && (
+            <>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                gap={2}
+                mt={2}
+                mb="32px"
+                bgcolor="action.hover"
+                p="16px"
+                borderRadius="16px"
+              >
+                <Box display="flex">
+                  <Avatar
+                    src={profile.avatarUrl}
+                    sx={{ width: 60, height: 60, border: '1px solid #999' }}
+                  />
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="start"
+                    justifyContent="center"
+                    ml="16px"
+                  >
+                    <Typography fontSize="16px" fontWeight={700}>
+                      {name}
+                    </Typography>
+                    {profile.username && (
+                      <Typography fontSize="14px" fontWeight={400} color="#666">
+                        @{profile.username}
                       </Typography>
-                      {profile.username && (
-                        <Typography fontSize="14px" fontWeight={400} color="#666">
-                          @{profile.username}
-                        </Typography>
-                      )}
-                    </Box>
-                  </Box>
-                  <Box display="flex" gap={1}>
-                    <Button
-                      component="label"
-                      variant="outlined"
-                      size="small"
-                      onClick={handlePhotoDelete}
-                    >
-                      Видалити фото
-                    </Button>
-                    <Button component="label" variant="contained" size="small">
-                      Змінити фото
-                      <input type="file" hidden accept="image/*" onChange={handlePhotoUpload} />
-                    </Button>
+                    )}
                   </Box>
                 </Box>
-
-                <Box display="flex" flexDirection="column" gap={3} mb="50px">
-                  <TextField
-                    label="Ім’я"
-                    value={profile.firstName}
-                    onChange={(e) => handleChange('firstName', e.target.value)}
-                    InputProps={{
-                      sx: {
-                        '& .MuiInputBase-input': {
-                          px: 2,
-                          py: '10px',
-                        },
-                        borderRadius: '10px',
-                      },
-                    }}
-                  />
-                  <TextField
-                    label="Прізвище"
-                    value={profile.lastName}
-                    onChange={(e) => handleChange('lastName', e.target.value)}
-                    InputProps={{
-                      sx: {
-                        '& .MuiInputBase-input': {
-                          px: 2,
-                          py: '10px',
-                        },
-                        borderRadius: '10px',
-                      },
-                    }}
-                  />
-                </Box>
-
-                <Typography
-                  fontSize="15px"
-                  fontWeight="bold"
-                  color="black"
-                  textAlign="left"
-                  px="2px"
-                  py="16px"
-                >
-                  Дата народження
-                </Typography>
-                <Box display="flex" flexDirection="column">
-                  <TextField
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                    value={profile.dateOfBirth}
-                    onChange={(e) => handleChange('dateOfBirth', e.target.value)}
-                    InputProps={{
-                      sx: {
-                        '& .MuiInputBase-input': {
-                          px: 2,
-                          py: '10px',
-                          '&::-webkit-calendar-picker-indicator': {
-                            filter: 'brightness(0)',
-                            cursor: 'pointer',
-                          },
-                        },
-                        borderRadius: '10px',
-                      },
-                    }}
-                  />
-                  <Typography
-                    fontSize="15px"
-                    fontWeight="bold"
-                    color="black"
-                    textAlign="left"
-                    px="2px"
-                    py="16px"
-                    mt="32px"
+                <Box display="flex" gap={1}>
+                  <Button
+                    component="label"
+                    variant="outlined"
+                    size="small"
+                    onClick={handlePhotoDelete}
                   >
-                    Стать
-                  </Typography>
-                  <FormControl fullWidth>
-                    <Select
-                      labelId="gender-label"
-                      value={profile.gender}
-                      onChange={(e) => handleChange('gender', e.target.value)}
-                      fullWidth
-                      sx={{
-                        borderRadius: '10px',
-                        '& .MuiSelect-select': {
-                          px: 2,
-                          py: '10px',
-                        },
-                      }}
-                      MenuProps={{
-                        PaperProps: {
-                          sx: {
-                            borderRadius: '10px',
-                          },
-                        },
-                      }}
-                    >
-                      {GENDERS.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  <Typography
-                    fontSize="15px"
-                    fontWeight="bold"
-                    color="black"
-                    textAlign="left"
-                    px="2px"
-                    py="16px"
-                    mt="32px"
-                  >
-                    Місцезнаходження
-                  </Typography>
-                  <TextField
-                    placeholder="м. Львів"
-                    value={profile.location}
-                    onChange={(e) => handleChange('location', e.target.value)}
-                    InputProps={{
-                      sx: {
-                        '& .MuiInputBase-input': {
-                          px: 2,
-                          py: '10px',
-                          '&::-webkit-calendar-picker-indicator': {
-                            filter: 'brightness(0)',
-                            cursor: 'pointer',
-                          },
-                        },
-                        borderRadius: '10px',
-                      },
-                    }}
-                  />
+                    Видалити фото
+                  </Button>
+                  <Button component="label" variant="contained" size="small">
+                    Змінити фото
+                    <input type="file" hidden accept="image/*" onChange={handlePhotoUpload} />
+                  </Button>
                 </Box>
+              </Box>
 
+              <Box display="flex" flexDirection="column" gap={3} mb="50px">
+                <TextField
+                  label="Ім’я"
+                  value={profile.firstName}
+                  onChange={(e) => handleChange('firstName', e.target.value)}
+                  InputProps={{
+                    sx: {
+                      '& .MuiInputBase-input': {
+                        px: 2,
+                        py: '10px',
+                      },
+                      borderRadius: '10px',
+                    },
+                  }}
+                />
+                <TextField
+                  label="Прізвище"
+                  value={profile.lastName}
+                  onChange={(e) => handleChange('lastName', e.target.value)}
+                  InputProps={{
+                    sx: {
+                      '& .MuiInputBase-input': {
+                        px: 2,
+                        py: '10px',
+                      },
+                      borderRadius: '10px',
+                    },
+                  }}
+                />
+              </Box>
+
+              <Typography
+                fontSize="15px"
+                fontWeight="bold"
+                color="black"
+                textAlign="left"
+                px="2px"
+                py="16px"
+              >
+                Дата народження
+              </Typography>
+              <Box display="flex" flexDirection="column">
+                <TextField
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  value={profile.dateOfBirth}
+                  onChange={(e) => handleChange('dateOfBirth', e.target.value)}
+                  InputProps={{
+                    sx: {
+                      '& .MuiInputBase-input': {
+                        px: 2,
+                        py: '10px',
+                        '&::-webkit-calendar-picker-indicator': {
+                          filter: 'brightness(0)',
+                          cursor: 'pointer',
+                        },
+                      },
+                      borderRadius: '10px',
+                    },
+                  }}
+                />
                 <Typography
                   fontSize="15px"
                   fontWeight="bold"
@@ -425,102 +339,111 @@ export default function EditProfileLayout() {
                   py="16px"
                   mt="32px"
                 >
-                  Біо
+                  Стать
+                </Typography>
+                <FormControl fullWidth>
+                  <Select
+                    labelId="gender-label"
+                    value={profile.gender}
+                    onChange={(e) => handleChange('gender', e.target.value)}
+                    fullWidth
+                    sx={{
+                      borderRadius: '10px',
+                      '& .MuiSelect-select': {
+                        px: 2,
+                        py: '10px',
+                      },
+                    }}
+                    MenuProps={{
+                      PaperProps: {
+                        sx: {
+                          borderRadius: '10px',
+                        },
+                      },
+                    }}
+                  >
+                    {GENDERS.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <Typography
+                  fontSize="15px"
+                  fontWeight="bold"
+                  color="black"
+                  textAlign="left"
+                  px="2px"
+                  py="16px"
+                  mt="32px"
+                >
+                  Місцезнаходження
                 </Typography>
                 <TextField
-                  placeholder="Біо"
-                  multiline
-                  rows={2}
-                  fullWidth
-                  value={profile.bio}
-                  onChange={(e) => handleChange('bio', e.target.value)}
+                  placeholder="м. Львів"
+                  value={profile.location}
+                  onChange={(e) => handleChange('location', e.target.value)}
                   InputProps={{
                     sx: {
+                      '& .MuiInputBase-input': {
+                        px: 2,
+                        py: '10px',
+                        '&::-webkit-calendar-picker-indicator': {
+                          filter: 'brightness(0)',
+                          cursor: 'pointer',
+                        },
+                      },
                       borderRadius: '10px',
                     },
                   }}
                 />
+              </Box>
 
-                <Box my={4} display="flex" justifyContent="end" alignItems="center">
-                  <Button variant="contained" onClick={() => setOpenPasswordModal(true)}>
-                    Зберегти
-                  </Button>
-                </Box>
-              </>
-            )}
-
-            {activeSection === 'privacy' && (
-              <Typography variant="body1">
-                🔒 Тут буде налаштування приватності акаунту (в розробці)
+              <Typography
+                fontSize="15px"
+                fontWeight="bold"
+                color="black"
+                textAlign="left"
+                px="2px"
+                py="16px"
+                mt="32px"
+              >
+                Біо
               </Typography>
-            )}
+              <TextField
+                placeholder="Біо"
+                multiline
+                rows={2}
+                fullWidth
+                value={profile.bio}
+                onChange={(e) => handleChange('bio', e.target.value)}
+                InputProps={{
+                  sx: {
+                    borderRadius: '10px',
+                  },
+                }}
+              />
 
-            {activeSection === 'security' && (
-              <Typography variant="body1">🛡️ Тут буде сторінка безпеки (в розробці)</Typography>
-            )}
-          </Container>
-        </Box>
-      </Container>
-      <Dialog
-        open={openPasswordModal}
-        onClose={() => setOpenPasswordModal(false)}
-        maxWidth="xs"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: 4,
-            p: 2,
-            backgroundColor: '#f9fafb',
-            boxShadow: 6,
-          },
-        }}
-      >
-        <DialogTitle sx={{ fontWeight: 'bold', textAlign: 'center', pb: 1 }}>
-          Введіть пароль
-        </DialogTitle>
+              <Box my={4} display="flex" justifyContent="end" alignItems="center">
+                <Button variant="contained" onClick={handleSubmit}>
+                  Зберегти
+                </Button>
+              </Box>
+            </>
+          )}
 
-        <DialogContent
-          sx={{
-            px: 2,
-          }}
-        >
-          <TextField
-            label="Поточний пароль"
-            type="password"
-            fullWidth
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-            variant="outlined"
-            sx={{
-              mt: 1,
-              backgroundColor: 'white',
-              borderRadius: 2,
-            }}
-          />
-        </DialogContent>
+          {activeSection === 'privacy' && (
+            <Typography variant="body1">
+              🔒 Тут буде налаштування приватності акаунту (в розробці)
+            </Typography>
+          )}
 
-        <DialogActions sx={{ justifyContent: 'space-between', px: 2, pb: 1.5 }}>
-          <Button
-            onClick={() => setOpenPasswordModal(false)}
-            variant="outlined"
-            sx={{ borderRadius: 2 }}
-          >
-            Скасувати
-          </Button>
-          <Button
-            variant="contained"
-            onClick={async () => {
-              await handleSubmit(currentPassword);
-              setTimeout(() => setOpenPasswordModal(false), 0);
-            }}
-            disabled={!currentPassword || submitLoading}
-            startIcon={submitLoading ? <CircularProgress size={18} color="inherit" /> : null}
-            sx={{ borderRadius: 2 }}
-          >
-            Підтвердити
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+          {activeSection === 'security' && (
+            <Typography variant="body1">🛡️ Тут буде сторінка безпеки (в розробці)</Typography>
+          )}
+        </Container>
+      </Box>
+    </Container>
   );
 }
