@@ -1,23 +1,13 @@
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import {
-  Avatar,
-  Box,
-  CircularProgress,
-  Container,
-  Divider,
-  Tab,
-  Tabs,
-  Typography,
-} from '@mui/material';
+import { Avatar, Box, Container, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePosts } from '../hooks/usePosts.tsx';
 import { useAuth } from '../services/AuthContext.tsx';
 import axiosInstance from '../services/axiosConfig.ts';
-import { postService } from '../services/postService.ts';
 import type { UserPublicProfile } from '../types/user.ts';
 import GlobalLoader from '../ui/GlobalLoader.tsx';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
+import UserPosts from '../components/Post/UserPosts.tsx';
 
 interface IProfilePageProps {
   isPublicProfile: boolean;
@@ -44,18 +34,6 @@ export default function ProfilePage({
 
   const navigate = useNavigate();
 
-  const {
-    posts,
-    // setPosts,
-    // page,
-    // lastPage,
-    loading: postLoading,
-    // fetchPosts,
-    loaderRef,
-  } = usePosts(postService.fetchUserPosts);
-
-  const displayedPosts = isPublicProfile ? publicUserData?.posts || [] : posts;
-
   const handleChangeTab = (_: any, newValue: number) => {
     setTab(newValue);
   };
@@ -64,7 +42,6 @@ export default function ProfilePage({
     const fetchProfile = async () => {
       try {
         const response = await axiosInstance.get('/api/user/profile');
-        console.log(response.data);
         setProfile(response.data);
       } catch (err: any) {
         console.error('Profile fetch error:', err);
@@ -172,7 +149,7 @@ export default function ProfilePage({
           <Box display="flex" gap={4} marginTop="32px" marginBottom="20px">
             <Box display="flex" gap={0.5}>
               <Typography fontWeight="bold" fontSize="15px">
-                {isPublicProfile ? publicUserData.posts.length : profile.posts.length}
+                {isPublicProfile ? publicUserData.posts : profile.posts}
               </Typography>
               <Typography color="#737373" fontSize="15px">
                 публікацій
@@ -245,77 +222,11 @@ export default function ProfilePage({
         <Box mt={2}>
           {tab === 0 && (
             <>
-              {displayedPosts.length === 0 && !postLoading ? (
-                <Typography align="center" color="#737373">
-                  Немає публікацій.
-                </Typography>
-              ) : (
-                <Box display="flex" flexDirection="column" gap={2}>
-                  {displayedPosts.map((post: any) => (
-                    <Box
-                      key={post.id}
-                      sx={{
-                        p: 1.5,
-                        borderRadius: 2,
-                        border: '1px solid #e0e0e0',
-                        backgroundColor: '#fff',
-                        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        gap: 1,
-                      }}
-                    >
-                      <Avatar src={profile.avatarUrl} sx={{ width: 36, height: 36 }} />
-                      <Box display="flex" flexDirection="column" alignItems="start">
-                        <Box display="flex" alignItems="center" flexWrap="wrap">
-                          <Typography fontWeight="bold" fontSize={15} paddingRight="4px">
-                            {profile.firstName} {profile.lastName}
-                          </Typography>
-                          <Typography fontSize={14} fontWeight="normal" color="#737373">
-                            @{profile.username}
-                          </Typography>
-                          <Typography color="#737373" paddingX="3px">
-                            ·
-                          </Typography>
-                          <Typography fontSize={14} color="#737373">
-                            {new Date(post.createdAt).toLocaleString('uk-UA', {
-                              day: 'numeric',
-                              month: 'long',
-                            })}
-                          </Typography>
-                        </Box>
-
-                        {post.content && (
-                          <Typography fontSize={15} textAlign="left">
-                            {post.content}
-                          </Typography>
-                        )}
-
-                        {post.photo && (
-                          <Box
-                            component="img"
-                            src={post.photo}
-                            alt="Пост"
-                            sx={{
-                              width: '100%',
-                              borderRadius: 4,
-                              objectFit: 'cover',
-                              maxHeight: 500,
-                              mt: 1,
-                            }}
-                          />
-                        )}
-                      </Box>
-                    </Box>
-                  ))}
-                </Box>
-              )}
-              {postLoading && (
-                <Box display="flex" justifyContent="center" my={2}>
-                  <CircularProgress />
-                </Box>
-              )}
-              <div ref={loaderRef} />
+              <UserPosts
+                profile={profile}
+                isPublicProfile={isPublicProfile}
+                publicUserData={publicUserData}
+              />
             </>
           )}
 
