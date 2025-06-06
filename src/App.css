@@ -125,3 +125,14 @@ h6 {
 ::-webkit-scrollbar-thumb {
   background-color: #745cee;
 }
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
