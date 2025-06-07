@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserPosts from '../components/Post/UserPosts.tsx';
 import ShowFollowersForm from '../components/users/ShowFollowersForm.tsx';
+import ShowFollowingsForm from '../components/users/ShowFollowingsForm.tsx';
 import { useAuth } from '../services/AuthContext.tsx';
 import axiosInstance from '../services/axiosConfig.ts';
 import type { UserPublicProfile } from '../types/user.ts';
@@ -29,6 +30,7 @@ export default function ProfilePage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isShowFollowersFormOpened, setIsShowFollowersFormOpened] = useState(false);
+  const [isShowFollowingsFormOpened, setIsShowFollowingsFormOpened] = useState(false);
   const { logout } = useAuth();
   const [tab, setTab] = useState(0);
   const displayedTabs =
@@ -115,7 +117,7 @@ export default function ProfilePage({
                   size="small"
                   sx={{ backgroundColor: isFollowing ? '#737373' : '' }}
                 >
-                  Стежити
+                  {isFollowing ? 'Відстежується' : 'Стежити'}
                 </NoOutlineButton>
               ) : (
                 <NoOutlineButton
@@ -176,7 +178,14 @@ export default function ProfilePage({
               </Typography>
             </Box>
 
-            <Box display="flex" gap={0.5}>
+            <Box
+              onClick={() => {
+                setIsShowFollowingsFormOpened(true);
+              }}
+              display="flex"
+              gap={0.5}
+              sx={{ cursor: 'pointer' }}
+            >
               <Typography fontWeight="bold" fontSize="15px">
                 {isPublicProfile ? publicUserData.following : profile.following}
               </Typography>
@@ -254,7 +263,18 @@ export default function ProfilePage({
         <ShowFollowersForm
           onClose={() => setIsShowFollowersFormOpened(false)}
           isOpened={isShowFollowersFormOpened}
-          userId={profile.id}
+          userId={isPublicProfile ? publicUserData.id : profile.id}
+          profile={profile}
+          isPublicProfile={isPublicProfile}
+          publicUserData={publicUserData}
+        />
+      )}
+
+      {isShowFollowingsFormOpened && (
+        <ShowFollowingsForm
+          onClose={() => setIsShowFollowingsFormOpened(false)}
+          isOpened={isShowFollowingsFormOpened}
+          userId={isPublicProfile ? publicUserData.id : profile.id}
         />
       )}
     </Container>

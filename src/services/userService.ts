@@ -25,6 +25,11 @@ export const userService = {
     return data;
   },
 
+  async getUsersFollowers(id: string) {
+    const { data } = await axiosInstance.get(`${USER_ENDPOINTS.GET_USER_FOLLOWERS}/${id}`);
+    return data;
+  },
+
   async getUsersFollowing(id: string) {
     const { data } = await axiosInstance.get(`${USER_ENDPOINTS.GET_USER_FOLLOWINGS}/${id}`);
     return data;

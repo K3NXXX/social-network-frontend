@@ -53,19 +53,7 @@ export default function UserPublicProfile() {
   }, [id]);
 
   if (!userData) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%',
-          minHeight: '100%',
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <CircularProgress />;
   }
 
   return (

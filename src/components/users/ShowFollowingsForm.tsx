@@ -6,38 +6,33 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
 import { userService } from '../../services/userService';
-import type { UserFollowers, UserPublicProfile } from '../../types/user';
+import type { UserFollowings } from '../../types/user';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
 import { customScrollBar } from '../../ui/customScrollBar';
 
-interface IShowFollowersFormProps {
+interface IShowFollowingsFormProps {
   isOpened: boolean;
   onClose: (isShowFollowersFormOpened: boolean) => void;
   userId: string;
-  profile: any;
-  publicUserData: UserPublicProfile;
-  isPublicProfile: boolean;
 }
 
-export default function ShowFollowersForm({
+export default function ShowFollowingsForm({
   isOpened,
   onClose,
   userId,
-  publicUserData,
-  isPublicProfile,
-}: IShowFollowersFormProps) {
+}: IShowFollowingsFormProps) {
   const [searchValue, setSearchValue] = useState('');
-  const [userFollowers, setUserFollowers] = useState<UserFollowers[] | []>([]);
-  console.log('user', userFollowers);
+  const [userFollowings, setUserFollowings] = useState<UserFollowings[] | []>([]);
+  console.log('user', userFollowings);
 
   useEffect(() => {
     const getUserFollowers = async () => {
       try {
-        const data = await userService.getUsersFollowers(userId);
-        setUserFollowers(data);
+        const data = await userService.getUsersFollowing(userId);
+        setUserFollowings(data);
       } catch (error) {
         console.log(error);
-        setUserFollowers([]);
+        setUserFollowings([]);
       }
     };
     getUserFollowers();
@@ -162,26 +157,24 @@ export default function ShowFollowersForm({
               ...customScrollBar,
             }}
           >
-            {userFollowers.length > 0 ? (
-              userFollowers.map((item) => (
+            {userFollowings.length > 0 ? (
+              userFollowings.map((item) => (
                 <Box
                   display="flex"
                   gap="0 20px"
                   alignItems="center"
                   justifyContent="space-between"
-                  key={item.follower.id}
+                  key={item.following.id}
                 >
                   <Link
-                    to={`${PAGES.VIEW_PUBLIC_PROFILE}/${item.follower.id}`}
+                    to={`${PAGES.VIEW_PUBLIC_PROFILE}/${item.following.id}`}
                     style={{ textDecoration: 'none' }}
                     onClick={() => onClose(false)}
                   >
                     <Box display="flex" gap="0 20px" alignItems="center">
-                      <Avatar
-                        src={isPublicProfile ? publicUserData?.avatarUrl : item.follower?.avatarUrl}
-                      />
+                      {item.following.avatarUrl && <Avatar src={item.following.avatarUrl} />}
                       <Box display="flex" flexDirection="column" gap="2px 0">
-                        {item.follower.username && (
+                        {item.following.username && (
                           <Typography
                             sx={{
                               fontWeight: 500,
@@ -190,11 +183,11 @@ export default function ShowFollowersForm({
                               cursor: 'pointer',
                             }}
                           >
-                            @{item.follower.username}
+                            @{item.following.username}
                           </Typography>
                         )}
                         <Typography sx={{ fontWeight: 500, color: '#bdbdbd', fontSize: '15px' }}>
-                          {item.follower.firstName + ' ' + item.follower.lastName}
+                          {item.following.firstName + ' ' + item.following.lastName}
                         </Typography>
                       </Box>
                     </Box>
