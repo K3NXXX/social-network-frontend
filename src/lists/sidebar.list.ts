@@ -3,7 +3,6 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import LanguageIcon from '@mui/icons-material/Language';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -25,12 +24,6 @@ export const sidebarList: ISidebarList[] = [
     icon: HomeOutlinedIcon,
     labelKey: 'sidebar.home',
     url: PAGES.HOME,
-  },
-  {
-    id: 2,
-    icon: PeopleOutlinedIcon,
-    labelKey: 'sidebar.friends',
-    url: PAGES.FRIENDS,
   },
   {
     id: 3,

@@ -1,14 +1,59 @@
 {
-  "welcome": "Welcome to the website!",
-  "language": "Language",
+  "searchPlaceholder": "Search...",
   "sidebar": {
     "home": "Home",
-    "friends": "Friends",
     "notifications": "Notifications",
     "chats": "Chats",
     "search": "Search",
     "profile": "Profile",
     "changeLanguage": "Change language",
     "logout": "Logout"
+  },
+  "posts": {
+    "createCommentPlaceholder": "What's on your mind?",
+    "uploadPhotoLabel": "Photo",
+    "publishLabel": "Publish",
+    "shareLabel": "Share",
+    "addCommentLabel": "Add comment...",
+    "editLabel": "Edit",
+    "deleteLabel": "Delete"
+  },
+  "profile": {
+    "postsLabel": "posts",
+    "followersLabel": "followers",
+    "followingsLabel": "followings",
+    "noPostsLabel": "No posts",
+    "noSavedPostsLabel": "No saved posts",
+    "noTaggedPostsLabel": "No tagged posts",
+    "editProfileLabel": "Edit profile",
+    "viewArchiveLabel": "View archive",
+    "messageLabel": "Message",
+    "followLabel": "Follow",
+    "followingLabel": "Following",
+    "settingsLabel": "Settings",
+    "changePhoto": "Change photo",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "username": "Username",
+    "birthDate": "Birth date",
+    "gender": "Sex",
+    "location": "Location",
+    "bio": "Bio",
+    "saveChangesLabel": "Save changes",
+    "tabs": {
+      "posts": "Posts",
+      "saved": "Saved",
+      "tagged": "Tagged"
+    },
+    "sidebar": {
+      "edit": "Edit Profile",
+      "privacy": "Account Privacy",
+      "security": "Security"
+    },
+    "genders": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    }
   }
 }

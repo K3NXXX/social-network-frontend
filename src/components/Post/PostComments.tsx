@@ -16,6 +16,7 @@ import type { CommentType } from '../../types/post';
 import { useAuth } from '../../services/AuthContext';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 import { postService } from '../../services/postService';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   comments: CommentType[];
@@ -40,6 +41,7 @@ const PostComments: React.FC<Props> = ({
 }) => {
   const { user } = useAuth();
   const [newComment, setNewComment] = useState('');
+  const { t } = useTranslation();
   const [visibleReplies, setVisibleReplies] = useState<Set<string>>(new Set());
   const [replyingTo, setReplyingTo] = useState<CommentType | null>(null);
   const [editingComment, setEditingComment] = useState<CommentType | null>(null);
@@ -238,7 +240,7 @@ const PostComments: React.FC<Props> = ({
           multiline
           size="medium"
           variant="outlined"
-          placeholder="Додайте коментар..."
+          placeholder={t('posts.addCommentLabel')}
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           onKeyDown={(e) => {
