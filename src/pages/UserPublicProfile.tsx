@@ -5,6 +5,7 @@ import { authService } from '../services/authService';
 import { userService } from '../services/userService';
 import type { User } from '../types/auth';
 import type { UserPublicProfile } from '../types/user';
+import GlobalLoader from '../ui/GlobalLoader';
 import ProfilePage from './ProfilePage';
 
 export default function UserPublicProfile() {

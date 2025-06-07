@@ -1,6 +1,7 @@
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { Avatar, Box, Container, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import UserPosts from '../components/Post/UserPosts.tsx';
 import ShowFollowersForm from '../components/users/ShowFollowersForm.tsx';
@@ -33,8 +34,11 @@ export default function ProfilePage({
   const [isShowFollowingsFormOpened, setIsShowFollowingsFormOpened] = useState(false);
   const { logout } = useAuth();
   const [tab, setTab] = useState(0);
+  const { t } = useTranslation();
   const displayedTabs =
-    isPublicProfile && !isThisMe ? ['Пости', 'Позначене'] : ['Пости', 'Збережене', 'Позначене'];
+    isPublicProfile && !isThisMe
+      ? [t('profile.tabs.posts'), t('profile.tabs.tagged')]
+      : [t('profile.tabs.posts'), t('profile.tabs.saved'), t('profile.tabs.tagged')];
 
   const navigate = useNavigate();
 
@@ -125,17 +129,17 @@ export default function ProfilePage({
                   size="small"
                   onClick={() => navigate('/profile/edit')}
                 >
-                  Редагувати профіль
+                  {t('profile.editProfileLabel')}
                 </NoOutlineButton>
               )}
 
               {isPublicProfile && !isThisMe ? (
                 <NoOutlineButton variant="contained" size="small">
-                  Повідомлення
+                  {t('profile.messageLabel')}
                 </NoOutlineButton>
               ) : (
                 <NoOutlineButton variant="contained" size="small">
-                  Переглянути архів
+                  {t('profile.viewArchiveLabel')}
                 </NoOutlineButton>
               )}
               {isPublicProfile && (
@@ -159,7 +163,7 @@ export default function ProfilePage({
                 {isPublicProfile ? publicUserData.posts : profile.posts}
               </Typography>
               <Typography color="#737373" fontSize="15px">
-                публікацій
+                {t('profile.postsLabel')}
               </Typography>
             </Box>
             <Box
@@ -190,7 +194,7 @@ export default function ProfilePage({
                 {isPublicProfile ? publicUserData.following : profile.following}
               </Typography>
               <Typography color="#737373" fontSize="15px">
-                підписок
+                {t('profile.followingsLabel')}
               </Typography>
             </Box>
           </Box>
@@ -248,13 +252,13 @@ export default function ProfilePage({
 
           {tab === 1 && (
             <Typography align="center" color="#737373">
-              Немає збережених публікацій.
+              {t('profile.noSavedPostsLabel')}
             </Typography>
           )}
 
           {tab === 2 && (
             <Typography align="center" color="#737373">
-              Немає позначених публікацій.
+              {t('profile.noTaggedPostsLabel')}
             </Typography>
           )}
         </Box>

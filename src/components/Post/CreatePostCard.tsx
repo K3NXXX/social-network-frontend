@@ -15,12 +15,14 @@ import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import { useAuth } from '../../services/AuthContext';
 import { postService } from '../../services/postService';
 import type { PostType } from '../../types/post';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   onPostCreated: (post: PostType) => void;
 };
 
 const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [content, setContent] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -56,7 +58,7 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
             fullWidth
             multiline
             rows={4}
-            placeholder="Що у вас на думці?"
+            placeholder={t('posts.createCommentPlaceholder')}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             variant="outlined"
@@ -88,13 +90,13 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
           />
           <label htmlFor="upload-photo">
             <Button variant="text" component="span" startIcon={<AddPhotoAlternateIcon />}>
-              Фото
+              {t('posts.uploadPhotoLabel')}
             </Button>
           </label>
           {imageFile && <span style={{ marginLeft: 8 }}>{imageFile.name}</span>}
         </div>
         <Button variant="contained" endIcon={<SendIcon />} onClick={handleSubmit}>
-          Опублікувати
+          {t('posts.publishLabel')}
         </Button>
       </CardActions>
     </Card>

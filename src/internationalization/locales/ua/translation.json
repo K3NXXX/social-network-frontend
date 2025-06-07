@@ -1,0 +1,73 @@
+{
+  "searchPlaceholder": "Пошук...",
+  "language": "Мова",
+  "sidebar": {
+    "home": "Головна",
+    "notifications": "Cповіщення",
+    "chats": "Чати",
+    "search": "Пошук",
+    "profile": "Профіль",
+    "changeLanguage": "Змінити мову",
+    "logout": "Вихід"
+  },
+  "posts": {
+    "createCommentPlaceholder": "Що у вас на думці?",
+    "uploadPhotoLabel": "Фото",
+    "publishLabel": "Опублікувати",
+    "shareLabel": "Поділитися",
+    "editLabel": "Редагувати",
+    "deleteLabel": "Видалити",
+    "hideAnswers": "Сховати відповіді",
+    "showAnswers": "Показати відповіді",
+    "addCommentLabel": "Додайте коментар...",
+    "commentReply": "Відповідь на коментар",
+    "commentCancel": "Скасувати"
+  },
+  "profile": {
+    "postsLabel": "публікацій",
+    "followersLabel": "підписників",
+    "followingsLabel": "підписок",
+    "noPostsLabel": "Немає публікацій",
+    "noSavedPostsLabel": "Немає збережених публікацій",
+    "noTaggedPostsLabel": "Немає позначених публікацій",
+    "editProfileLabel": "Редагувати профіль",
+    "viewArchiveLabel": "Переглянути архів",
+    "messageLabel": "Повідомлення",
+    "followLabel": "Стежити",
+    "followingLabel": "Відстежується",
+    "settingsLabel": "Налаштування",
+    "changePhoto": "Змінити фото",
+    "firstName": "Ім'я",
+    "lastName": "Прізвище",
+    "username": "Псевдонім",
+    "birthDate": "Дата народження",
+    "gender": "Стать",
+    "location": "Місцезнаходження",
+    "bio": "Біо",
+    "saveChangesLabel": "Зберегти зміни",
+    "tabs": {
+      "posts": "Пости",
+      "saved": "Збережене",
+      "tagged": "Позначене"
+    },
+    "sidebar": {
+      "edit": "Редагувати профіль",
+      "privacy": "Приватність акаунту",
+      "security": "Безпека"
+    },
+    "genders": {
+      "male": "Чоловік",
+      "female": "Жінка",
+      "other": "Інше"
+    }
+  },
+  "chats": {
+    "chooseToWrite": "Виберіть, кому написати:",
+    "chatsLabel": "Чати",
+    "chooseChat": " Виберіть чат, щоб почати спілкування",
+    "onLine": " В мережі",
+    "offline": " Не в мережі",
+    "read": "переглянуто",
+    "sent": "відправлено"
+  }
+}
