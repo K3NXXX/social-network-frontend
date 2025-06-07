@@ -174,7 +174,7 @@ export default function ProfilePage({
                 {isPublicProfile ? publicUserData.followers : profile.followers}
               </Typography>
               <Typography color="#737373" fontSize="15px">
-                читачі
+                читачів
               </Typography>
             </Box>
 
@@ -264,9 +264,8 @@ export default function ProfilePage({
           onClose={() => setIsShowFollowersFormOpened(false)}
           isOpened={isShowFollowersFormOpened}
           userId={isPublicProfile ? publicUserData.id : profile.id}
+          setProfile={setProfile}
           profile={profile}
-          isPublicProfile={isPublicProfile}
-          publicUserData={publicUserData}
         />
       )}
 
@@ -275,6 +274,8 @@ export default function ProfilePage({
           onClose={() => setIsShowFollowingsFormOpened(false)}
           isOpened={isShowFollowingsFormOpened}
           userId={isPublicProfile ? publicUserData.id : profile.id}
+          setProfile={setProfile}
+          profile={profile}
         />
       )}
     </Container>

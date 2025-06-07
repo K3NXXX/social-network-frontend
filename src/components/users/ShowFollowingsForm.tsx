@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
 import { userService } from '../../services/userService';
+import type { User } from '../../types/auth';
 import type { UserFollowings } from '../../types/user';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
 import { customScrollBar } from '../../ui/customScrollBar';
@@ -14,16 +15,34 @@ interface IShowFollowingsFormProps {
   isOpened: boolean;
   onClose: (isShowFollowersFormOpened: boolean) => void;
   userId: string;
+  setProfile: (data: User) => void;
+  profile: User;
 }
 
 export default function ShowFollowingsForm({
   isOpened,
   onClose,
   userId,
+  setProfile,
+  profile,
 }: IShowFollowingsFormProps) {
   const [searchValue, setSearchValue] = useState('');
   const [userFollowings, setUserFollowings] = useState<UserFollowings[] | []>([]);
-  console.log('user', userFollowings);
+
+  const handleFollowToggle = async (followerId: string) => {
+    try {
+      const result = await userService.followUser(followerId);
+      const updatedData = await userService.getUserPublicProfile(userId);
+      setProfile(updatedData);
+      setUserFollowings((prev) =>
+        prev.map((following) =>
+          following.id === followerId ? { ...following, isFollowed: result.following } : following
+        )
+      );
+    } catch (error) {
+      console.error('Помилка при підписці:', error);
+    }
+  };
 
   useEffect(() => {
     const getUserFollowers = async () => {
@@ -164,17 +183,17 @@ export default function ShowFollowingsForm({
                   gap="0 20px"
                   alignItems="center"
                   justifyContent="space-between"
-                  key={item.following.id}
+                  key={item.id}
                 >
                   <Link
-                    to={`${PAGES.VIEW_PUBLIC_PROFILE}/${item.following.id}`}
+                    to={`${PAGES.VIEW_PUBLIC_PROFILE}/${item.id}`}
                     style={{ textDecoration: 'none' }}
                     onClick={() => onClose(false)}
                   >
                     <Box display="flex" gap="0 20px" alignItems="center">
-                      <Avatar src={item.following.avatarUrl ? item.following.avatarUrl : ''} />
+                      <Avatar src={item.avatarUrl ? item.avatarUrl : ''} />
                       <Box display="flex" flexDirection="column" gap="2px 0">
-                        {item.following.username && (
+                        {item.username && (
                           <Typography
                             sx={{
                               fontWeight: 500,
@@ -183,24 +202,34 @@ export default function ShowFollowingsForm({
                               cursor: 'pointer',
                             }}
                           >
-                            @{item.following.username}
+                            @{item.username}
                           </Typography>
                         )}
                         <Typography sx={{ fontWeight: 500, color: '#bdbdbd', fontSize: '15px' }}>
-                          {item.following.firstName + ' ' + item.following.lastName}
+                          {item.firstName + ' ' + item.lastName}
                         </Typography>
                       </Box>
                     </Box>
                   </Link>
 
-                  <NoOutlineButton variant="contained" size="small">
-                    Стежити
-                  </NoOutlineButton>
+                  {profile.id !== item.id && (
+                    <NoOutlineButton
+                      variant="contained"
+                      size="small"
+                      onClick={() => handleFollowToggle(item.id)}
+                      sx={{
+                        backgroundColor: item.isFollowed ? '#747474' : '',
+                        color: '#fff',
+                      }}
+                    >
+                      {item.isFollowed ? 'Відстежується' : 'Стежити'}
+                    </NoOutlineButton>
+                  )}
                 </Box>
               ))
             ) : (
               <Typography sx={{ color: 'white', textAlign: 'center', fontWeight: 500 }}>
-                Немає читачів
+                Немає підписок
               </Typography>
             )}
           </Box>

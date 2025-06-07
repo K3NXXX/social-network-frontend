@@ -27,23 +27,21 @@ export interface UserPublicProfile {
 }
 
 export interface UserFollowers {
-  follower: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    username: string | null;
-    avatarUrl: string | null;
-  };
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string | null;
+  avatarUrl: string | null;
   createdAt: string;
+  isFollowed: string;
 }
 
 export interface UserFollowings {
-  following: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    username: string | null;
-    avatarUrl: string | null;
-  };
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string | null;
+  avatarUrl: string | null;
+  isFollowed: boolean;
   createdAt: string;
 }

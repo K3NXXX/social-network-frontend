@@ -6,7 +6,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
 import { userService } from '../../services/userService';
-import type { UserFollowers, UserPublicProfile } from '../../types/user';
+import type { User } from '../../types/auth';
+import type { UserFollowers } from '../../types/user';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
 import { customScrollBar } from '../../ui/customScrollBar';
 
@@ -14,15 +15,34 @@ interface IShowFollowersFormProps {
   isOpened: boolean;
   onClose: (isShowFollowersFormOpened: boolean) => void;
   userId: string;
-  profile: any;
-  publicUserData: UserPublicProfile;
-  isPublicProfile: boolean;
+  setProfile: (data: User) => void;
+  profile: User;
 }
 
-export default function ShowFollowersForm({ isOpened, onClose, userId }: IShowFollowersFormProps) {
+export default function ShowFollowersForm({
+  isOpened,
+  onClose,
+  userId,
+  setProfile,
+  profile,
+}: IShowFollowersFormProps) {
   const [searchValue, setSearchValue] = useState('');
   const [userFollowers, setUserFollowers] = useState<UserFollowers[] | []>([]);
-  console.log('user', userFollowers);
+
+  const handleFollowToggle = async (followerId: string) => {
+    try {
+      const result = await userService.followUser(followerId);
+      const updatedData = await userService.getUserPublicProfile(userId);
+      setProfile(updatedData);
+      setUserFollowers((prev) =>
+        prev.map((follower) =>
+          follower.id === followerId ? { ...follower, isFollowed: result.following } : follower
+        )
+      );
+    } catch (error) {
+      console.error('Помилка при підписці:', error);
+    }
+  };
 
   useEffect(() => {
     const getUserFollowers = async () => {
@@ -163,17 +183,17 @@ export default function ShowFollowersForm({ isOpened, onClose, userId }: IShowFo
                   gap="0 20px"
                   alignItems="center"
                   justifyContent="space-between"
-                  key={item.follower.id}
+                  key={item.id}
                 >
                   <Link
-                    to={`${PAGES.VIEW_PUBLIC_PROFILE}/${item.follower.id}`}
+                    to={`${PAGES.VIEW_PUBLIC_PROFILE}/${item.id}`}
                     style={{ textDecoration: 'none' }}
                     onClick={() => onClose(false)}
                   >
                     <Box display="flex" gap="0 20px" alignItems="center">
-                      <Avatar src={item.follower?.avatarUrl ? item.follower?.avatarUrl : ''} />
+                      <Avatar src={item.avatarUrl ? item?.avatarUrl : ''} />
                       <Box display="flex" flexDirection="column" gap="2px 0">
-                        {item.follower.username && (
+                        {item.username && (
                           <Typography
                             sx={{
                               fontWeight: 500,
@@ -182,19 +202,28 @@ export default function ShowFollowersForm({ isOpened, onClose, userId }: IShowFo
                               cursor: 'pointer',
                             }}
                           >
-                            @{item.follower.username}
+                            @{item.username}
                           </Typography>
                         )}
                         <Typography sx={{ fontWeight: 500, color: '#bdbdbd', fontSize: '15px' }}>
-                          {item.follower.firstName + ' ' + item.follower.lastName}
+                          {item.firstName + ' ' + item.lastName}
                         </Typography>
                       </Box>
                     </Box>
                   </Link>
-
-                  <NoOutlineButton variant="contained" size="small">
-                    Стежити
-                  </NoOutlineButton>
+                  {profile.id !== item.id && (
+                    <NoOutlineButton
+                      variant="contained"
+                      size="small"
+                      onClick={() => handleFollowToggle(item.id)}
+                      sx={{
+                        backgroundColor: item.isFollowed ? '#747474' : '',
+                        color: '#fff',
+                      }}
+                    >
+                      {item.isFollowed ? 'Відстежується' : 'Стежити'}
+                    </NoOutlineButton>
+                  )}
                 </Box>
               ))
             ) : (
