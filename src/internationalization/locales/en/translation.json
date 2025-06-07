@@ -1,0 +1,14 @@
+{
+  "welcome": "Welcome to the website!",
+  "language": "Language",
+  "sidebar": {
+    "home": "Home",
+    "friends": "Friends",
+    "notifications": "Notifications",
+    "chats": "Chats",
+    "search": "Search",
+    "profile": "Profile",
+    "changeLanguage": "Change language",
+    "logout": "Logout"
+  }
+}

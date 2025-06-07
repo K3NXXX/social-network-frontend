@@ -3,14 +3,25 @@ import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
+import i18n from '../../internationalization/i18n';
 import { sidebarList } from '../../lists/sidebar.list';
 import { authService } from '../../services/authService';
 import Logo from '../../ui/Logo';
+import { useTranslation } from 'react-i18next';
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
+
+  const { t } = useTranslation();
+
+  console.log(i18n.language);
+
+  const toggleLanguage = () => {
+    const nextLang = i18n.language === 'ua' ? 'en' : 'ua';
+    i18n.changeLanguage(nextLang);
+  };
 
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
 
@@ -71,11 +82,11 @@ export default function Sidebar() {
 
       <Box sx={{ flexGrow: 1 }}>
         {sidebarList
-          .filter((item) => item.id !== 7)
+          .filter((item) => item.id !== 7 && item.id !== 8)
           .map((item) => {
             const isActivePath = pathname === item.url;
             return (
-              <Link key={item.id} to={item.url} style={{ textDecoration: 'none', width: '100%' }}>
+              <Link key={item.id} to={item.url!} style={{ textDecoration: 'none', width: '100%' }}>
                 <Box
                   sx={{
                     display: 'flex',
@@ -94,18 +105,57 @@ export default function Sidebar() {
                 >
                   <item.icon sx={{ color: 'white', fontSize: '30px' }} />
                   {!isCollapsed && (
-                    <Typography sx={{ color: 'white', fontSize: '17px' }}>{item.label}</Typography>
+                    <Typography sx={{ color: 'white', fontSize: '17px' }}>
+                      {t(item.labelKey)}
+                    </Typography>
                   )}
                 </Box>
               </Link>
             );
           })}
+
+        {sidebarList
+          .filter((item) => item.id === 7)
+          .map((item) => (
+            <Box
+              key={item.id}
+              onClick={toggleLanguage}
+              sx={{
+                textDecoration: 'none',
+                width: '100%',
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: isCollapsed ? 0 : '20px',
+                  padding: '10px 8px',
+                  borderRadius: 4,
+                  width: '100%',
+                  cursor: 'pointer',
+                  marginBottom: '10px',
+                  '&:hover': {
+                    backgroundColor: '#2a2340',
+                  },
+                  justifyContent: isCollapsed ? 'center' : 'flex-start',
+                }}
+              >
+                <item.icon sx={{ color: 'white', fontSize: '30px' }} />
+                {!isCollapsed && (
+                  <Typography sx={{ color: 'white', fontSize: '17px' }}>
+                    {t(item.labelKey)}
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+          ))}
       </Box>
 
       {sidebarList
-        .filter((item) => item.id === 7)
+        .filter((item) => item.id === 8)
         .map((item) => (
-          <Link key={item.id} to={item.url} style={{ textDecoration: 'none' }}>
+          <Link key={item.id} to={item.url!} style={{ textDecoration: 'none' }}>
             <Box
               sx={{
                 display: 'flex',
@@ -115,6 +165,7 @@ export default function Sidebar() {
                 width: '100%',
                 gap: isCollapsed ? 0 : '20px',
                 justifyContent: isCollapsed ? 'center' : 'flex-start',
+                cursor: 'pointer',
                 '&:hover': {
                   backgroundColor: '#2a2340',
                 },
@@ -123,7 +174,9 @@ export default function Sidebar() {
             >
               <item.icon sx={{ color: 'white', fontSize: '30px' }} />
               {!isCollapsed && (
-                <Typography sx={{ color: 'white', fontSize: '17px' }}>{item.label}</Typography>
+                <Typography sx={{ color: 'white', fontSize: '17px' }}>
+                  {t(item.labelKey)}
+                </Typography>
               )}
             </Box>
           </Link>

@@ -1,0 +1,14 @@
+{
+  "welcome": "Ласкаво просимо на сайт!",
+  "language": "Мова",
+  "sidebar": {
+    "home": "Головна",
+    "friends": "Друзі",
+    "notifications": "Повідомлення",
+    "chats": "Чати",
+    "search": "Пошук",
+    "profile": "Профіль",
+    "changeLanguage": "Зміна мови",
+    "logout": "Вихід"
+  }
+}

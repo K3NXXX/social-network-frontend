@@ -1,10 +1,10 @@
-import { Box, CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { userService } from '../services/userService';
 import type { User } from '../types/auth';
 import type { UserPublicProfile } from '../types/user';
+import GlobalLoader from '../ui/GlobalLoader';
 import ProfilePage from './ProfilePage';
 
 export default function UserPublicProfile() {
@@ -53,19 +53,7 @@ export default function UserPublicProfile() {
   }, [id]);
 
   if (!userData) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%',
-          minHeight: '100%',
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <GlobalLoader />;
   }
 
   return (
