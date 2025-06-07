@@ -172,7 +172,7 @@ export default function ShowFollowingsForm({
                     onClick={() => onClose(false)}
                   >
                     <Box display="flex" gap="0 20px" alignItems="center">
-                      {item.following.avatarUrl && <Avatar src={item.following.avatarUrl} />}
+                      <Avatar src={item.following.avatarUrl ? item.following.avatarUrl : ''} />
                       <Box display="flex" flexDirection="column" gap="2px 0">
                         {item.following.username && (
                           <Typography

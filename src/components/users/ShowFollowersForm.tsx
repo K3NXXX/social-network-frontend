@@ -19,13 +19,7 @@ interface IShowFollowersFormProps {
   isPublicProfile: boolean;
 }
 
-export default function ShowFollowersForm({
-  isOpened,
-  onClose,
-  userId,
-  publicUserData,
-  isPublicProfile,
-}: IShowFollowersFormProps) {
+export default function ShowFollowersForm({ isOpened, onClose, userId }: IShowFollowersFormProps) {
   const [searchValue, setSearchValue] = useState('');
   const [userFollowers, setUserFollowers] = useState<UserFollowers[] | []>([]);
   console.log('user', userFollowers);
@@ -177,9 +171,7 @@ export default function ShowFollowersForm({
                     onClick={() => onClose(false)}
                   >
                     <Box display="flex" gap="0 20px" alignItems="center">
-                      <Avatar
-                        src={isPublicProfile ? publicUserData?.avatarUrl : item.follower?.avatarUrl}
-                      />
+                      <Avatar src={item.follower?.avatarUrl ? item.follower?.avatarUrl : ''} />
                       <Box display="flex" flexDirection="column" gap="2px 0">
                         {item.follower.username && (
                           <Typography
