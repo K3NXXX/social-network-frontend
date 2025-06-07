@@ -16,7 +16,11 @@
     "shareLabel": "Share",
     "addCommentLabel": "Add comment...",
     "editLabel": "Edit",
-    "deleteLabel": "Delete"
+    "deleteLabel": "Delete",
+    "hideAnswers": "Hide answers",
+    "showAnswers": "Show answers",
+    "commentReply": "Reply to comment",
+    "commentCancel": "Cancel"
   },
   "profile": {
     "postsLabel": "posts",
@@ -55,5 +59,14 @@
       "female": "Female",
       "other": "Other"
     }
+  },
+  "chats": {
+    "chooseToWrite": "Choose someone to messaging",
+    "chatsLabel": "Chats",
+    "chooseChat": "Select a chat to start messaging",
+    "onLine": " Online",
+    "offline": " Offline",
+    "read": "read",
+    "sent": "sent"
   }
 }

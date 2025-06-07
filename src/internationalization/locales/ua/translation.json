@@ -17,7 +17,11 @@
     "shareLabel": "Поділитися",
     "editLabel": "Редагувати",
     "deleteLabel": "Видалити",
-    "addCommentLabel": "Додайте коментар..."
+    "hideAnswers": "Сховати відповіді",
+    "showAnswers": "Показати відповіді",
+    "addCommentLabel": "Додайте коментар...",
+    "commentReply": "Відповідь на коментар",
+    "commentCancel": "Скасувати"
   },
   "profile": {
     "postsLabel": "публікацій",
@@ -56,5 +60,14 @@
       "female": "Жінка",
       "other": "Інше"
     }
+  },
+  "chats": {
+    "chooseToWrite": "Виберіть, кому написати:",
+    "chatsLabel": "Чати",
+    "chooseChat": " Виберіть чат, щоб почати спілкування",
+    "onLine": " В мережі",
+    "offline": " Не в мережі",
+    "read": "переглянуто",
+    "sent": "відправлено"
   }
 }
