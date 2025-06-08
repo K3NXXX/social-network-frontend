@@ -115,15 +115,44 @@ h6 {
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #ffffff;
+  background: #f0f2f5;
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #745cee;
+  background: linear-gradient(180deg, #a18bff, #8e84f7);
+  border-radius: 10px;
+  border: 2px solid #f0f2f5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #8e84f7, #7a6bf5);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-button {
+  background: linear-gradient(180deg, #a18bff, #8e84f7);
+  border-radius: 4px;
+  border: 1px solid #f0f2f5;
+  display: block;
+  height: 12px;
+  width: 12px;
+}
+
+::-webkit-scrollbar-button:active {
+  background: linear-gradient(180deg, #8e84f7, #7a6bf5);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #8e84f7 #f0f2f5;
 }
 
 @keyframes slideDown {
