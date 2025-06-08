@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import type { FormEvent, ChangeEvent } from 'react';
 import {
   Box,
   Button,
@@ -17,87 +18,83 @@ interface EmailVerificationProps {
   onBack: () => void;
 }
 
+const RESEND_COOLDOWN = 60; // seconds
+
 const EmailVerification: React.FC<EmailVerificationProps> = ({
   email,
   onVerificationComplete,
   onBack,
 }) => {
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [countdown, setCountdown] = useState(60);
-  const [canResend, setCanResend] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [countdown, setCountdown] = useState<number>(RESEND_COOLDOWN);
+  const [canResend, setCanResend] = useState<boolean>(false);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-
+    let timer: ReturnType<typeof setTimeout>;
     if (countdown > 0) {
       timer = setTimeout(() => setCountdown(countdown - 1), 1000);
     } else {
       setCanResend(true);
     }
-
     return () => {
       if (timer) clearTimeout(timer);
     };
   }, [countdown]);
 
-  const handleVerify = async (e: React.FormEvent) => {
+  const handleVerify = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-
+    setSuccess(null);
     if (!code || code.length !== 6) {
       setError('Будь ласка, введіть 6-значний код підтвердження');
       return;
     }
-
     try {
       setIsLoading(true);
       const response = await authService.verifyEmail(code);
-      setSuccess(response.message);
-      setTimeout(onVerificationComplete, 2000);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Помилка підтвердження електронної пошти');
+      setSuccess(response.message || 'Обліковий запис підтверджено!');
+      setTimeout(onVerificationComplete, 1500);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Помилка підтвердження електронної пошти');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleResendCode = async () => {
+    setError(null);
+    setSuccess(null);
     try {
       setIsLoading(true);
-      setError(null);
-      const response = await authService.resendVerificationCode(email);
-      setCountdown(60);
+      await authService.resendVerificationCode(email);
+      setCountdown(RESEND_COOLDOWN);
       setCanResend(false);
-      setSuccess(response.message);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Не вдалося надіслати код підтвердження');
+      setSuccess('Новий код підтвердження надіслано на вашу пошту.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Не вдалося надіслати код підтвердження');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleCodeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setCode(e.target.value.replace(/\D/g, '').slice(0, 6));
+  };
+
   return (
     <Box component="form" onSubmit={handleVerify} sx={{ mt: 1, width: '100%' }}>
       <Typography variant="body1" gutterBottom>
-        На вашу електронну адресу <strong>{email}</strong> було надіслано код підтвердження. Будь
-        ласка, введіть його нижче для завершення реєстрації.
+        На вашу електронну адресу <strong>{email}</strong> було надіслано код підтвердження. Введіть його нижче для завершення реєстрації.
       </Typography>
-
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
+        <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
       )}
-
       {success && (
-        <Alert severity="success" sx={{ mb: 2 }}>
-          {success}
-        </Alert>
+        <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>
       )}
-
       <TextField
         margin="normal"
         required
@@ -108,7 +105,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
         autoComplete="off"
         autoFocus
         value={code}
-        onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+        onChange={handleCodeChange}
         inputProps={{
           inputMode: 'numeric',
           pattern: '[0-9]*',
@@ -116,7 +113,6 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
         }}
         disabled={isLoading}
       />
-
       <Stack direction="row" spacing={2} sx={{ mt: 2, mb: 2 }}>
         <Button
           type="submit"
@@ -127,7 +123,6 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           {isLoading ? <CircularProgress size={24} /> : 'Підтвердити'}
         </Button>
       </Stack>
-
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 2 }}>
         <Link
           component="button"
@@ -138,7 +133,6 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
         >
           Назад до форми реєстрації
         </Link>
-
         <Button
           variant="text"
           onClick={handleResendCode}

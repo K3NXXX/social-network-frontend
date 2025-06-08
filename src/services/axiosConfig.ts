@@ -1,10 +1,7 @@
 import axios from 'axios';
 
-// You can switch between local and production URLs
-const BASE_URL =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost:3000' // Change this to your local backend port
-    : 'https://vetra-8c5dfe3bdee7.herokuapp.com';
+// Always use production backend
+const BASE_URL = 'https://vetra-8c5dfe3bdee7.herokuapp.com';
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
