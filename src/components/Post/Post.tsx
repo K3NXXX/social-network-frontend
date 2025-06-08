@@ -1,0 +1,202 @@
+import React, { useRef, useState } from 'react';
+import { Card, Divider } from '@mui/material';
+
+import PostActions from './PostActions';
+import PostComments from './PostComments';
+import PostContent from './PostContent';
+import PostHeader from './PostHeader';
+
+import type { CommentType, PostType } from '../../types/post';
+import { useAuth } from '../../services/AuthContext';
+import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { postService } from '../../services/postService';
+import EditPostModal from './EditPostModal';
+
+interface Props {
+  post: PostType;
+  onDelete: (id: string) => void;
+}
+
+const Post: React.FC<Props> = ({ post, onDelete }) => {
+  const { user } = useAuth();
+  const [liked, setLiked] = useState(post.liked);
+  const [likesCount, setLikesCount] = useState(post._count.likes);
+  const [commentsCount, setCommentsCount] = useState(post._count.comments);
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState<CommentType[]>([]);
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const take = 5;
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [currentPost, setCurrentPost] = useState(post);
+
+  const fetchComments = async (pageNumber = 1) => {
+    try {
+      const res = await postService.fetchPostComments(post.id, pageNumber, take);
+      if (pageNumber === 1) {
+        setComments(res.data);
+      } else {
+        setComments((prev) => {
+          const existingIds = new Set(prev.map((c) => c.id));
+          const newComments = res.data.filter((c) => !existingIds.has(c.id));
+          return [...prev, ...newComments];
+        });
+      }
+      setPage(res.page);
+      setLastPage(res.totalPages);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleLoadMoreComments = () => {
+    if (page < lastPage) {
+      fetchComments(page + 1);
+    }
+  };
+
+  useIntersectionObserver(loaderRef, () => {
+    if (page < lastPage) {
+      handleLoadMoreComments();
+    }
+  });
+
+  const handleToggleLike = async () => {
+    try {
+      const { liked } = await postService.toggleLike(post.id);
+      setLiked(liked);
+      setLikesCount((prev) => (liked ? prev + 1 : prev - 1));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleAddComment = (newComment: CommentType) => {
+    setComments((prevComments) => {
+      if (newComment.parentId) {
+        return prevComments.map((comment) => {
+          if (comment.id === newComment.parentId) {
+            console.log(comment, newComment);
+
+            return {
+              ...comment,
+              replies: [...(comment.replies || []), newComment],
+            };
+          }
+          return comment;
+        });
+      } else {
+        console.log([...prevComments, { ...newComment, replies: [] }]);
+        return [...prevComments, { ...newComment, replies: [] }];
+      }
+    });
+    setCommentsCount((prev) => prev + 1);
+  };
+
+  const handleDeletePost = async () => {
+    try {
+      const message = await postService.deletePost(post.id);
+      console.log(message);
+      onDelete(post.id);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeleteComment = (commentId: string) => {
+    setComments((prevComments) =>
+      prevComments
+        .filter((comment) => comment.id !== commentId)
+        .map((comment) => ({
+          ...comment,
+          replies: comment.replies?.filter((reply) => reply.id !== commentId) || [],
+        }))
+    );
+    setCommentsCount((prev) => prev - 1);
+  };
+
+  const handleAddReplies = (parentId: string, replies: CommentType[]) => {
+    setComments((prevComments) =>
+      prevComments.map((comment) => {
+        if (comment.id === parentId) {
+          return {
+            ...comment,
+            replies,
+          };
+        }
+        return comment;
+      })
+    );
+  };
+
+  const handleUpdateComment = (updatedComment: CommentType) => {
+    setComments((prevComments) =>
+      prevComments.map((comment) => {
+        if (comment.id === updatedComment.id) {
+          return { ...comment, ...updatedComment };
+        }
+        if (comment.replies) {
+          return {
+            ...comment,
+            replies: comment.replies.map((reply) =>
+              reply.id === updatedComment.id ? { ...reply, ...updatedComment } : reply
+            ),
+          };
+        }
+        return comment;
+      })
+    );
+  };
+
+  const handleUpdatePost = (updatedPost: PostType) => {
+    setCurrentPost(updatedPost);
+  };
+
+  return (
+    <Card sx={{ width: '100%', maxWidth: '1200px', mx: 'auto', p: 2, mb: 4 }}>
+      <PostHeader
+        user={post.user}
+        createdAt={post.createdAt}
+        isOwner={post.user.id === user?.id}
+        onDelete={handleDeletePost}
+        onEdit={() => setEditOpen(true)}
+      />
+
+      <EditPostModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        post={currentPost}
+        onUpdate={handleUpdatePost}
+      />
+
+      <PostContent content={post.content} photo={post.photo} />
+
+      <Divider sx={{ my: 2, mx: -2 }} />
+      <PostActions
+        likesCount={likesCount}
+        commentsCount={commentsCount}
+        liked={liked}
+        onToggleLike={handleToggleLike}
+        onToggleComments={() => {
+          fetchComments();
+          setShowComments(!showComments);
+        }}
+      />
+      {showComments && (
+        <PostComments
+          comments={comments}
+          postId={post.id}
+          onAddComment={handleAddComment}
+          onDeleteComment={handleDeleteComment}
+          hasMore={page < lastPage}
+          onAddReplies={handleAddReplies}
+          onLoadMore={handleLoadMoreComments}
+          onUpdateComment={handleUpdateComment}
+        />
+      )}
+    </Card>
+  );
+};
+
+export default Post;
