@@ -15,8 +15,9 @@ import {
   Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import axiosInstance from '../services/axiosConfig.ts';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../services/AuthContext.tsx';
+import axiosInstance from '../services/axiosConfig.ts';
 
 const GENDERS = [
   { value: 'MALE', label: 'Чоловік' },
@@ -40,6 +41,7 @@ export default function EditProfileLayout() {
   const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
 
   const { logout } = useAuth();
+  const { t } = useTranslation();
 
   const allowedFields = ['firstName', 'lastName', 'dateOfBirth', 'gender', 'bio', 'location'];
 
@@ -187,7 +189,7 @@ export default function EditProfileLayout() {
           }}
         >
           <Typography textAlign="start" px="10px" fontSize="18px" fontWeight="bold" my={2}>
-            Settings
+            {t('profile.settingsLabel')}
           </Typography>
           <List sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2 }}>
             {sidebarItems.map((item) => (
@@ -205,7 +207,7 @@ export default function EditProfileLayout() {
                   }}
                 >
                   <ListItemText
-                    primary={item.label}
+                    primary={t(`profile.sidebar.${item.key}`)}
                     primaryTypographyProps={{
                       fontSize: '14px',
                       fontWeight: 400,
@@ -260,10 +262,10 @@ export default function EditProfileLayout() {
                     size="small"
                     onClick={handlePhotoDelete}
                   >
-                    Видалити фото
+                    {t('profile.deletePhoto')}
                   </Button>
                   <Button component="label" variant="contained" size="small">
-                    Змінити фото
+                    {t('profile.changePhoto')}
                     <input type="file" hidden accept="image/*" onChange={handlePhotoUpload} />
                   </Button>
                 </Box>
@@ -271,7 +273,7 @@ export default function EditProfileLayout() {
 
               <Box display="flex" flexDirection="column" gap={3} mb="50px">
                 <TextField
-                  label="Ім’я"
+                  label={t('profile.firstName')}
                   value={profile.firstName}
                   onChange={(e) => handleChange('firstName', e.target.value)}
                   InputProps={{
@@ -285,7 +287,7 @@ export default function EditProfileLayout() {
                   }}
                 />
                 <TextField
-                  label="Прізвище"
+                  label={t('profile.lastName')}
                   value={profile.lastName}
                   onChange={(e) => handleChange('lastName', e.target.value)}
                   InputProps={{
@@ -308,7 +310,7 @@ export default function EditProfileLayout() {
                 px="2px"
                 py="16px"
               >
-                Дата народження
+                {t('profile.birthDate')}
               </Typography>
               <Box display="flex" flexDirection="column">
                 <TextField
@@ -339,7 +341,7 @@ export default function EditProfileLayout() {
                   py="16px"
                   mt="32px"
                 >
-                  Стать
+                  {t('profile.gender')}
                 </Typography>
                 <FormControl fullWidth>
                   <Select
@@ -364,7 +366,7 @@ export default function EditProfileLayout() {
                   >
                     {GENDERS.map((option) => (
                       <MenuItem key={option.value} value={option.value}>
-                        {option.label}
+                        {t(`profile.genders.${option.value.toLowerCase()}`)}
                       </MenuItem>
                     ))}
                   </Select>
@@ -378,7 +380,7 @@ export default function EditProfileLayout() {
                   py="16px"
                   mt="32px"
                 >
-                  Місцезнаходження
+                  {t('profile.location')}
                 </Typography>
                 <TextField
                   placeholder="м. Львів"
@@ -409,7 +411,7 @@ export default function EditProfileLayout() {
                 py="16px"
                 mt="32px"
               >
-                Біо
+                {t('profile.bio')}
               </Typography>
               <TextField
                 placeholder="Біо"
@@ -427,7 +429,7 @@ export default function EditProfileLayout() {
 
               <Box my={4} display="flex" justifyContent="end" alignItems="center">
                 <Button variant="contained" onClick={handleSubmit}>
-                  Зберегти
+                  {t('profile.saveChangesLabel')}
                 </Button>
               </Box>
             </>

@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { authService } from '../services/authService';
@@ -14,18 +14,7 @@ export default function UserPublicProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const isThisMe = currentUser?.id === userData?.id;
 
-  const checkIfFollowing = async () => {
-    try {
-      if (!id) return;
-      const currentUser = await authService.getCurrentUser();
-      const followings = await userService.getUsersFollowing(currentUser.id);
-      const isUserFollowed = followings.some((user: User) => user.id === userData?.id);
-      setIsFollowing(isUserFollowed);
-      setCurrentUser(currentUser);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  console.log('current', currentUser);
 
   const toggleFollowUser = async (id: string) => {
     try {
@@ -44,7 +33,6 @@ export default function UserPublicProfile() {
       try {
         const data = await userService.getUserPublicProfile(id);
         setUserData(data);
-        await checkIfFollowing();
       } catch {
         setUserData(null);
       }
@@ -52,20 +40,25 @@ export default function UserPublicProfile() {
     getUserData();
   }, [id]);
 
+  useEffect(() => {
+    const checkIfFollowing = async () => {
+      if (!userData) return;
+      try {
+        const currentUser = await authService.getCurrentUser();
+        const followings = await userService.getUsersFollowing(currentUser.id);
+        const isUserFollowed = followings.some((user: User) => user.id === userData.id);
+        setIsFollowing(isUserFollowed);
+        setCurrentUser(currentUser);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    checkIfFollowing();
+  }, [userData]);
+
   if (!userData) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%',
-          minHeight: '100%',
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <CircularProgress />;
   }
 
   return (

@@ -1,13 +1,17 @@
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { Avatar, Box, Container, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import UserPosts from '../components/Post/UserPosts.tsx';
+import ShowFollowersForm from '../components/users/ShowFollowersForm.tsx';
+import ShowFollowingsForm from '../components/users/ShowFollowingsForm.tsx';
 import { useAuth } from '../services/AuthContext.tsx';
 import axiosInstance from '../services/axiosConfig.ts';
 import type { UserPublicProfile } from '../types/user.ts';
 import GlobalLoader from '../ui/GlobalLoader.tsx';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
-import UserPosts from '../components/Post/UserPosts.tsx';
+import { PAGES } from '../constants/pages.constants.ts';
 
 interface IProfilePageProps {
   isPublicProfile: boolean;
@@ -27,10 +31,15 @@ export default function ProfilePage({
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isShowFollowersFormOpened, setIsShowFollowersFormOpened] = useState(false);
+  const [isShowFollowingsFormOpened, setIsShowFollowingsFormOpened] = useState(false);
   const { logout } = useAuth();
   const [tab, setTab] = useState(0);
+  const { t } = useTranslation();
   const displayedTabs =
-    isPublicProfile && !isThisMe ? ['Пости', 'Позначене'] : ['Пости', 'Збережене', 'Позначене'];
+    isPublicProfile && !isThisMe
+      ? [t('profile.tabs.posts'), t('profile.tabs.tagged')]
+      : [t('profile.tabs.posts'), t('profile.tabs.saved'), t('profile.tabs.tagged')];
 
   const navigate = useNavigate();
 
@@ -113,25 +122,25 @@ export default function ProfilePage({
                   size="small"
                   sx={{ backgroundColor: isFollowing ? '#737373' : '' }}
                 >
-                  Стежити
+                  {isFollowing ? t('profile.followingLabel') : t('profile.followLabel')}
                 </NoOutlineButton>
               ) : (
                 <NoOutlineButton
                   variant="contained"
                   size="small"
-                  onClick={() => navigate('/profile/edit')}
+                  onClick={() => navigate(PAGES.EDIT_PROFILE)}
                 >
-                  Редагувати профіль
+                  {t('profile.editProfileLabel')}
                 </NoOutlineButton>
               )}
 
               {isPublicProfile && !isThisMe ? (
                 <NoOutlineButton variant="contained" size="small">
-                  Повідомлення
+                  {t('profile.messageLabel')}
                 </NoOutlineButton>
               ) : (
                 <NoOutlineButton variant="contained" size="small">
-                  Переглянути архів
+                  {t('profile.viewArchiveLabel')}
                 </NoOutlineButton>
               )}
               {isPublicProfile && (
@@ -155,25 +164,38 @@ export default function ProfilePage({
                 {isPublicProfile ? publicUserData.posts : profile.posts}
               </Typography>
               <Typography color="#737373" fontSize="15px">
-                публікацій
+                {t('profile.postsLabel')}
               </Typography>
             </Box>
-
-            <Box display="flex" gap={0.5}>
+            <Box
+              onClick={() => {
+                setIsShowFollowersFormOpened(true);
+              }}
+              display="flex"
+              gap={0.5}
+              sx={{ cursor: 'pointer' }}
+            >
               <Typography fontWeight="bold" fontSize="15px">
                 {isPublicProfile ? publicUserData.followers : profile.followers}
               </Typography>
               <Typography color="#737373" fontSize="15px">
-                підписників
+                {t('profile.followersLabel')}
               </Typography>
             </Box>
 
-            <Box display="flex" gap={0.5}>
+            <Box
+              onClick={() => {
+                setIsShowFollowingsFormOpened(true);
+              }}
+              display="flex"
+              gap={0.5}
+              sx={{ cursor: 'pointer' }}
+            >
               <Typography fontWeight="bold" fontSize="15px">
                 {isPublicProfile ? publicUserData.following : profile.following}
               </Typography>
               <Typography color="#737373" fontSize="15px">
-                підписок
+                {t('profile.followingsLabel')}
               </Typography>
             </Box>
           </Box>
@@ -231,17 +253,34 @@ export default function ProfilePage({
 
           {tab === 1 && (
             <Typography align="center" color="#737373">
-              Немає збережених публікацій.
+              {t('profile.noSavedPostsLabel')}
             </Typography>
           )}
 
           {tab === 2 && (
             <Typography align="center" color="#737373">
-              Немає позначених публікацій.
+              {t('profile.noTaggedPostsLabel')}
             </Typography>
           )}
         </Box>
       </Box>
+      {isShowFollowersFormOpened && (
+        <ShowFollowersForm
+          onClose={() => setIsShowFollowersFormOpened(false)}
+          isOpened={isShowFollowersFormOpened}
+          userId={isPublicProfile ? publicUserData.id : profile.id}
+          setProfile={setProfile}
+        />
+      )}
+
+      {isShowFollowingsFormOpened && (
+        <ShowFollowingsForm
+          onClose={() => setIsShowFollowingsFormOpened(false)}
+          isOpened={isShowFollowingsFormOpened}
+          userId={isPublicProfile ? publicUserData.id : profile.id}
+          setProfile={setProfile}
+        />
+      )}
     </Container>
   );
 }
