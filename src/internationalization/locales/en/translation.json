@@ -73,5 +73,47 @@
     "offline": " Offline",
     "read": "read",
     "sent": "sent"
+  },
+  "auth": {
+    "createProfileLabel": "Create an account",
+    "firstName": "First name",
+    "firstNameRequired": "First name is required",
+    "firstNameTooShort": "First name must be longer than 1 character",
+
+    "lastName": "Last name",
+    "lastNameRequired": "Last name is required",
+    "lastNameTooShort": "Last name must be longer than 1 character",
+
+    "email": "Email",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Invalid email address",
+
+    "password": "Password",
+    "passwordRequired": "Password is required",
+    "passwordTooShort": "Password must contain minimum 8 characters",
+
+    "confirmPassword": "Confirm password",
+    "confirmPasswordRequired": "Confirm password is required",
+    "passwordsDoNotMatch": "Passwords do not match",
+
+    "register": "Sign up",
+    "alreadyHaveAccount": "Already have an account? Log in",
+    "login": "Log in",
+    "loginLabel": "Log in",
+    "noProfile": "Don't have an account? Sign up",
+    "emailVerification": {
+      "enter6DigitCode": "Please enter the 6-digit verification code",
+      "accountVerified": "Account verified successfully!",
+      "verificationError": "Email verification error",
+      "newCodeSent": "A new verification code has been sent to your email.",
+      "resendError": "Failed to send verification code",
+      "codeSentTo": "A verification code has been sent to your email",
+      "enterCodeBelow": "Please enter it below to complete your registration.",
+      "verificationCode": "Verification Code",
+      "confirm": "Confirm",
+      "backToRegisterForm": "Back to registration form",
+      "resendCode": "Resend code",
+      "availableIn": "Available in {{seconds}}s"
+    }
   }
 }

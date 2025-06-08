@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
 import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Container,
-  Paper,
-  Link,
   Alert,
+  Box,
+  Button,
   CircularProgress,
+  Container,
+  Link,
+  Paper,
+  TextField,
+  Typography,
 } from '@mui/material';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { useAuth } from '../../services/AuthContext';
-import Logo from '../../components/auth/Logo';
-import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
-import { useForm, Controller } from 'react-hook-form';
+import React, { useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../services/AuthContext';
+import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
+import Logo from '../../ui/Logo';
 
 interface LoginFormInputs {
   email: string;
@@ -26,6 +27,7 @@ const Login: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const { login, loading } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const {
     control,
@@ -69,11 +71,23 @@ const Login: React.FC = () => {
             flexDirection: 'column',
             alignItems: 'center',
             width: '100%',
+            borderRadius: '12px',
           }}
         >
-          <Logo size="large" />
-          <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
-            Увійти до СоцМережі
+          <Logo size={'30px'} />
+          <Typography
+            component="h1"
+            variant="h5"
+            sx={{
+              mb: 3,
+              textAlign: 'center',
+              color: '#333',
+              fontSize: { xs: '1.6rem', sm: '1.6rem' },
+              letterSpacing: '0.3px',
+              fontFamily: 'Ubuntu',
+            }}
+          >
+            {t('auth.login')}
           </Typography>
 
           {submitError && (
@@ -92,10 +106,10 @@ const Login: React.FC = () => {
               name="email"
               control={control}
               rules={{
-                required: "Електронна пошта обов'язкова",
+                required: t('auth.emailRequired'),
                 pattern: {
                   value: /\S+@\S+\.\S+/,
-                  message: 'Невірний формат електронної пошти',
+                  message: t('auth.emailInvalid'),
                 },
               }}
               render={({ field }) => (
@@ -105,7 +119,7 @@ const Login: React.FC = () => {
                   required
                   fullWidth
                   id="email"
-                  label="Електронна пошта"
+                  label={t('auth.email')}
                   autoComplete="email"
                   autoFocus
                   error={!!errors.email}
@@ -118,10 +132,10 @@ const Login: React.FC = () => {
               name="password"
               control={control}
               rules={{
-                required: "Пароль обов'язковий",
+                required: t('auth.passwordRequired'),
                 minLength: {
-                  value: 6,
-                  message: 'Пароль має бути не менше 6 символів',
+                  value: 8,
+                  message: t('auth.passwordTooShort'),
                 },
               }}
               render={({ field }) => (
@@ -130,7 +144,7 @@ const Login: React.FC = () => {
                   margin="normal"
                   required
                   fullWidth
-                  label="Пароль"
+                  label={t('auth.password')}
                   type="password"
                   id="password"
                   autoComplete="current-password"
@@ -147,11 +161,11 @@ const Login: React.FC = () => {
               sx={{ mt: 3, mb: 2 }}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} /> : 'Увійти'}
+              {loading ? <CircularProgress size={24} /> : t('auth.loginLabel')}
             </Button>
             <Box sx={{ textAlign: 'center' }}>
               <Link component={RouterLink} to="/register" variant="body2">
-                {'Немає облікового запису? Зареєструватись'}
+                {t('auth.noProfile')}
               </Link>
             </Box>
           </Box>

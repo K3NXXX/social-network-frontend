@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
 import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Container,
-  Paper,
-  Link,
   Alert,
+  Box,
+  Button,
   CircularProgress,
+  Container,
   Fade,
+  Link,
+  Paper,
+  TextField,
+  Typography,
 } from '@mui/material';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { useAuth } from '../../services/AuthContext';
-import Logo from '../../components/auth/Logo';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import EmailVerification from '../../components/auth/EmailVerification';
-import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
+import { useAuth } from '../../services/AuthContext';
 import { authService } from '../../services/authService';
+import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
+import Logo from '../../ui/Logo';
 
 interface RegisterFormData {
   firstName: string;
@@ -52,6 +53,7 @@ const Register: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isVerificationStep, setIsVerificationStep] = useState(false);
   const [pendingEmail, setPendingEmail] = useState('');
+  const { t } = useTranslation();
 
   const { loading } = useAuth();
   const navigate = useNavigate();
@@ -67,39 +69,42 @@ const Register: React.FC = () => {
     };
 
     if (!formData.firstName.trim()) {
-      errors.firstName = "Ім'я обов'язкове";
+      errors.firstName = t('auth.firstNameRequired');
       valid = false;
     } else if (formData.firstName.length < 2) {
-      errors.firstName = "Ім'я має бути довшим за 1 символ";
+      errors.firstName = t('auth.firstNameTooShort');
       valid = false;
     }
 
     if (!formData.lastName.trim()) {
-      errors.lastName = "Прізвище обов'язкове";
+      errors.lastName = t('auth.lastNameRequired');
       valid = false;
     } else if (formData.lastName.length < 2) {
-      errors.lastName = 'Прізвище має бути довшим за 1 символ';
+      errors.lastName = t('auth.lastNameTooShort');
       valid = false;
     }
 
     if (!formData.email) {
-      errors.email = "Електронна пошта обов'язкова";
+      errors.email = t('auth.emailRequired');
       valid = false;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Електронна пошта невірна';
+      errors.email = t('auth.emailInvalid');
       valid = false;
     }
 
     if (!formData.password) {
-      errors.password = "Пароль обов'язковий";
+      errors.password = t('auth.passwordRequired');
       valid = false;
     } else if (formData.password.length < 8) {
-      errors.password = 'Пароль має бути довшим за 7 символів';
+      errors.password = t('auth.passwordTooShort');
       valid = false;
     }
 
-    if (formData.confirmPassword !== formData.password) {
-      errors.confirmPassword = 'Паролі не співпадають';
+    if (!formData.confirmPassword) {
+      errors.confirmPassword = t('auth.confirmPasswordRequired');
+      valid = false;
+    } else if (formData.confirmPassword !== formData.password) {
+      errors.confirmPassword = t('auth.passwordsDoNotMatch');
       valid = false;
     }
 
@@ -148,8 +153,6 @@ const Register: React.FC = () => {
     setSubmitError(null);
   };
 
-  const handleSubmit = isVerificationStep ? () => {} : handleRegister;
-
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -169,11 +172,23 @@ const Register: React.FC = () => {
             flexDirection: 'column',
             alignItems: 'center',
             width: '100%',
+            borderRadius: '12px',
           }}
         >
-          <Logo size="large" />
-          <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
-            Зареєструватись у СоцМережі
+          <Logo size="30px" />
+          <Typography
+            component="h1"
+            variant="h5"
+            sx={{
+              mb: 3,
+              textAlign: 'center',
+              color: '#333',
+              fontSize: { xs: '1.6rem' },
+              letterSpacing: '0.3px',
+              fontFamily: 'Ubuntu',
+            }}
+          >
+            {t('auth.createProfileLabel')}
           </Typography>
 
           {submitError && (
@@ -196,7 +211,7 @@ const Register: React.FC = () => {
             ) : (
               <Box
                 component="form"
-                onSubmit={handleSubmit}
+                onSubmit={handleRegister}
                 noValidate
                 sx={{ mt: 1, width: '100%' }}
               >
@@ -205,7 +220,7 @@ const Register: React.FC = () => {
                   required
                   fullWidth
                   id="firstName"
-                  label="Ім'я"
+                  label={t('auth.firstName')}
                   name="firstName"
                   autoComplete="given-name"
                   autoFocus
@@ -220,7 +235,7 @@ const Register: React.FC = () => {
                   required
                   fullWidth
                   id="lastName"
-                  label="Прізвище"
+                  label={t('auth.lastName')}
                   name="lastName"
                   autoComplete="family-name"
                   value={formData.lastName}
@@ -234,7 +249,7 @@ const Register: React.FC = () => {
                   required
                   fullWidth
                   id="email"
-                  label="Електронна пошта"
+                  label={t('auth.email')}
                   name="email"
                   autoComplete="email"
                   value={formData.email}
@@ -248,7 +263,7 @@ const Register: React.FC = () => {
                   required
                   fullWidth
                   name="password"
-                  label="Пароль"
+                  label={t('auth.password')}
                   type="password"
                   id="password"
                   autoComplete="new-password"
@@ -263,7 +278,7 @@ const Register: React.FC = () => {
                   required
                   fullWidth
                   name="confirmPassword"
-                  label="Підтвердження пароля"
+                  label={t('auth.confirmPassword')}
                   type="password"
                   id="confirmPassword"
                   autoComplete="new-password"
@@ -280,11 +295,11 @@ const Register: React.FC = () => {
                   sx={{ mt: 3, mb: 2 }}
                   disabled={loading}
                 >
-                  {loading ? <CircularProgress size={24} /> : 'Зареєструватись'}
+                  {loading ? <CircularProgress size={24} /> : t('auth.register')}
                 </Button>
                 <Box sx={{ textAlign: 'center' }}>
                   <Link component={RouterLink} to="/login" variant="body2">
-                    {'Вже маєте обліковий запис? Увійти'}
+                    {t('auth.alreadyHaveAccount')}
                   </Link>
                 </Box>
               </Box>
@@ -295,5 +310,4 @@ const Register: React.FC = () => {
     </Container>
   );
 };
-
 export default Register;

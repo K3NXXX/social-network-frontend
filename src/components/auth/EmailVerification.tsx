@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import type { FormEvent, ChangeEvent } from 'react';
 import {
+  Alert,
   Box,
   Button,
-  Typography,
-  TextField,
   CircularProgress,
-  Alert,
-  Stack,
   Link,
+  Stack,
+  TextField,
+  Typography,
 } from '@mui/material';
+import type { ChangeEvent, FormEvent } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { authService } from '../../services/authService';
 
 interface EmailVerificationProps {
@@ -25,6 +26,8 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
   onVerificationComplete,
   onBack,
 }) => {
+  const { t } = useTranslation();
+
   const [code, setCode] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -49,16 +52,16 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
     setError(null);
     setSuccess(null);
     if (!code || code.length !== 6) {
-      setError('Будь ласка, введіть 6-значний код підтвердження');
+      setError(t('auth.emailVerification.enter6DigitCode'));
       return;
     }
     try {
       setIsLoading(true);
       const response = await authService.verifyEmail(code);
-      setSuccess(response.message || 'Обліковий запис підтверджено!');
+      setSuccess(response.message || t('auth.emailVerification.accountVerified'));
       setTimeout(onVerificationComplete, 1500);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Помилка підтвердження електронної пошти');
+      setError(err instanceof Error ? err.message : t('auth.emailVerification.verificationError'));
     } finally {
       setIsLoading(false);
     }
@@ -72,9 +75,9 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
       await authService.resendVerificationCode(email);
       setCountdown(RESEND_COOLDOWN);
       setCanResend(false);
-      setSuccess('Новий код підтвердження надіслано на вашу пошту.');
+      setSuccess(t('auth.emailVerification.newCodeSent'));
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Не вдалося надіслати код підтвердження');
+      setError(err instanceof Error ? err.message : t('auth.emailVerification.resendError'));
     } finally {
       setIsLoading(false);
     }
@@ -87,20 +90,25 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
   return (
     <Box component="form" onSubmit={handleVerify} sx={{ mt: 1, width: '100%' }}>
       <Typography variant="body1" gutterBottom>
-        На вашу електронну адресу <strong>{email}</strong> було надіслано код підтвердження. Введіть його нижче для завершення реєстрації.
+        {t('auth.emailVerification.codeSentTo')} <strong>{email}</strong>{' '}
+        {t('auth.emailVerification.enterCodeBelow')}
       </Typography>
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
       )}
       {success && (
-        <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>
+        <Alert severity="success" sx={{ mb: 2 }}>
+          {success}
+        </Alert>
       )}
       <TextField
         margin="normal"
         required
         fullWidth
         id="verificationCode"
-        label="Код підтвердження"
+        label={t('auth.emailVerification.verificationCode')}
         name="verificationCode"
         autoComplete="off"
         autoFocus
@@ -120,7 +128,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           variant="contained"
           disabled={isLoading || code.length !== 6}
         >
-          {isLoading ? <CircularProgress size={24} /> : 'Підтвердити'}
+          {isLoading ? <CircularProgress size={24} /> : t('auth.emailVerification.confirm')}
         </Button>
       </Stack>
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 2 }}>
@@ -131,7 +139,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           onClick={onBack}
           disabled={isLoading}
         >
-          Назад до форми реєстрації
+          {t('auth.emailVerification.backToRegisterForm')}
         </Link>
         <Button
           variant="text"
@@ -139,7 +147,9 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           disabled={!canResend || isLoading}
           sx={{ textTransform: 'none' }}
         >
-          {canResend ? 'Надіслати код ще раз' : `Доступно через ${countdown}с`}
+          {canResend
+            ? t('auth.emailVerification.resendCode')
+            : t('auth.emailVerification.availableIn', { seconds: countdown })}
         </Button>
       </Stack>
     </Box>
