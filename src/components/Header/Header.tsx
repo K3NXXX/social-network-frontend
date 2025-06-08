@@ -6,6 +6,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Box, Card, InputAdornment, TextField, Typography } from '@mui/material';
 import debounce from 'lodash/debounce';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
 import { userService } from '../../services/userService';
@@ -16,7 +17,7 @@ import SearchItem from '../../ui/SearchItem';
 export default function Header() {
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState<SearchUsers[] | []>([]);
-
+  const { t } = useTranslation();
   const debounceSearch = useCallback(
     debounce(async (value: string) => {
       if (value.trim().length < 2) return setSearchResults([]);
@@ -103,7 +104,7 @@ export default function Header() {
           </Box>
           <TextField
             autoComplete="off"
-            placeholder="Пошук..."
+            placeholder={t('searchPlaceholder')}
             variant="outlined"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}

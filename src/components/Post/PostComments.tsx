@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import SendIcon from '@mui/icons-material/Send';
 import {
   Avatar,
   Box,
@@ -9,13 +9,14 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+import React, { useRef, useState } from 'react';
 import Comment from './Comment';
 
-import type { CommentType } from '../../types/post';
-import { useAuth } from '../../services/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { useAuth } from '../../services/AuthContext';
 import { postService } from '../../services/postService';
+import type { CommentType } from '../../types/post';
 
 interface Props {
   comments: CommentType[];
@@ -40,6 +41,7 @@ const PostComments: React.FC<Props> = ({
 }) => {
   const { user } = useAuth();
   const [newComment, setNewComment] = useState('');
+  const { t } = useTranslation();
   const [visibleReplies, setVisibleReplies] = useState<Set<string>>(new Set());
   const [replyingTo, setReplyingTo] = useState<CommentType | null>(null);
   const [editingComment, setEditingComment] = useState<CommentType | null>(null);
@@ -150,8 +152,8 @@ const PostComments: React.FC<Props> = ({
                 {c._count?.replies > 0 && (
                   <Button size="small" onClick={() => toggleReplies(c)} sx={{ mt: 1, ml: 7 }}>
                     {visibleReplies.has(c.id)
-                      ? 'Сховати відповіді'
-                      : `Показати відповіді (${c._count.replies})`}
+                      ? t('posts.hideAnswers')
+                      : `${t('posts.hideAnswers')} (${c._count.replies})`}
                   </Button>
                 )}
               </Box>
@@ -178,8 +180,8 @@ const PostComments: React.FC<Props> = ({
                           sx={{ mt: 1, ml: 7 }}
                         >
                           {visibleReplies.has(reply.id)
-                            ? 'Сховати відповіді'
-                            : `Показати відповіді (${reply._count.replies})`}
+                            ? t('posts.hideAnswers')
+                            : `${t('posts.showAnswers')} (${reply._count.replies})`}
                         </Button>
                       )}
                     </Box>
@@ -210,7 +212,7 @@ const PostComments: React.FC<Props> = ({
         >
           <Box sx={{ textAlign: 'left' }}>
             <Typography variant="subtitle2" color="primary" sx={{ mb: 0.5 }}>
-              Відповідь на коментар
+              {t('posts.commentReply')}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               <strong>{`${replyingTo.user.firstName} ${replyingTo.user.lastName}`}</strong>: "
@@ -223,7 +225,7 @@ const PostComments: React.FC<Props> = ({
             onClick={() => setReplyingTo(null)}
             sx={{ alignSelf: 'center' }}
           >
-            Скасувати
+            {t('posts.commentCancel')}
           </Button>
         </Box>
       )}
@@ -238,7 +240,7 @@ const PostComments: React.FC<Props> = ({
           multiline
           size="medium"
           variant="outlined"
-          placeholder="Додайте коментар..."
+          placeholder={t('posts.addCommentLabel')}
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           onKeyDown={(e) => {
