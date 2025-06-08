@@ -1,7 +1,8 @@
-import React from 'react';
 import { Box, Typography } from '@mui/material';
-import type { MessageData } from '../../types/chats';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { chatsService } from '../../services/chatsService';
+import type { MessageData } from '../../types/chats';
 
 const currentUserStyles = {
   bgcolor: '#9885f4',
@@ -42,6 +43,7 @@ const Message: React.FC<MessageProps & { innerRef?: React.Ref<HTMLDivElement> }>
   innerRef,
 }) => {
   const currentUser = chatsService.getUser();
+  const { t } = useTranslation();
 
   return (
     <Box
@@ -61,7 +63,11 @@ const Message: React.FC<MessageProps & { innerRef?: React.Ref<HTMLDivElement> }>
       >
         {new Date(data.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         {currentUser.id === data.sender.id &&
-          (data.isRead === true ? ', переглянуто' : data.isRead === false ? ', відправлено' : '')}
+          (data.isRead === true
+            ? `, ${t('chats.read')}`
+            : data.isRead === false
+              ? `, ${t('chats.sent')}`
+              : '')}
       </Box>
     </Box>
   );

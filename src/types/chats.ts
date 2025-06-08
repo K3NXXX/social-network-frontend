@@ -5,6 +5,7 @@ export interface MessageData {
   createdAt: string;
   sender: UserPreview;
   isRead?: boolean;
+  chatId?: string;
 }
 
 //чат зі списку чатів (GET /chat/i)

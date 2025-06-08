@@ -5,9 +5,11 @@ import ChatScreen from '../components/chats/ChatScreen';
 import { chatsService } from '../services/chatsService';
 import type { ChatPreview, UserPreview, UserPreviewWithStatus } from '../types/chats';
 import { io, Socket } from 'socket.io-client';
+import { useTranslation } from 'react-i18next';
 
 const ChatsPage: React.FC = () => {
   const currentUser = chatsService.getUser();
+  const { t } = useTranslation();
 
   const [selectedChat, setSelectedChat] = useState<ChatPreview | null>(null);
   const [chats, setChats] = useState<ChatPreview[]>([]);
@@ -194,7 +196,7 @@ const ChatsPage: React.FC = () => {
           sx={{ width: '90%', alignSelf: 'center', marginTop: '5%' }}
         >
           <MenuItem value="" disabled>
-            Виберіть, кому написати:
+            {t('chats.chooseToWrite')}
           </MenuItem>
           {users.map((user, index) => {
             if (user.id === currentUser.id) return;
@@ -231,9 +233,9 @@ const ChatsPage: React.FC = () => {
         </Select>
         <Typography
           variant="body1"
-          sx={{ fontSize: 25, fontWeight: 'bold', margin: '30% 0 5% 0%', color: 'black' }}
+          sx={{ fontSize: 25, fontWeight: 'bold', margin: '10% 0 2% 0', color: 'black' }}
         >
-          Чати
+          {t('chats.chatsLabel')}
         </Typography>
         <Box>
           {chats.map((chat, i) => (

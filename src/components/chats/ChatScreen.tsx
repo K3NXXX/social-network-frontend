@@ -1,10 +1,16 @@
 import { Box, Typography, Avatar, TextField, IconButton } from '@mui/material';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import sendIcon from '../../assets/paper-plane.svg';
-import type { ChatPreview, MessageData, UserPreview } from '../../types/chats';
+import type {
+  ChatPreview,
+  MessageData,
+  UserPreview,
+  UserPreviewWithStatus,
+} from '../../types/chats';
 import Message from './Message';
 import { chatsService } from '../../services/chatsService';
 import type { Socket } from 'socket.io-client';
+import { useTranslation } from 'react-i18next';
 
 export interface ChatScreenProps {
   selectedChat: ChatPreview | null;
@@ -15,23 +21,33 @@ export interface ChatScreenProps {
 const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newChatUser }) => {
   const currentUser = chatsService.getUser();
 
-  //співрозмовник в існуючому чаті, newChatUser - якщо чат ще не створений
-  const otherUser = selectedChat?.participants.find((user) => user.id !== currentUser.id);
-
   const [messages, setMessages] = useState<MessageData[]>();
+  const [messageInput, setMessageInput] = useState<string>('');
+  const { t } = useTranslation();
 
-  //щоб передавати оновлене значення selectedChat до useEffect[socketRef.current]
+  const otherUser = selectedChat?.participants.find((user) => user.id !== currentUser.id);
+  //щоб передавати оновлені значення до useEffect
   const selectedChatRef = useRef<ChatPreview | null>(selectedChat);
   useEffect(() => {
     selectedChatRef.current = selectedChat;
   }, [selectedChat]);
 
+  const newChatUserRef = useRef<UserPreview | undefined>(newChatUser);
+  useEffect(() => {
+    newChatUserRef.current = newChatUser;
+  }, [newChatUser]);
+
+  const messageInputRef = useRef<string>(messageInput);
+  useEffect(() => {
+    messageInputRef.current = messageInput;
+  }, [messageInput]);
+
   useEffect(() => {
     if (selectedChat) {
-      if (!otherUser?.id) return;
       const loadMessages = async () => {
+        if (!otherUser) return;
         try {
-          const data = await chatsService.fetchMessages(otherUser?.id);
+          const data = await chatsService.fetchMessages(otherUser.id);
           setMessages(data);
         } catch (error) {
           console.error('Error fetching messages for the chat:', error);
@@ -45,7 +61,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
     const socket = socketRef.current;
     if (!socket) return;
 
-    const handleMessageSeen = (msg: any) => {
+    const handleMessageSeen = (msg: { messageId: string }) => {
       setMessages((messages) => {
         if (!messages) return;
 
@@ -53,7 +69,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
       });
     };
 
-    const handleGetMessage = (message: any) => {
+    const handleGetMessage = (message: MessageData) => {
       const currentChat = selectedChatRef.current;
       if (message.chatId === currentChat?.chatId) {
         setMessages((messages) => [
@@ -79,19 +95,21 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
     };
   }, [socketRef.current]);
 
-  const [messageInput, setMessageInput] = useState('');
-
   const handleSendMessage = (content: string) => {
-    if (content.length === 0) return;
+    if (content.length === 0) {
+      console.log('the message is empty');
+      return;
+    }
     const socket = socketRef.current;
     if (!socket?.connected) {
       console.log('socket not connected yet');
       return;
     }
-
     if (socket && socket.connected) {
       socket.emit('newMessage', {
-        receiverId: otherUser?.id || newChatUser?.id,
+        receiverId:
+          selectedChatRef.current?.participants.find((user) => user.id !== currentUser.id)?.id ||
+          newChatUserRef.current?.id,
         content,
         imageUrl: null,
       });
@@ -99,6 +117,23 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
 
     setMessageInput('');
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        if (!newChatUserRef.current && !selectedChatRef.current) {
+          return;
+        }
+        handleSendMessage(messageInputRef.current);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -134,8 +169,9 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
     observer.current.observe(node);
   }, []);
 
-  const fullNameString = (user: any) => `${user.firstName} ${user.lastName}`;
-  const initialsString = (user: any) =>
+  const fullNameString = (user: UserPreview | UserPreviewWithStatus) =>
+    `${user.firstName} ${user.lastName}`;
+  const initialsString = (user: UserPreview | UserPreviewWithStatus) =>
     `${user.firstName[0].toUpperCase()}${user.lastName[0].toUpperCase()}`;
 
   return (
@@ -151,7 +187,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
           }}
         >
           <Typography variant="h6" color="text.secondary">
-            Виберіть чат, щоб почати спілкування
+            {t('chats.chooseChat')}
           </Typography>
         </Box>
       ) : (
@@ -181,7 +217,13 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
             >
               <Avatar
                 src={otherUser?.avatarUrl || newChatUser?.avatarUrl || undefined}
-                alt={otherUser ? fullNameString(otherUser) : fullNameString(newChatUser)}
+                alt={
+                  otherUser
+                    ? fullNameString(otherUser)
+                    : newChatUser
+                      ? fullNameString(newChatUser)
+                      : ''
+                }
                 sx={{
                   width: 45,
                   height: 45,
@@ -199,7 +241,9 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
                       : initialsString(otherUser)
                     : newChatUser?.avatarUrl
                       ? null
-                      : initialsString(newChatUser)}
+                      : newChatUser
+                        ? initialsString(newChatUser)
+                        : null}
                 </Typography>
               </Avatar>
             </Box>
@@ -216,10 +260,14 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
                 component="p"
                 sx={{ color: 'black', fontWeight: 'bold', fontSize: '16px' }}
               >
-                {otherUser ? fullNameString(otherUser) : fullNameString(newChatUser)}
+                {otherUser
+                  ? fullNameString(otherUser)
+                  : newChatUser
+                    ? fullNameString(newChatUser)
+                    : null}
               </Typography>
               <Typography variant="body1" component="p" sx={{ color: 'grey', fontSize: '14px' }}>
-                {otherUser ? (otherUser?.isOnline ? 'В мережі' : 'Не в мережі') : ''}
+                {otherUser ? (otherUser?.isOnline ? t('chats.online') : t('chats.offline')) : ''}
               </Typography>
             </Box>
           </Box>
