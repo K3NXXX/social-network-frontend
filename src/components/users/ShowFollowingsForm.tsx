@@ -3,8 +3,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import { Avatar, Box, Dialog, InputAdornment, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
+import { authService } from '../../services/authService';
 import { userService } from '../../services/userService';
 import type { User } from '../../types/auth';
 import type { UserFollowings } from '../../types/user';
@@ -16,7 +18,6 @@ interface IShowFollowingsFormProps {
   onClose: (isShowFollowersFormOpened: boolean) => void;
   userId: string;
   setProfile: (data: User) => void;
-  profile: User;
 }
 
 export default function ShowFollowingsForm({
@@ -24,10 +25,11 @@ export default function ShowFollowingsForm({
   onClose,
   userId,
   setProfile,
-  profile,
 }: IShowFollowingsFormProps) {
   const [searchValue, setSearchValue] = useState('');
   const [userFollowings, setUserFollowings] = useState<UserFollowings[] | []>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const { t } = useTranslation();
 
   const handleFollowToggle = async (followerId: string) => {
     try {
@@ -45,16 +47,18 @@ export default function ShowFollowingsForm({
   };
 
   useEffect(() => {
-    const getUserFollowers = async () => {
+    const getUserFollowings = async () => {
       try {
         const data = await userService.getUsersFollowing(userId);
+        const userData = await authService.getCurrentUser();
         setUserFollowings(data);
+        setCurrentUser(userData);
       } catch (error) {
         console.log(error);
         setUserFollowings([]);
       }
     };
-    getUserFollowers();
+    getUserFollowings();
   }, []);
 
   return (
@@ -101,14 +105,14 @@ export default function ShowFollowingsForm({
             userSelect: 'none',
           }}
         >
-          Читачі
+          {t('profile.followingsLabelBig')}
         </Typography>
       </Box>
       <Box>
         <Box sx={{ padding: '0 15px 20px' }}>
           <TextField
             autoComplete="off"
-            placeholder="Пошук..."
+            placeholder={t('searchPlaceholder')}
             variant="outlined"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
@@ -212,7 +216,7 @@ export default function ShowFollowingsForm({
                     </Box>
                   </Link>
 
-                  {profile.id !== item.id && (
+                  {currentUser && currentUser.id !== item.id && (
                     <NoOutlineButton
                       variant="contained"
                       size="small"
@@ -222,14 +226,14 @@ export default function ShowFollowingsForm({
                         color: '#fff',
                       }}
                     >
-                      {item.isFollowed ? 'Відстежується' : 'Стежити'}
+                      {item.isFollowed ? t('profile.followingLabel') : t('profile.followLabel')}
                     </NoOutlineButton>
                   )}
                 </Box>
               ))
             ) : (
               <Typography sx={{ color: 'white', textAlign: 'center', fontWeight: 500 }}>
-                Немає підписок
+                {t('profile.noFollowings')}
               </Typography>
             )}
           </Box>

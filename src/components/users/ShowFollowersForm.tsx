@@ -5,18 +5,19 @@ import { Avatar, Box, Dialog, InputAdornment, TextField, Typography } from '@mui
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
+import { authService } from '../../services/authService';
 import { userService } from '../../services/userService';
 import type { User } from '../../types/auth';
 import type { UserFollowers } from '../../types/user';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
 import { customScrollBar } from '../../ui/customScrollBar';
+import { useTranslation } from 'react-i18next';
 
 interface IShowFollowersFormProps {
   isOpened: boolean;
   onClose: (isShowFollowersFormOpened: boolean) => void;
   userId: string;
   setProfile: (data: User) => void;
-  profile: User;
 }
 
 export default function ShowFollowersForm({
@@ -24,11 +25,11 @@ export default function ShowFollowersForm({
   onClose,
   userId,
   setProfile,
-  profile,
 }: IShowFollowersFormProps) {
   const [searchValue, setSearchValue] = useState('');
   const [userFollowers, setUserFollowers] = useState<UserFollowers[] | []>([]);
-
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const { t } = useTranslation();
   const handleFollowToggle = async (followerId: string) => {
     try {
       const result = await userService.followUser(followerId);
@@ -48,14 +49,16 @@ export default function ShowFollowersForm({
     const getUserFollowers = async () => {
       try {
         const data = await userService.getUsersFollowers(userId);
+        const userData = await authService.getCurrentUser();
         setUserFollowers(data);
+        setCurrentUser(userData);
       } catch (error) {
         console.log(error);
         setUserFollowers([]);
       }
     };
     getUserFollowers();
-  }, []);
+  }, [userId]);
 
   return (
     <Dialog
@@ -101,14 +104,14 @@ export default function ShowFollowersForm({
             userSelect: 'none',
           }}
         >
-          Читачі
+          {t('profile.followersLabelBig')}
         </Typography>
       </Box>
       <Box>
         <Box sx={{ padding: '0 15px 20px' }}>
           <TextField
             autoComplete="off"
-            placeholder="Пошук..."
+            placeholder={t('searchPlaceholder')}
             variant="outlined"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
@@ -211,7 +214,7 @@ export default function ShowFollowersForm({
                       </Box>
                     </Box>
                   </Link>
-                  {profile.id !== item.id && (
+                  {currentUser && currentUser.id !== item.id && (
                     <NoOutlineButton
                       variant="contained"
                       size="small"
@@ -221,14 +224,14 @@ export default function ShowFollowersForm({
                         color: '#fff',
                       }}
                     >
-                      {item.isFollowed ? 'Відстежується' : 'Стежити'}
+                      {item.isFollowed ? t('profile.followingLabel') : t('profile.followLabel')}
                     </NoOutlineButton>
                   )}
                 </Box>
               ))
             ) : (
               <Typography sx={{ color: 'white', textAlign: 'center', fontWeight: 500 }}>
-                Немає читачів
+                {t('profile.noFollowers')}
               </Typography>
             )}
           </Box>

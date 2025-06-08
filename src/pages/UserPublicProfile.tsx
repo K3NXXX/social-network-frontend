@@ -5,7 +5,6 @@ import { authService } from '../services/authService';
 import { userService } from '../services/userService';
 import type { User } from '../types/auth';
 import type { UserPublicProfile } from '../types/user';
-import GlobalLoader from '../ui/GlobalLoader';
 import ProfilePage from './ProfilePage';
 
 export default function UserPublicProfile() {
@@ -14,6 +13,8 @@ export default function UserPublicProfile() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const isThisMe = currentUser?.id === userData?.id;
+
+  console.log('current', currentUser);
 
   const toggleFollowUser = async (id: string) => {
     try {

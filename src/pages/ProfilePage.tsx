@@ -11,6 +11,8 @@ import axiosInstance from '../services/axiosConfig.ts';
 import type { UserPublicProfile } from '../types/user.ts';
 import GlobalLoader from '../ui/GlobalLoader.tsx';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
+import { PAGES } from '../constants/pages.constants.ts';
+import type { User } from '../types/auth.ts';
 
 interface IProfilePageProps {
   isPublicProfile: boolean;
@@ -121,13 +123,13 @@ export default function ProfilePage({
                   size="small"
                   sx={{ backgroundColor: isFollowing ? '#737373' : '' }}
                 >
-                  {isFollowing ? 'Відстежується' : 'Стежити'}
+                  {isFollowing ? t('profile.followingLabel') : t('profile.followLabel')}
                 </NoOutlineButton>
               ) : (
                 <NoOutlineButton
                   variant="contained"
                   size="small"
-                  onClick={() => navigate('/profile/edit')}
+                  onClick={() => navigate(PAGES.EDIT_PROFILE)}
                 >
                   {t('profile.editProfileLabel')}
                 </NoOutlineButton>
@@ -178,7 +180,7 @@ export default function ProfilePage({
                 {isPublicProfile ? publicUserData.followers : profile.followers}
               </Typography>
               <Typography color="#737373" fontSize="15px">
-                читачів
+                {t('profile.followersLabel')}
               </Typography>
             </Box>
 
@@ -269,7 +271,6 @@ export default function ProfilePage({
           isOpened={isShowFollowersFormOpened}
           userId={isPublicProfile ? publicUserData.id : profile.id}
           setProfile={setProfile}
-          profile={profile}
         />
       )}
 
@@ -279,7 +280,6 @@ export default function ProfilePage({
           isOpened={isShowFollowingsFormOpened}
           userId={isPublicProfile ? publicUserData.id : profile.id}
           setProfile={setProfile}
-          profile={profile}
         />
       )}
     </Container>

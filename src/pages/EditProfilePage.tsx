@@ -15,6 +15,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '../services/AuthContext.tsx';
 import axiosInstance from '../services/axiosConfig.ts';
 
 const GENDERS = [
@@ -39,6 +41,7 @@ export default function EditProfileLayout() {
   const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
 
   const { logout } = useAuth();
+  const { t } = useTranslation();
 
   const allowedFields = ['firstName', 'lastName', 'dateOfBirth', 'gender', 'bio', 'location'];
 
@@ -259,10 +262,10 @@ export default function EditProfileLayout() {
                     size="small"
                     onClick={handlePhotoDelete}
                   >
-                    Видалити фото
+                    {t('profile.deletePhoto')}
                   </Button>
                   <Button component="label" variant="contained" size="small">
-                    Змінити фото
+                    {t('profile.changePhoto')}
                     <input type="file" hidden accept="image/*" onChange={handlePhotoUpload} />
                   </Button>
                 </Box>
@@ -426,7 +429,7 @@ export default function EditProfileLayout() {
 
               <Box my={4} display="flex" justifyContent="end" alignItems="center">
                 <Button variant="contained" onClick={handleSubmit}>
-                  Зберегти
+                  {t('profile.saveChangesLabel')}
                 </Button>
               </Box>
             </>
