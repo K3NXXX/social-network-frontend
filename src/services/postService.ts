@@ -20,6 +20,8 @@ const POST_ENDPOINTS = {
   DELETE_COMMENT: (id: string) => `/api/comments/${id}`,
 
   TOGGLE_LIKE: (postId: string) => `/api/likes/post/${postId}`,
+  SAVE_POST: (postId: string) => `/api/posts/save/${postId}`,
+  UNSAVE_POST: (postId: string) => `/api/posts/unsave/${postId}`,
 };
 
 export const postService = {
@@ -257,6 +259,26 @@ export const postService = {
       return response.data;
     } catch (error) {
       console.error(`Error updating post ${postId}:`, error);
+      throw error;
+    }
+  },
+
+  async savePost(postId: string): Promise<{ saved: boolean }> {
+    try {
+      const response = await axiosInstance.post(POST_ENDPOINTS.SAVE_POST(postId));
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to save post ${postId}:`, error);
+      throw error;
+    }
+  },
+
+  async unsavePost(postId: string): Promise<{ saved: boolean }> {
+    try {
+      const response = await axiosInstance.delete(POST_ENDPOINTS.UNSAVE_POST(postId));
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to unsave post ${postId}:`, error);
       throw error;
     }
   },

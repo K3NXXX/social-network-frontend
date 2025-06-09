@@ -30,6 +30,7 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [currentPost, setCurrentPost] = useState(post);
+  const [saved, setSaved] = useState(post.saved ?? false);
 
   const fetchComments = async (pageNumber = 1) => {
     try {
@@ -153,6 +154,19 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
     setCurrentPost(updatedPost);
   };
 
+  const handleToggleSave = async () => {
+    try {
+      if (saved) {
+        await postService.unsavePost(post.id);
+      } else {
+        await postService.savePost(post.id);
+      }
+      setSaved((prev) => !prev);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <Card sx={{ width: '100%', maxWidth: '1200px', mx: 'auto', p: 2, mb: 4 }}>
       <PostHeader
@@ -182,6 +196,8 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
           fetchComments();
           setShowComments(!showComments);
         }}
+        saved={saved}
+        onToggleSave={handleToggleSave}
       />
       {showComments && (
         <PostComments

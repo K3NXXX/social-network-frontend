@@ -37,6 +37,7 @@ export interface PostType {
   likes: Like[];
   _count: PostCount;
   liked: boolean;
+  saved: boolean;
 }
 
 export interface PostCount {
