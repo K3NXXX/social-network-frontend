@@ -29,7 +29,7 @@ export const postService = {
   ): Promise<{
     data: PostType[];
     page: number;
-    lastPage: number;
+    totalPages: number;
   }> {
     try {
       const response = await axiosInstance.get(POST_ENDPOINTS.POSTS, {
@@ -51,7 +51,7 @@ export const postService = {
   ): Promise<{
     data: PostType[];
     page: number;
-    lastPage: number;
+    totalPages: number;
   }> {
     try {
       const response = await axiosInstance.get(POST_ENDPOINTS.USER_POSTS, {
@@ -90,7 +90,7 @@ export const postService = {
   ): Promise<{
     data: PostType[];
     page: number;
-    lastPage: number;
+    totalPages: number;
   }> {
     try {
       const response = await axiosInstance.get(POST_ENDPOINTS.FEED_POSTS, {
@@ -109,7 +109,7 @@ export const postService = {
   ): Promise<{
     data: PostType[];
     page: number;
-    lastPage: number;
+    totalPages: number;
   }> {
     try {
       const response = await axiosInstance.get(POST_ENDPOINTS.DISCOVER_POSTS, {
@@ -167,7 +167,9 @@ export const postService = {
     take = 5
   ): Promise<{
     data: CommentType[];
+    total: number;
     page: number;
+    take: number;
     totalPages: number;
   }> {
     try {
@@ -239,19 +241,13 @@ export const postService = {
     }
   },
 
-  async updatePost(
-    postId: string,
-    content: string,
-    imageFile: File | null,
-    removePhoto: boolean
-  ): Promise<PostType> {
+  async updatePost(postId: string, content: string, imageFile: File | null): Promise<PostType> {
     try {
       const formData = new FormData();
       formData.append('content', content);
       if (imageFile) {
         formData.append('file', imageFile);
       }
-      formData.append('removePhoto', String(removePhoto));
 
       const response = await axiosInstance.patch(POST_ENDPOINTS.SINGLE_POST(postId), formData, {
         headers: {

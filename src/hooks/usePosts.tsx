@@ -4,7 +4,7 @@ import type { PostType } from '../types/post';
 interface FetchPostsResponse {
   data: PostType[];
   page: number;
-  lastPage: number;
+  totalPages: number;
 }
 
 export function usePosts(
@@ -20,10 +20,11 @@ export function usePosts(
   const fetchPosts = async (pageNumber = 1) => {
     setLoading(true);
     try {
-      const { data, page: currentPage, lastPage } = await fetchFunction(pageNumber, take);
+      const { data, page: currentPage, totalPages } = await fetchFunction(pageNumber, take);
+      console.log(data);
       setPosts((prev) => (pageNumber === 1 ? data : [...prev, ...data]));
       setPage(currentPage);
-      setLastPage(lastPage);
+      setLastPage(totalPages);
     } catch (error) {
       console.error('Failed to fetch posts:', error);
     } finally {

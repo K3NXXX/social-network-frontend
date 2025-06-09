@@ -17,6 +17,7 @@ export interface CommentType {
   user: User;
   _count: CommentsCount;
   replies: CommentType[];
+  liked?: boolean;
 }
 
 interface Like {

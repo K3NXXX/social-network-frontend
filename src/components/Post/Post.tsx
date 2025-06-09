@@ -170,7 +170,7 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
         onUpdate={handleUpdatePost}
       />
 
-      <PostContent content={post.content} photo={post.photo} />
+      <PostContent content={currentPost.content} photo={currentPost.photo} />
 
       <Divider sx={{ my: 2, mx: -2 }} />
       <PostActions
