@@ -64,14 +64,14 @@ export const chatsService = {
   async fetchAllUsers(): Promise<UserPreview[]> {
     try {
       const response = await axiosInstance.get(ENDPOINTS.USERS);
-      console.log('data about users:', response.data);
+      console.log('data about user:', response.data);
       return response.data;
     } catch (error) {
-      console.error('users fetching error:', error);
+      console.error('user fetching error:', error);
       if (axios.isAxiosError(error)) {
         if (error.response) {
           console.error('Server error response:', error.response.data);
-          throw new Error(error.response.data?.message || 'Failed to fetch users');
+          throw new Error(error.response.data?.message || 'Failed to fetch user');
         } else if (error.request) {
           console.error('No response from server', error.request);
           throw new Error('No response from server');
