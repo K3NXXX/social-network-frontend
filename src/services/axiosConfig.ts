@@ -5,10 +5,6 @@ const BASE_URL = 'https://vetra-8c5dfe3bdee7.herokuapp.com';
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 10000, // 10 second timeout
 });
 
 axiosInstance.interceptors.request.use(

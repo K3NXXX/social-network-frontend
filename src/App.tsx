@@ -15,7 +15,7 @@ import ProfilePage from './pages/ProfilePage';
 import SearchPage from './pages/SearchPage';
 import UserPublicProfile from './pages/UserPublicProfile';
 import { AuthProvider } from './services/AuthContext';
-import EditProfilePage from './pages/EditProfilePage.tsx';
+import EditProfilePage from './pages/EditUserPage.tsx';
 
 function App() {
   const { pathname } = useLocation();
