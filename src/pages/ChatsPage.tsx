@@ -269,7 +269,6 @@ const ChatsPage: React.FC = () => {
               </InputAdornment>
             ),
             sx: {
-              // borderRadius: '10px',
               padding: 0,
               '& input': {
                 padding: '1.5px 0px',
@@ -278,8 +277,6 @@ const ChatsPage: React.FC = () => {
           }}
           sx={{
             '& .MuiOutlinedInput-root': {
-              // borderRadius: '10px',
-
               margin: '10px 5px 0 5px',
               padding: 0,
               '& input': {
@@ -318,9 +315,9 @@ const ChatsPage: React.FC = () => {
           {t('chats.chatsLabel')}
         </Typography>
         <Box>
-          {chats.map((chat, i) => (
+          {chats.map((chat) => (
             <ChatBar
-              key={i}
+              key={chat.chatId}
               data={chat}
               onSelect={() => {
                 setNewChatUser(undefined);

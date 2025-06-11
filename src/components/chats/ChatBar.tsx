@@ -26,11 +26,11 @@ const ChatBar: React.FC<ChatBarProps> = ({ data, onSelect, sx, socketRef }) => {
   const [newMessage, setNewMessage] = useState<MessageData | null>(null);
   useEffect(() => {
     if (lastMessage) {
-      console.log('Last Message:', lastMessage.content, lastMessage);
+      // console.log('Last Message:', lastMessage.content, lastMessage);
       setNewMessage(lastMessage);
     }
   }, [lastMessage]);
-  console.log(newMessage, lastMessage, 'data:', data);
+  // console.log(newMessage, lastMessage, 'data:', data);
 
   const baseStyles = {
     width: '100%',
@@ -46,8 +46,8 @@ const ChatBar: React.FC<ChatBarProps> = ({ data, onSelect, sx, socketRef }) => {
     if (!socket) return;
 
     const handleGetMessage = (message: any) => {
-      console.log('got a new message on the chatbar:', message);
-      console.log('chat ids: ', message.chatId, data.chatId);
+      // console.log('got a new message on the chatbar:', message);
+      // console.log('chat ids: ', message.chatId, data.chatId);
       if (message.chatId === data.chatId) {
         setNewMessage({
           id: message.id,

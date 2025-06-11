@@ -81,7 +81,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
             isRead: message.isRead,
           },
         ]);
-      } else console.log('user not in the chat yet. not adding the message');
+      }
     };
 
     socket.on('message', handleGetMessage);
@@ -264,7 +264,11 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
                     : null}
               </Typography>
               <Typography variant="body1" component="p" sx={{ color: 'grey', fontSize: '14px' }}>
-                {otherUser ? (otherUser?.isOnline ? t('chats.online') : t('chats.offline')) : ''}
+                {otherUser
+                  ? otherUser?.isOnline || otherUser?.isActive === 'ACTIVE'
+                    ? t('chats.online')
+                    : t('chats.offline')
+                  : ''}
               </Typography>
             </Box>
           </Box>
