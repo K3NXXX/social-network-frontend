@@ -12,6 +12,8 @@ interface Props {
   liked: boolean;
   onToggleLike: () => void;
   onToggleComments: () => void;
+  saved: boolean;
+  onToggleSave: () => void;
 }
 
 const PostActions: React.FC<Props> = ({
@@ -20,6 +22,8 @@ const PostActions: React.FC<Props> = ({
   liked,
   onToggleLike,
   onToggleComments,
+  saved,
+  onToggleSave,
 }) => (
   <CardActions sx={{ justifyContent: 'space-between', pt: 0 }}>
     <Stack direction="row" spacing={2}>
@@ -47,7 +51,7 @@ const PostActions: React.FC<Props> = ({
       <IconButton>
         <ShareIcon />
       </IconButton>
-      <BookmarkToggle />
+      <BookmarkToggle saved={saved} onToggleSave={onToggleSave} />
     </Stack>
   </CardActions>
 );

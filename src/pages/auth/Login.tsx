@@ -1,78 +1,51 @@
-import React, { useState } from 'react';
-import { 
-  Box, 
-  TextField, 
-  Button, 
-  Typography, 
-  Container, 
-  Paper,
-  Link,
+import {
   Alert,
-  CircularProgress
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Link,
+  Paper,
+  TextField,
+  Typography,
 } from '@mui/material';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../services/AuthContext';
-import Logo from '../../components/auth/Logo';
 import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
+import Logo from '../../ui/Logo';
+
+interface LoginFormInputs {
+  email: string;
+  password: string;
+}
 
 const Login: React.FC = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const [formErrors, setFormErrors] = useState({
-    email: '',
-    password: '',
-  });
   const [submitError, setSubmitError] = useState<string | null>(null);
-  
   const { login, loading } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
-  const validateForm = () => {
-    let valid = true;
-    const errors = {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormInputs>({
+    defaultValues: {
       email: '',
       password: '',
-    };
+    },
+    mode: 'onBlur',
+  });
 
-    if (!formData.email) {
-      errors.email = 'Email is required';
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Email is invalid';
-      valid = false;
-    }
-
-    if (!formData.password) {
-      errors.password = 'Password is required';
-      valid = false;
-    }
-
-    setFormErrors(errors);
-    return valid;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitError(null);
-
-    if (!validateForm()) return;
-
+  const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
-      await login({
-        email: formData.email,
-        password: formData.password,
-      });
-      navigate('/');
+      setSubmitError(null);
+      await login(data);
+      navigate('/feed');
     } catch (error) {
       logErrorDetails(error);
       setSubmitError(formatErrorMessage(error));
@@ -90,7 +63,7 @@ const Login: React.FC = () => {
           justifyContent: 'center',
         }}
       >
-        <Paper 
+        <Paper
           elevation={3}
           sx={{
             p: 4,
@@ -98,11 +71,23 @@ const Login: React.FC = () => {
             flexDirection: 'column',
             alignItems: 'center',
             width: '100%',
+            borderRadius: '12px',
           }}
         >
-          <Logo size="large" />
-          <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
-            Увійти до СоцМережі
+          <Logo size={'30px'} />
+          <Typography
+            component="h1"
+            variant="h5"
+            sx={{
+              mb: 3,
+              textAlign: 'center',
+              color: '#333',
+              fontSize: { xs: '1.6rem', sm: '1.6rem' },
+              letterSpacing: '0.3px',
+              fontFamily: 'Ubuntu',
+            }}
+          >
+            {t('auth.login')}
           </Typography>
 
           {submitError && (
@@ -110,37 +95,64 @@ const Login: React.FC = () => {
               {submitError}
             </Alert>
           )}
-          
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Електронна пошта"
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+            sx={{ mt: 1, width: '100%' }}
+          >
+            <Controller
               name="email"
-              autoComplete="email"
-              autoFocus
-              value={formData.email}
-              onChange={handleChange}
-              error={!!formErrors.email}
-              helperText={formErrors.email}
-              disabled={loading}
+              control={control}
+              rules={{
+                required: t('auth.emailRequired'),
+                pattern: {
+                  value: /\S+@\S+\.\S+/,
+                  message: t('auth.emailInvalid'),
+                },
+              }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label={t('auth.email')}
+                  autoComplete="email"
+                  autoFocus
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
+                  disabled={loading}
+                />
+              )}
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
+            <Controller
               name="password"
-              label="Пароль"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={formData.password}
-              onChange={handleChange}
-              error={!!formErrors.password}
-              helperText={formErrors.password}
-              disabled={loading}
+              control={control}
+              rules={{
+                required: t('auth.passwordRequired'),
+                minLength: {
+                  value: 8,
+                  message: t('auth.passwordTooShort'),
+                },
+              }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  margin="normal"
+                  required
+                  fullWidth
+                  label={t('auth.password')}
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  error={!!errors.password}
+                  helperText={errors.password?.message}
+                  disabled={loading}
+                />
+              )}
             />
             <Button
               type="submit"
@@ -149,11 +161,11 @@ const Login: React.FC = () => {
               sx={{ mt: 3, mb: 2 }}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} /> : 'Увійти'}
+              {loading ? <CircularProgress size={24} /> : t('auth.loginLabel')}
             </Button>
             <Box sx={{ textAlign: 'center' }}>
               <Link component={RouterLink} to="/register" variant="body2">
-                {"Немає облікового запису? Зареєструватись"}
+                {t('auth.noProfile')}
               </Link>
             </Box>
           </Box>
@@ -163,4 +175,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login; 
+export default Login;

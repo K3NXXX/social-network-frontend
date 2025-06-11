@@ -17,6 +17,7 @@ import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 import { useAuth } from '../../services/AuthContext';
 import { postService } from '../../services/postService';
 import type { CommentType } from '../../types/post';
+import ReplyLoader from './ReplyLoader';
 
 interface Props {
   comments: CommentType[];
@@ -24,7 +25,7 @@ interface Props {
   onAddComment: (comment: CommentType) => void;
   onDeleteComment: (commentId: string) => void;
   hasMore: boolean;
-  onAddReplies: (parentId: string, replies: CommentType[]) => void;
+  onAddReplies: (replies: CommentType[]) => void;
   onLoadMore: () => void;
   onUpdateComment: (comment: CommentType) => void;
 }
@@ -47,6 +48,8 @@ const PostComments: React.FC<Props> = ({
   const [editingComment, setEditingComment] = useState<CommentType | null>(null);
   const [editContent, setEditContent] = useState('');
   const loaderRef = useRef<HTMLDivElement | null>(null);
+  const [replyPages, setReplyPages] = useState<Record<string, number>>({});
+  const take = 5;
 
   const handleSend = async () => {
     if (!newComment.trim()) return;
@@ -68,10 +71,17 @@ const PostComments: React.FC<Props> = ({
     setReplyingTo(null);
   };
 
-  const fetchReplies = async (commentId: string) => {
+  const fetchReplies = async (commentId: string, page: number = 1) => {
     try {
-      const replies = await postService.fetchReplies(commentId, 1, 10);
-      onAddReplies(commentId, replies);
+      const replies = await postService.fetchReplies(commentId, page, take);
+
+      if (replies.length > 0) {
+        onAddReplies(replies);
+        setReplyPages((prev) => ({
+          ...prev,
+          [commentId]: page,
+        }));
+      }
     } catch (error) {
       console.error('Could not load replies', error);
     }
@@ -123,6 +133,84 @@ const PostComments: React.FC<Props> = ({
     onLoadMore();
   });
 
+  const renderComments = (comments: CommentType[], level: number = 0) => {
+    return comments.map((comment) => {
+      const isEditing = editingComment?.id === comment.id;
+      const isVisible = visibleReplies.has(comment.id);
+
+      return (
+        <Box key={comment.id} sx={{ pl: level * 4, mb: 2 }}>
+          <Comment
+            comment={comment}
+            isOwner={comment.user.id === user?.id}
+            onReplyClick={() => setReplyingTo(comment)}
+            onDeleteClick={() => handleDelete(comment.id)}
+            onEditClick={() => handleEditClick(comment)}
+            isEditing={isEditing}
+            editContent={editContent}
+            onEditContentChange={setEditContent}
+            onConfirmEdit={handleEdit}
+          />
+
+          {comment._count?.replies > 0 && (
+            <Button
+              size="small"
+              onClick={() => toggleReplies(comment)}
+              sx={{ ml: 6, mt: 1, textTransform: 'none' }}
+            >
+              {isVisible ?
+                t('posts.hideAnswers')
+                : `${t('posts.hideAnswers')} (${comment._count.replies})`}
+            </Button>
+          )}
+
+          {isVisible && (
+            <>
+              {comment.replies?.length > 0 && (
+                <Box sx={{ mt: 1 }}>{renderComments(comment.replies, level + 1)}</Box>
+              )}
+
+              {comment.replies?.length < comment._count.replies && (
+                <ReplyLoader
+                  commentId={comment.id}
+                  fetchReplies={fetchReplies}
+                  currentPage={replyPages[comment.id] ?? 1}
+                />
+              )}
+            </>
+          )}
+        </Box>
+      );
+    });
+  };
+
+  function buildCommentsTree(comments: CommentType[]): CommentType[] {
+    const map = new Map<string, CommentType & { replies: CommentType[] }>();
+    const roots: (CommentType & { replies: CommentType[] })[] = [];
+
+    const seenIds = new Set<string>();
+
+    comments.forEach((comment) => {
+      if (!seenIds.has(comment.id)) {
+        seenIds.add(comment.id);
+        map.set(comment.id, { ...comment, replies: comment.replies ?? [] });
+      }
+    });
+
+    map.forEach((comment) => {
+      const parentId = comment.parentId;
+      if (parentId && map.has(parentId)) {
+        map.get(parentId)!.replies.push(comment);
+      } else if (!parentId) {
+        roots.push(comment);
+      }
+    });
+
+    return roots;
+  }
+
+  const commentTree = buildCommentsTree(comments);
+
   return (
     <Box sx={{ mt: 2 }}>
       <Divider sx={{ mb: 2 }} />
@@ -133,64 +221,7 @@ const PostComments: React.FC<Props> = ({
           pr: 1,
         }}
       >
-        <Stack spacing={2} sx={{ mt: 2 }}>
-          {comments.map((c) => (
-            <Box key={c.id}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                <Comment
-                  comment={c}
-                  onReplyClick={() => setReplyingTo(c)}
-                  onDeleteClick={() => handleDelete(c.id)}
-                  isOwner={c.userId === user?.id}
-                  onEditClick={() => handleEditClick(c)}
-                  isEditing={editingComment?.id === c.id}
-                  editContent={editContent}
-                  onEditContentChange={(value) => setEditContent(value)}
-                  onConfirmEdit={handleEdit}
-                />
-
-                {c._count?.replies > 0 && (
-                  <Button size="small" onClick={() => toggleReplies(c)} sx={{ mt: 1, ml: 7 }}>
-                    {visibleReplies.has(c.id)
-                      ? t('posts.hideAnswers')
-                      : `${t('posts.hideAnswers')} (${c._count.replies})`}
-                  </Button>
-                )}
-              </Box>
-
-              {visibleReplies.has(c.id) && (
-                <Stack spacing={1} sx={{ ml: 7, mt: 1 }}>
-                  {(c.replies || []).map((reply) => (
-                    <Box key={reply.id}>
-                      <Comment
-                        comment={reply}
-                        onReplyClick={() => setReplyingTo(reply)}
-                        onDeleteClick={() => handleDelete(reply.id)}
-                        isOwner={reply.userId === user?.id}
-                        onEditClick={() => handleEditClick(reply)}
-                        isEditing={editingComment?.id === reply.id}
-                        editContent={editContent}
-                        onEditContentChange={(value) => setEditContent(value)}
-                        onConfirmEdit={handleEdit}
-                      />
-                      {reply._count?.replies > 0 && (
-                        <Button
-                          size="small"
-                          onClick={() => toggleReplies(reply)}
-                          sx={{ mt: 1, ml: 7 }}
-                        >
-                          {visibleReplies.has(reply.id)
-                            ? t('posts.hideAnswers')
-                            : `${t('posts.showAnswers')} (${reply._count.replies})`}
-                        </Button>
-                      )}
-                    </Box>
-                  ))}
-                </Stack>
-              )}
-            </Box>
-          ))}
-        </Stack>
+        {renderComments(commentTree)}
 
         {hasMore && <div ref={loaderRef} style={{ height: '1px' }} />}
       </Box>

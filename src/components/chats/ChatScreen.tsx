@@ -1,12 +1,7 @@
 import { Box, Typography, Avatar, TextField, IconButton } from '@mui/material';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import sendIcon from '../../assets/paper-plane.svg';
-import type {
-  ChatPreview,
-  MessageData,
-  UserPreview,
-  UserPreviewWithStatus,
-} from '../../types/chats';
+import type { ChatPreview, MessageData, UserPreview } from '../../types/chats';
 import Message from './Message';
 import { chatsService } from '../../services/chatsService';
 import type { Socket } from 'socket.io-client';
@@ -48,7 +43,9 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
         if (!otherUser) return;
         try {
           const data = await chatsService.fetchMessages(otherUser.id);
-          setMessages(data);
+          const { messages } = data;
+          // тут також повертається hasNextPage:boolean для пагінації
+          setMessages(messages);
         } catch (error) {
           console.error('Error fetching messages for the chat:', error);
         }
@@ -70,6 +67,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
     };
 
     const handleGetMessage = (message: MessageData) => {
+      console.log('message event caught:', message);
       const currentChat = selectedChatRef.current;
       if (message.chatId === currentChat?.chatId) {
         setMessages((messages) => [
@@ -169,9 +167,8 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
     observer.current.observe(node);
   }, []);
 
-  const fullNameString = (user: UserPreview | UserPreviewWithStatus) =>
-    `${user.firstName} ${user.lastName}`;
-  const initialsString = (user: UserPreview | UserPreviewWithStatus) =>
+  const fullNameString = (user: UserPreview) => `${user.firstName} ${user.lastName}`;
+  const initialsString = (user: UserPreview) =>
     `${user.firstName[0].toUpperCase()}${user.lastName[0].toUpperCase()}`;
 
   return (
@@ -267,7 +264,11 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
                     : null}
               </Typography>
               <Typography variant="body1" component="p" sx={{ color: 'grey', fontSize: '14px' }}>
-                {otherUser ? (otherUser?.isOnline ? t('chats.online') : t('chats.offline')) : ''}
+                {otherUser
+                  ? otherUser?.isOnline || otherUser?.isActive === 'ACTIVE'
+                    ? t('chats.online')
+                    : t('chats.offline')
+                  : ''}
               </Typography>
             </Box>
           </Box>
@@ -289,7 +290,16 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
                 data-id={msg.id}
                 innerRef={
                   //ставимо observer тільки якщо повідомлення від іншого юзера, і не прочитане
-                  msg.isRead === false && msg.sender.id !== currentUser.id ? observeElement : null
+
+                  msg.senderId
+                    ? msg.isRead === false && msg.senderId !== currentUser.id
+                      ? observeElement
+                      : null
+                    : msg.sender
+                      ? msg.isRead === false && msg.sender.id !== currentUser.id
+                        ? observeElement
+                        : null
+                      : null
                 }
               />
             ))}

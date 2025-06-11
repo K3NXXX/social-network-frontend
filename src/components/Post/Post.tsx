@@ -30,16 +30,19 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [currentPost, setCurrentPost] = useState(post);
+  const [saved, setSaved] = useState(post.saved ?? false);
 
   const fetchComments = async (pageNumber = 1) => {
     try {
       const res = await postService.fetchPostComments(post.id, pageNumber, take);
+      const rootComments = res.data.filter((c) => c.parentId === null);
+
       if (pageNumber === 1) {
-        setComments(res.data);
+        setComments(rootComments);
       } else {
         setComments((prev) => {
           const existingIds = new Set(prev.map((c) => c.id));
-          const newComments = res.data.filter((c) => !existingIds.has(c.id));
+          const newComments = rootComments.filter((c) => !existingIds.has(c.id));
           return [...prev, ...newComments];
         });
       }
@@ -64,7 +67,7 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
 
   const handleToggleLike = async () => {
     try {
-      const { liked } = await postService.toggleLike(post.id);
+      const { liked } = await postService.togglePostLike(post.id);
       setLiked(liked);
       setLikesCount((prev) => (liked ? prev + 1 : prev - 1));
     } catch (error) {
@@ -74,22 +77,7 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
 
   const handleAddComment = (newComment: CommentType) => {
     setComments((prevComments) => {
-      if (newComment.parentId) {
-        return prevComments.map((comment) => {
-          if (comment.id === newComment.parentId) {
-            console.log(comment, newComment);
-
-            return {
-              ...comment,
-              replies: [...(comment.replies || []), newComment],
-            };
-          }
-          return comment;
-        });
-      } else {
-        console.log([...prevComments, { ...newComment, replies: [] }]);
-        return [...prevComments, { ...newComment, replies: [] }];
-      }
+      return [...prevComments, newComment];
     });
     setCommentsCount((prev) => prev + 1);
   };
@@ -116,18 +104,12 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
     setCommentsCount((prev) => prev - 1);
   };
 
-  const handleAddReplies = (parentId: string, replies: CommentType[]) => {
-    setComments((prevComments) =>
-      prevComments.map((comment) => {
-        if (comment.id === parentId) {
-          return {
-            ...comment,
-            replies,
-          };
-        }
-        return comment;
-      })
-    );
+  const handleAddReplies = (replies: CommentType[]) => {
+    setComments((prevComments) => {
+      const existingIds = new Set(prevComments.map((c) => c.id));
+      const newReplies = replies.filter((r) => !existingIds.has(r.id));
+      return [...prevComments, ...newReplies];
+    });
   };
 
   const handleUpdateComment = (updatedComment: CommentType) => {
@@ -153,6 +135,19 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
     setCurrentPost(updatedPost);
   };
 
+  const handleToggleSave = async () => {
+    try {
+      if (saved) {
+        await postService.unsavePost(post.id);
+      } else {
+        await postService.savePost(post.id);
+      }
+      setSaved((prev) => !prev);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <Card sx={{ width: '100%', maxWidth: '1200px', mx: 'auto', p: 2, mb: 4 }}>
       <PostHeader
@@ -170,7 +165,7 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
         onUpdate={handleUpdatePost}
       />
 
-      <PostContent content={post.content} photo={post.photo} />
+      <PostContent content={currentPost.content} photo={currentPost.photo} />
 
       <Divider sx={{ my: 2, mx: -2 }} />
       <PostActions
@@ -182,6 +177,8 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
           fetchComments();
           setShowComments(!showComments);
         }}
+        saved={saved}
+        onToggleSave={handleToggleSave}
       />
       {showComments && (
         <PostComments
