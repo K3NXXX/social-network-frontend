@@ -5,6 +5,7 @@ import FavoriteBorderIcon from '@mui/icons-material/Favorite';
 
 import type { CommentType } from '../../types/post';
 import { formatCreatedAt } from '../../utils/dateUtils';
+import { postService } from '../../services/postService';
 
 interface CommentProps {
   comment: CommentType;
@@ -29,12 +30,17 @@ const Comment: React.FC<CommentProps> = ({
   onEditContentChange,
   onConfirmEdit,
 }) => {
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(comment.liked);
   const [likesCount, setLikesCount] = useState(comment._count?.likes || 0);
 
-  const handleToggleLike = () => {
-    setLiked((prev: boolean) => !prev);
-    setLikesCount((prev: number) => (liked ? prev - 1 : prev + 1));
+  const handleToggleLike = async () => {
+    try {
+      const result = await postService.toggleCommentLike(comment.id);
+      setLiked(result.liked);
+      setLikesCount((prev) => (result.liked ? prev + 1 : prev - 1));
+    } catch (error) {
+      console.error('Помилка при лайкуванні коментаря:', error);
+    }
   };
 
   return (

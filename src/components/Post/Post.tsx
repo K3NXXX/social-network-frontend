@@ -65,7 +65,7 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
 
   const handleToggleLike = async () => {
     try {
-      const { liked } = await postService.toggleLike(post.id);
+      const { liked } = await postService.togglePostLike(post.id);
       setLiked(liked);
       setLikesCount((prev) => (liked ? prev + 1 : prev - 1));
     } catch (error) {
