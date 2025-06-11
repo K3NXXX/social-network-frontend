@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -21,13 +21,24 @@ interface Props {
 const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
   const [content, setContent] = useState(post.content || '');
   const [file, setFile] = useState<File | null>(null);
-  const [removePhoto, setRemovePhoto] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [file]);
 
   const handleUpdate = async () => {
     setLoading(true);
     try {
-      const updatedPost = await postService.updatePost(post.id, content, file, removePhoto);
+      const updatedPost = await postService.updatePost(post.id, content, file);
       onUpdate(updatedPost);
       onClose();
     } catch (err) {
@@ -36,6 +47,12 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (open) {
+      document.getElementById('content-input')?.focus();
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
@@ -49,7 +66,21 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
           onChange={(e) => setContent(e.target.value)}
           sx={{ my: 2 }}
         />
-        {post.photo && !removePhoto && (
+
+        {previewUrl ? (
+          <Box sx={{ mb: 2, textAlign: 'center' }}>
+            <img
+              src={previewUrl}
+              alt="preview"
+              style={{
+                maxWidth: '300px',
+                maxHeight: '200px',
+                borderRadius: 8,
+                objectFit: 'contain',
+              }}
+            />
+          </Box>
+        ) : post.photo ? (
           <Box sx={{ mb: 2, textAlign: 'center' }}>
             <img
               src={post.photo}
@@ -61,11 +92,9 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
                 objectFit: 'contain',
               }}
             />
-            <Button color="error" onClick={() => setRemovePhoto(true)} sx={{ mt: 1 }} fullWidth>
-              Видалити фото
-            </Button>
           </Box>
-        )}
+        ) : null}
+
         <Button variant="contained" component="label" fullWidth>
           Завантажити нове фото
           <input
@@ -80,7 +109,7 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
         <Button onClick={onClose} disabled={loading}>
           Скасувати
         </Button>
-        <Button onClick={handleUpdate} disabled={true} variant="contained">
+        <Button onClick={handleUpdate} disabled={loading} variant="contained">
           Оновити
         </Button>
       </DialogActions>
