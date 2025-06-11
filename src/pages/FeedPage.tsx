@@ -63,6 +63,8 @@ const FeedPage: React.FC = () => {
         alignItems: 'center',
         minHeight: '100vh',
         py: 3,
+        backgroundColor: 'var(--background-color)',
+        color: 'var(--text-color)',
       }}
     >
       <CreatePostCard onPostCreated={(newPost) => setFeedPosts((prev) => [newPost, ...prev])} />
@@ -72,8 +74,16 @@ const FeedPage: React.FC = () => {
 
         {showDiscover && (
           <>
-            <Divider sx={{ my: 4 }} />
-            <Typography variant="h6" align="center" color="text.secondary" mb={4}>
+            <Divider sx={{ my: 4, borderColor: 'var(--border-color)' }} />
+            <Typography
+              variant="h6"
+              align="center"
+              sx={{
+                mb: 4,
+                color: 'var(--text-color)',
+                opacity: 0.7,
+              }}
+            >
               Більше немає постів від тих, за ким ви стежите. Ось цікаві публікації для вас:
             </Typography>
             <PostsList posts={discoverPosts} loading={loadingDiscover} onDelete={handleDelete} />

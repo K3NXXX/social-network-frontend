@@ -131,7 +131,7 @@ export default function ProfilePage({
                   onClickCapture={() => toggleFollowUser(publicUserData.id)}
                   variant="contained"
                   size="small"
-                  sx={{ backgroundColor: isFollowing ? '#737373' : '' }}
+                  sx={{ backgroundColor: isFollowing ? 'var(--primary-color)' : '' }}
                 >
                   Стежити
                 </NoOutlineButton>
@@ -139,6 +139,7 @@ export default function ProfilePage({
                 <NoOutlineButton
                   variant="contained"
                   size="small"
+                  sx={{ backgroundColor: 'var(--primary-color)' }}
                   onClick={() => navigate('/profile/edit')}
                 >
                   Редагувати профіль
@@ -150,7 +151,11 @@ export default function ProfilePage({
                   Повідомлення
                 </NoOutlineButton>
               ) : (
-                <NoOutlineButton variant="contained" size="small">
+                <NoOutlineButton
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: 'var(--primary-color)' }}
+                >
                   Переглянути архів
                 </NoOutlineButton>
               )}
@@ -174,7 +179,7 @@ export default function ProfilePage({
               <Typography fontWeight="bold" fontSize="15px">
                 {isPublicProfile ? publicUserData.posts.length : profile.posts.length}
               </Typography>
-              <Typography color="#737373" fontSize="15px">
+              <Typography sx={{ color: 'var(--text-color)', fontSize: '15px' }}>
                 публікацій
               </Typography>
             </Box>
@@ -183,7 +188,7 @@ export default function ProfilePage({
               <Typography fontWeight="bold" fontSize="15px">
                 {isPublicProfile ? publicUserData.followers : profile.followers}
               </Typography>
-              <Typography color="#737373" fontSize="15px">
+              <Typography sx={{ color: 'var(--text-color)', fontSize: '15px' }}>
                 підписників
               </Typography>
             </Box>
@@ -192,7 +197,7 @@ export default function ProfilePage({
               <Typography fontWeight="bold" fontSize="15px">
                 {isPublicProfile ? publicUserData.following : profile.following}
               </Typography>
-              <Typography color="#737373" fontSize="15px">
+              <Typography sx={{ color: 'var(--text-color)', fontSize: '15px' }}>
                 підписок
               </Typography>
             </Box>
@@ -215,7 +220,7 @@ export default function ProfilePage({
               sx: {
                 top: 0,
                 height: '1px',
-                backgroundColor: 'primary.main',
+                backgroundColor: 'var(--primary-color)',
               },
             }}
           >
@@ -227,6 +232,7 @@ export default function ProfilePage({
                   outline: 'none',
                   border: 'none',
                   transition: 'none',
+                  color: 'var(--text-color)',
                   '&:focus': {
                     outline: 'none',
                   },
@@ -235,6 +241,7 @@ export default function ProfilePage({
                   },
                   '&.Mui-selected': {
                     transition: 'none',
+                    color: 'var(--primary-color)',
                   },
                 }}
               />
@@ -258,7 +265,7 @@ export default function ProfilePage({
                         p: 1.5,
                         borderRadius: 2,
                         border: '1px solid #e0e0e0',
-                        backgroundColor: '#fff',
+                        backgroundColor: 'var(--background-color)',
                         boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
                         display: 'flex',
                         flexDirection: 'row',

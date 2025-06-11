@@ -45,7 +45,16 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
   };
 
   return (
-    <Card sx={{ width: '100%', maxWidth: '1000px', mx: 'auto', p: 1, mb: 3 }}>
+    <Card
+      sx={{
+        width: '100%',
+        maxWidth: '1000px',
+        mx: 'auto',
+        p: 1,
+        mb: 3,
+        backgroundColor: 'var(--secondary-color)',
+      }}
+    >
       <CardContent sx={{ pb: 1 }}>
         <Stack direction="row" spacing={2} alignItems="flex-start">
           <Avatar src={user?.avatarUrl ?? undefined}>
@@ -60,7 +69,13 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             variant="outlined"
-            sx={{ backgroundColor: '#F8F8FC' }}
+            sx={{
+              '& .MuiInputBase-input::placeholder': {
+                color: 'var(--text-color)',
+                opacity: 1,
+              },
+              backgroundColor: 'var(--background-color)',
+            }}
           />
         </Stack>
 
@@ -87,13 +102,23 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
             onChange={handleImageChange}
           />
           <label htmlFor="upload-photo">
-            <Button variant="text" component="span" startIcon={<AddPhotoAlternateIcon />}>
+            <Button
+              variant="text"
+              component="span"
+              startIcon={<AddPhotoAlternateIcon />}
+              sx={{ color: 'var(--primary-color)' }}
+            >
               Фото
             </Button>
           </label>
           {imageFile && <span style={{ marginLeft: 8 }}>{imageFile.name}</span>}
         </div>
-        <Button variant="contained" endIcon={<SendIcon />} onClick={handleSubmit}>
+        <Button
+          variant="contained"
+          endIcon={<SendIcon />}
+          onClick={handleSubmit}
+          sx={{ backgroundColor: 'var(--primary-color)' }}
+        >
           Опублікувати
         </Button>
       </CardActions>

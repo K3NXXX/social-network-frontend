@@ -181,10 +181,10 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            bgcolor: 'white',
+            bgcolor: 'var(--background-color)',
           }}
         >
-          <Typography variant="h6" color="text.secondary">
+          <Typography variant="h6" color="var(--text-color)">
             Виберіть чат, щоб почати спілкування
           </Typography>
         </Box>
@@ -192,7 +192,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
         <Box
           sx={{
             width: '100%',
-            bgcolor: 'white',
+            bgcolor: 'var(--background-color)',
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -201,7 +201,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
             sx={{
               width: '100%',
               height: 70,
-              borderBottom: '1px solid #dedede',
+              borderBottom: '1px solid var(--border-color)',
               display: 'flex',
             }}
           >

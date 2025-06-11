@@ -181,19 +181,22 @@ const ChatsPage: React.FC = () => {
         sx={{
           width: '320px',
           flexShrink: 0,
-          bgcolor: 'white',
+          bgcolor: 'var(--background-color)',
           display: 'flex',
           flexDirection: 'column',
-          borderRight: '1px solid #dedede',
+          borderRight: '1px solid var(--border-color)',
         }}
       >
         <Select
           value={selectedUserId}
           onChange={handleSelectChange}
           displayEmpty
-          sx={{ width: '90%', alignSelf: 'center', marginTop: '5%' }}
+          sx={{ width: '90%', alignSelf: 'center', marginTop: '5%', color: 'var(--text-color)' }}
         >
-          <MenuItem value="" disabled>
+          <MenuItem
+            value=""
+            sx={{ color: 'var(--text-color)', backgroundColor: 'var(--background-color)' }}
+          >
             Виберіть, кому написати:
           </MenuItem>
           {users.map((user, index) => {
@@ -205,7 +208,7 @@ const ChatsPage: React.FC = () => {
                     src={user?.avatarUrl ?? undefined}
                     sx={{
                       height: 40,
-                      bgcolor: '#9885f4',
+                      bgcolor: 'var(--background-color)',
                       fontSize: 12,
                       marginRight: 1,
                     }}
@@ -216,7 +219,7 @@ const ChatsPage: React.FC = () => {
                   </Avatar>
                   <Typography
                     sx={{
-                      color: 'black',
+                      color: 'var(--text-color)',
                       fontWeight: 500,
                       fontSize: '20px',
                       alignSelf: 'center',
@@ -231,7 +234,12 @@ const ChatsPage: React.FC = () => {
         </Select>
         <Typography
           variant="body1"
-          sx={{ fontSize: 25, fontWeight: 'bold', margin: '10% 0 2% 0', color: 'black' }}
+          sx={{
+            fontSize: 25,
+            fontWeight: 'bold',
+            margin: '10% 0 2% 0',
+            color: 'var(--text-color)',
+          }}
         >
           Чати
         </Typography>
@@ -244,7 +252,9 @@ const ChatsPage: React.FC = () => {
                 setNewChatUser(undefined);
                 setSelectedChat(chat);
               }}
-              sx={selectedChat?.chatId === chat.chatId ? { bgcolor: '#e6e6e6' } : null}
+              sx={
+                selectedChat?.chatId === chat.chatId ? { bgcolor: 'var(--background-color)' } : null
+              }
               socketRef={socketRef}
             />
           ))}
