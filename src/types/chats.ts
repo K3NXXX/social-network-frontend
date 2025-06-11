@@ -3,7 +3,8 @@ export interface MessageData {
   content: string;
   imageUrl: string | null;
   createdAt: string;
-  sender: UserPreview;
+  sender?: UserPreview;
+  senderId?: string;
   isRead?: boolean;
   chatId?: string;
 }
@@ -14,7 +15,18 @@ export interface ChatPreview {
   name: string | null;
   isGroup: boolean;
   lastMessage: MessageData | null;
-  participants: UserPreviewWithStatus[];
+  participants: UserPreview[];
+}
+
+//чат з івента chat_created
+export interface ChatPreview_ChatCreated {
+  id: string;
+  name: string | null;
+  isGroup: boolean;
+  messages: MessageData[];
+  participants: {
+    user: UserPreview;
+  }[];
 }
 
 //чат (GET /chat/:receiverId)
@@ -30,8 +42,6 @@ export interface UserPreview {
   lastName: string;
   username: string | null;
   avatarUrl: string | null;
-}
-
-export interface UserPreviewWithStatus extends UserPreview {
-  isOnline: boolean;
+  isOnline?: boolean;
+  isActive?: string;
 }
