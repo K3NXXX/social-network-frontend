@@ -16,6 +16,7 @@
     "publishLabel": "Опублікувати",
     "shareLabel": "Поділитися",
     "editLabel": "Редагувати",
+    "saveLabel": "Зберегти",
     "deleteLabel": "Видалити",
     "hideAnswers": "Сховати відповіді",
     "showAnswers": "Показати відповіді",
@@ -80,23 +81,18 @@
     "firstName": "Ім'я",
     "firstNameRequired": "Ім'я обов'язкове",
     "firstNameTooShort": "Ім'я має бути довшим за 1 символ",
-
     "lastName": "Прізвище",
     "lastNameRequired": "Прізвище обов'язкове",
     "lastNameTooShort": "Прізвище має бути довшим за 1 символ",
-
     "email": "Електронна пошта",
     "emailRequired": "Електронна пошта обов'язкова",
     "emailInvalid": "Електронна пошта невірна",
-
     "password": "Пароль",
     "passwordRequired": "Пароль обов'язковий",
     "passwordTooShort": "Пароль має містити мін. 8 символів",
-
     "confirmPassword": "Підтвердження пароля",
     "confirmPasswordRequired": "Підтвердження пароля обов'язкове",
     "passwordsDoNotMatch": "Паролі не співпадають",
-
     "register": "Зареєструватись",
     "alreadyHaveAccount": "Вже маєте обліковий запис? Увійти",
     "login": "Увійти в акаунт",

@@ -21,7 +21,6 @@ export function usePosts(
     setLoading(true);
     try {
       const { data, page: currentPage, totalPages } = await fetchFunction(pageNumber, take);
-      console.log(data);
       setPosts((prev) => (pageNumber === 1 ? data : [...prev, ...data]));
       setPage(currentPage);
       setLastPage(totalPages);

@@ -35,12 +35,14 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
   const fetchComments = async (pageNumber = 1) => {
     try {
       const res = await postService.fetchPostComments(post.id, pageNumber, take);
+      const rootComments = res.data.filter((c) => c.parentId === null);
+
       if (pageNumber === 1) {
-        setComments(res.data);
+        setComments(rootComments);
       } else {
         setComments((prev) => {
           const existingIds = new Set(prev.map((c) => c.id));
-          const newComments = res.data.filter((c) => !existingIds.has(c.id));
+          const newComments = rootComments.filter((c) => !existingIds.has(c.id));
           return [...prev, ...newComments];
         });
       }
@@ -75,22 +77,7 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
 
   const handleAddComment = (newComment: CommentType) => {
     setComments((prevComments) => {
-      if (newComment.parentId) {
-        return prevComments.map((comment) => {
-          if (comment.id === newComment.parentId) {
-            console.log(comment, newComment);
-
-            return {
-              ...comment,
-              replies: [...(comment.replies || []), newComment],
-            };
-          }
-          return comment;
-        });
-      } else {
-        console.log([...prevComments, { ...newComment, replies: [] }]);
-        return [...prevComments, { ...newComment, replies: [] }];
-      }
+      return [...prevComments, newComment];
     });
     setCommentsCount((prev) => prev + 1);
   };
@@ -117,18 +104,12 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
     setCommentsCount((prev) => prev - 1);
   };
 
-  const handleAddReplies = (parentId: string, replies: CommentType[]) => {
-    setComments((prevComments) =>
-      prevComments.map((comment) => {
-        if (comment.id === parentId) {
-          return {
-            ...comment,
-            replies,
-          };
-        }
-        return comment;
-      })
-    );
+  const handleAddReplies = (replies: CommentType[]) => {
+    setComments((prevComments) => {
+      const existingIds = new Set(prevComments.map((c) => c.id));
+      const newReplies = replies.filter((r) => !existingIds.has(r.id));
+      return [...prevComments, ...newReplies];
+    });
   };
 
   const handleUpdateComment = (updatedComment: CommentType) => {

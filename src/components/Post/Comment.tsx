@@ -3,6 +3,7 @@ import { Avatar, Box, Typography, Stack, Button, TextField } from '@mui/material
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/Favorite';
 
+import { useTranslation } from 'react-i18next';
 import type { CommentType } from '../../types/post';
 import { formatCreatedAt } from '../../utils/dateUtils';
 import { postService } from '../../services/postService';
@@ -32,6 +33,7 @@ const Comment: React.FC<CommentProps> = ({
 }) => {
   const [liked, setLiked] = useState(comment.liked);
   const [likesCount, setLikesCount] = useState(comment._count?.likes || 0);
+  const { t } = useTranslation();
 
   const handleToggleLike = async () => {
     try {
@@ -80,7 +82,7 @@ const Comment: React.FC<CommentProps> = ({
                 />
                 <Stack direction="row" spacing={1}>
                   <Button variant="contained" size="small" onClick={onConfirmEdit}>
-                    Зберегти
+                    {t('posts.saveLabel')}
                   </Button>
                 </Stack>
               </Stack>
@@ -112,7 +114,7 @@ const Comment: React.FC<CommentProps> = ({
             sx={{ p: 0, fontSize: 12, textTransform: 'none', color: '#757575' }}
             onClick={onReplyClick}
           >
-            Відповісти
+            {t('posts.commentReply')}
           </Button>
           {isOwner && (
             <>
@@ -122,7 +124,7 @@ const Comment: React.FC<CommentProps> = ({
                 sx={{ p: 0, fontSize: 12, textTransform: 'none', color: '#757575' }}
                 onClick={onDeleteClick}
               >
-                Видалити
+                {t('posts.deleteLabel')}
               </Button>
               <Button
                 variant="text"
@@ -130,7 +132,7 @@ const Comment: React.FC<CommentProps> = ({
                 sx={{ p: 0, fontSize: 12, textTransform: 'none', color: '#757575' }}
                 onClick={onEditClick}
               >
-                Редагувати
+                {t('posts.editLabel')}
               </Button>
             </>
           )}

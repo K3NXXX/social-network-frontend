@@ -16,6 +16,7 @@
     "shareLabel": "Share",
     "addCommentLabel": "Add comment...",
     "editLabel": "Edit",
+    "saveLabel": "Save",
     "deleteLabel": "Delete",
     "hideAnswers": "Hide answers",
     "showAnswers": "Show answers",
@@ -79,23 +80,18 @@
     "firstName": "First name",
     "firstNameRequired": "First name is required",
     "firstNameTooShort": "First name must be longer than 1 character",
-
     "lastName": "Last name",
     "lastNameRequired": "Last name is required",
     "lastNameTooShort": "Last name must be longer than 1 character",
-
     "email": "Email",
     "emailRequired": "Email is required",
     "emailInvalid": "Invalid email address",
-
     "password": "Password",
     "passwordRequired": "Password is required",
     "passwordTooShort": "Password must contain minimum 8 characters",
-
     "confirmPassword": "Confirm password",
     "confirmPasswordRequired": "Confirm password is required",
     "passwordsDoNotMatch": "Passwords do not match",
-
     "register": "Sign up",
     "alreadyHaveAccount": "Already have an account? Log in",
     "login": "Log in",
