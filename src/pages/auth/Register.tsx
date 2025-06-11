@@ -1,38 +1,61 @@
-import React, { useState } from 'react';
-import { 
-  Box, 
-  TextField, 
-  Button, 
-  Typography, 
-  Container, 
-  Paper,
-  Link,
+import {
   Alert,
-  CircularProgress
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Fade,
+  Link,
+  Paper,
+  TextField,
+  Typography,
 } from '@mui/material';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import EmailVerification from '../../components/auth/EmailVerification';
 import { useAuth } from '../../services/AuthContext';
-import Logo from '../../components/auth/Logo';
+import { authService } from '../../services/authService';
 import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
+import Logo from '../../ui/Logo';
+
+interface RegisterFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface FormErrors {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 const Register: React.FC = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
-  const [formErrors, setFormErrors] = useState({
+  const [formErrors, setFormErrors] = useState<FormErrors>({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
   const [submitError, setSubmitError] = useState<string | null>(null);
-  
-  const { register, loading } = useAuth();
+  const [isVerificationStep, setIsVerificationStep] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState('');
+  const { t } = useTranslation();
+
+  const { loading } = useAuth();
   const navigate = useNavigate();
 
   const validateForm = () => {
@@ -42,43 +65,46 @@ const Register: React.FC = () => {
       lastName: '',
       email: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
     };
 
     if (!formData.firstName.trim()) {
-      errors.firstName = "Ім'я обов'язкове";
+      errors.firstName = t('auth.firstNameRequired');
       valid = false;
     } else if (formData.firstName.length < 2) {
-      errors.firstName = "Ім'я має бути довшим за 1 символ";
+      errors.firstName = t('auth.firstNameTooShort');
       valid = false;
     }
 
     if (!formData.lastName.trim()) {
-      errors.lastName = "Прізвище обов'язкове";
+      errors.lastName = t('auth.lastNameRequired');
       valid = false;
     } else if (formData.lastName.length < 2) {
-      errors.lastName = "Прізвище має бути довшим за 1 символ";
+      errors.lastName = t('auth.lastNameTooShort');
       valid = false;
     }
 
     if (!formData.email) {
-      errors.email = 'Електронна пошта обов\'язкова';
+      errors.email = t('auth.emailRequired');
       valid = false;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Електронна пошта невірна';
+      errors.email = t('auth.emailInvalid');
       valid = false;
     }
 
     if (!formData.password) {
-      errors.password = 'Пароль обов\'язковий';
+      errors.password = t('auth.passwordRequired');
       valid = false;
     } else if (formData.password.length < 8) {
-      errors.password = 'Пароль має бути довшим за 7 символів';
+      errors.password = t('auth.passwordTooShort');
       valid = false;
     }
 
-    if (formData.confirmPassword !== formData.password) {
-      errors.confirmPassword = 'Паролі не співпадають';
+    if (!formData.confirmPassword) {
+      errors.confirmPassword = t('auth.confirmPasswordRequired');
+      valid = false;
+    } else if (formData.confirmPassword !== formData.password) {
+      errors.confirmPassword = t('auth.passwordsDoNotMatch');
       valid = false;
     }
 
@@ -88,31 +114,43 @@ const Register: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
 
     if (!validateForm()) return;
 
     try {
-      await register({
+      const { email } = await authService.register({
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         password: formData.password,
-        confirmPassword: formData.confirmPassword
+        confirmPassword: formData.confirmPassword,
       });
-      navigate('/');
+
+      setPendingEmail(email);
+      setIsVerificationStep(true);
+      setSubmitError(null);
     } catch (error) {
       logErrorDetails(error);
       setSubmitError(formatErrorMessage(error));
     }
+  };
+
+  const handleVerificationComplete = () => {
+    navigate('/');
+  };
+
+  const handleBackToForm = () => {
+    setIsVerificationStep(false);
+    setSubmitError(null);
   };
 
   return (
@@ -126,7 +164,7 @@ const Register: React.FC = () => {
           justifyContent: 'center',
         }}
       >
-        <Paper 
+        <Paper
           elevation={3}
           sx={{
             p: 4,
@@ -134,11 +172,23 @@ const Register: React.FC = () => {
             flexDirection: 'column',
             alignItems: 'center',
             width: '100%',
+            borderRadius: '12px',
           }}
         >
-          <Logo size="large" />
-          <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
-            Зареєструватись у СоцМережі
+          <Logo size="30px" />
+          <Typography
+            component="h1"
+            variant="h5"
+            sx={{
+              mb: 3,
+              textAlign: 'center',
+              color: '#333',
+              fontSize: { xs: '1.6rem' },
+              letterSpacing: '0.3px',
+              fontFamily: 'Ubuntu',
+            }}
+          >
+            {t('auth.createProfileLabel')}
           </Typography>
 
           {submitError && (
@@ -146,100 +196,118 @@ const Register: React.FC = () => {
               {submitError}
             </Alert>
           )}
-          
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="firstName"
-              label="Ім'я"
-              name="firstName"
-              autoComplete="given-name"
-              autoFocus
-              value={formData.firstName}
-              onChange={handleChange}
-              error={!!formErrors.firstName}
-              helperText={formErrors.firstName}
-              disabled={loading}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="lastName"
-              label="Прізвище"
-              name="lastName"
-              autoComplete="family-name"
-              value={formData.lastName}
-              onChange={handleChange}
-              error={!!formErrors.lastName}
-              helperText={formErrors.lastName}
-              disabled={loading}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Електронна пошта"
-              name="email"
-              autoComplete="email"
-              value={formData.email}
-              onChange={handleChange}
-              error={!!formErrors.email}
-              helperText={formErrors.email}
-              disabled={loading}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Пароль"
-              type="password"
-              id="password"
-              autoComplete="new-password"
-              value={formData.password}
-              onChange={handleChange}
-              error={!!formErrors.password}
-              helperText={formErrors.password}
-              disabled={loading}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="confirmPassword"
-              label="Підтвердження пароля"
-              type="password"
-              id="confirmPassword"
-              autoComplete="new-password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              error={!!formErrors.confirmPassword}
-              helperText={formErrors.confirmPassword}
-              disabled={loading}
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled={loading}
-            >
-              {loading ? <CircularProgress size={24} /> : 'Зареєструватись'}
-            </Button>
-            <Box sx={{ textAlign: 'center' }}>
-              <Link component={RouterLink} to="/login" variant="body2">
-                {"Вже маєте обліковий запис? Увійти"}
-              </Link>
-            </Box>
+
+          <Box sx={{ width: '100%' }}>
+            {isVerificationStep ? (
+              <Fade in={isVerificationStep}>
+                <div>
+                  <EmailVerification
+                    email={pendingEmail}
+                    onVerificationComplete={handleVerificationComplete}
+                    onBack={handleBackToForm}
+                  />
+                </div>
+              </Fade>
+            ) : (
+              <Box
+                component="form"
+                onSubmit={handleRegister}
+                noValidate
+                sx={{ mt: 1, width: '100%' }}
+              >
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="firstName"
+                  label={t('auth.firstName')}
+                  name="firstName"
+                  autoComplete="given-name"
+                  autoFocus
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  error={!!formErrors.firstName}
+                  helperText={formErrors.firstName}
+                  disabled={loading}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="lastName"
+                  label={t('auth.lastName')}
+                  name="lastName"
+                  autoComplete="family-name"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  error={!!formErrors.lastName}
+                  helperText={formErrors.lastName}
+                  disabled={loading}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label={t('auth.email')}
+                  name="email"
+                  autoComplete="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  error={!!formErrors.email}
+                  helperText={formErrors.email}
+                  disabled={loading}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label={t('auth.password')}
+                  type="password"
+                  id="password"
+                  autoComplete="new-password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  error={!!formErrors.password}
+                  helperText={formErrors.password}
+                  disabled={loading}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="confirmPassword"
+                  label={t('auth.confirmPassword')}
+                  type="password"
+                  id="confirmPassword"
+                  autoComplete="new-password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  error={!!formErrors.confirmPassword}
+                  helperText={formErrors.confirmPassword}
+                  disabled={loading}
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                  disabled={loading}
+                >
+                  {loading ? <CircularProgress size={24} /> : t('auth.register')}
+                </Button>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Link component={RouterLink} to="/login" variant="body2">
+                    {t('auth.alreadyHaveAccount')}
+                  </Link>
+                </Box>
+              </Box>
+            )}
           </Box>
         </Paper>
       </Box>
     </Container>
   );
 };
-
-export default Register; 
+export default Register;

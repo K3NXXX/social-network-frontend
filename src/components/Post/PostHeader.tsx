@@ -16,6 +16,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import EditIcon from '@mui/icons-material/Edit';
 import type { User } from '../../types/post';
 import { formatCreatedAt } from '../../utils/dateUtils';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   user: User;
@@ -26,6 +27,7 @@ interface Props {
 }
 
 const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdit }) => {
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [, setCurrentTime] = useState(Date.now());
 
@@ -92,7 +94,7 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
           <ListItemIcon>
             <ShareIcon fontSize="small" />
           </ListItemIcon>
-          Поділитися
+          {t('posts.shareLabel')}
         </MenuItem>
 
         {isOwner && [
@@ -100,14 +102,14 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
             <ListItemIcon>
               <EditIcon fontSize="small" />
             </ListItemIcon>
-            Редагувати
+            {t('posts.editLabel')}
           </MenuItem>,
           <Divider key="divider" />,
           <MenuItem key="delete" onClick={handleDeleteClick} sx={{ color: 'error.main' }}>
             <ListItemIcon>
               <DeleteIcon fontSize="small" color="error" />
             </ListItemIcon>
-            Видалити
+            {t('posts.deleteLabel')}
           </MenuItem>,
         ]}
       </Menu>

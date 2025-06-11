@@ -5,14 +5,17 @@ import ChatScreen from '../components/chats/ChatScreen';
 import { chatsService } from '../services/chatsService';
 import type { ChatPreview, ChatPreview_ChatCreated, UserPreview } from '../types/chats';
 import { io, Socket } from 'socket.io-client';
+
 import SearchBlock from '../components/chats/SearchBlock';
 import SearchIcon from '@mui/icons-material/Search';
 import { Close } from '@mui/icons-material';
 import debounce from 'lodash/debounce';
 import { userService } from '../services/userService';
+import { useTranslation } from 'react-i18next';
 
 const ChatsPage: React.FC = () => {
-  //const currentUser = chatsService.getUser();
+  // const currentUser = chatsService.getUser();
+  const { t } = useTranslation();
 
   const [selectedChat, setSelectedChat] = useState<ChatPreview | null>(null);
   const [chats, setChats] = useState<ChatPreview[]>([]);
@@ -247,7 +250,7 @@ const ChatsPage: React.FC = () => {
       >
         <TextField
           autoComplete="off"
-          placeholder={'Виберіть кому написати'}
+          placeholder={t('chats.chooseToWrite')}
           variant="outlined"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
@@ -312,7 +315,7 @@ const ChatsPage: React.FC = () => {
           variant="body1"
           sx={{ fontSize: 25, fontWeight: 'bold', margin: '10% 0 2% 0', color: 'black' }}
         >
-          Чати
+          {t('chats.chatsLabel')}
         </Typography>
         <Box>
           {chats.map((chat, i) => (

@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Container,
   FormControl,
   List,
@@ -13,9 +14,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
-import axiosInstance from '../services/axiosConfig.ts';
+import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../services/AuthContext.tsx';
+import axiosInstance from '../services/axiosConfig.ts';
 
 const GENDERS = [
   { value: 'MALE', label: 'Чоловік' },
@@ -30,56 +32,112 @@ const sidebarItems = [
 ];
 
 export default function EditProfileLayout() {
+  const [profile, setProfile] = useState<any>(null);
+  const [name, setName] = useState<any>(null);
   const [activeSection, setActiveSection] = useState('edit');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { logout } = useAuth();
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
 
-  const [profile, setProfile] = useState({
-    firstName: '',
-    lastName: '',
-    username: '',
-    photo: '',
-    dateOfBirth: '',
-    gender: 'OTHER',
-    bio: '',
-    location: '',
-  });
+  const { logout } = useAuth();
+  const { t } = useTranslation();
+
+  const allowedFields = ['firstName', 'lastName', 'dateOfBirth', 'gender', 'bio', 'location'];
 
   const handleChange = (field: string, value: string) => {
-    setProfile((prev) => ({ ...prev, [field]: value }));
+    setProfile((prev: any) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
-    console.log('Saving profile:', profile);
+  const handleSubmit = async () => {
+    try {
+      const updateProfile = allowedFields.reduce(
+        (acc, key) => {
+          if ((profile as Record<string, any>)[key] !== undefined) {
+            acc[key] = (profile as Record<string, any>)[key];
+          }
+          return acc;
+        },
+        {} as Record<string, any>
+      );
+
+      await axiosInstance.patch('/api/user/profile', updateProfile);
+
+      await fetchProfile();
+      setMessage('Профіль успішно оновлено!');
+      setMessageType('success');
+    } catch (error: any) {
+      const msg = error.response?.data?.message || 'Не вдалося зберегти зміни.';
+      setMessage(msg);
+      setMessageType('error');
+    } finally {
+      setTimeout(() => {
+        setMessage('');
+        setMessageType(null);
+      }, 4000);
+    }
   };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      await axiosInstance.patch('/api/user/update/avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      await fetchProfile();
+    } catch (err) {
+      setMessage('Помилка при завантаженні фото');
+      setMessageType('error');
+    }
+  };
+
+  const handlePhotoDelete = async () => {
+    try {
+      await axiosInstance.delete('/api/user/delete/avatar');
+      await fetchProfile();
+    } catch (err) {
+      setMessage('Помилка при видаленні фото');
+      setMessageType('error');
+    }
+  };
+
+  const fetchProfile = useCallback(async () => {
+    try {
+      const response = await axiosInstance.get('/api/user/profile');
+      const formattedDate = response.data.dateOfBirth
+        ? new Date(response.data.dateOfBirth).toISOString().split('T')[0]
+        : '';
+
+      setProfile({ ...response.data, dateOfBirth: formattedDate });
+      setName(response.data.firstName + ' ' + response.data.lastName);
+      setError(null);
+    } catch (err: any) {
+      console.error('Profile fetch error:', err);
+      if (err.response?.status === 401) {
+        setError('Сесія завершена. Увійдіть знову.');
+        logout?.();
+      } else {
+        setError('Не вдалося завантажити профіль.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [logout]);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await axiosInstance.get('/api/user/profile');
-        console.log(response.data);
-        setProfile(response.data);
-      } catch (err: any) {
-        console.error('Profile fetch error:', err);
-        if (err.response?.status === 401) {
-          setError('Сесія завершена. Увійдіть знову.');
-          logout?.();
-        } else {
-          setError('Не вдалося завантажити профіль.');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProfile();
-  }, [logout]);
+  }, [fetchProfile]);
 
   if (loading) {
     return (
       <Box sx={{ textAlign: 'center', mt: 10 }}>
-        <Typography variant="h5">Завантаження профілю...</Typography>
+        <CircularProgress />
       </Box>
     );
   }
@@ -96,6 +154,31 @@ export default function EditProfileLayout() {
 
   return (
     <Container maxWidth={false}>
+      {message && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 20,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: messageType === 'success' ? '#d0f0d0' : '#ffe0e0',
+            color: messageType === 'success' ? '#005500' : '#aa0000',
+            border: '1px solid',
+            borderColor: messageType === 'success' ? '#91e291' : '#f5a4a4',
+            borderRadius: '12px',
+            px: 3,
+            py: 1.5,
+            boxShadow: 3,
+            zIndex: 1300,
+            animation: 'slideDown 0.3s ease-out',
+          }}
+        >
+          <Typography fontSize="14px" fontWeight={500}>
+            {message}
+          </Typography>
+        </Box>
+      )}
+
       <Box display="flex">
         <Box
           sx={{
@@ -106,7 +189,7 @@ export default function EditProfileLayout() {
           }}
         >
           <Typography textAlign="start" px="10px" fontSize="18px" fontWeight="bold" my={2}>
-            Settings
+            {t('profile.settingsLabel')}
           </Typography>
           <List sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2 }}>
             {sidebarItems.map((item) => (
@@ -124,7 +207,7 @@ export default function EditProfileLayout() {
                   }}
                 >
                   <ListItemText
-                    primary={item.label}
+                    primary={t(`profile.sidebar.${item.key}`)}
                     primaryTypographyProps={{
                       fontSize: '14px',
                       fontWeight: 400,
@@ -152,7 +235,7 @@ export default function EditProfileLayout() {
               >
                 <Box display="flex">
                   <Avatar
-                    src={profile.photo}
+                    src={profile.avatarUrl}
                     sx={{ width: 60, height: 60, border: '1px solid #999' }}
                   />
                   <Box
@@ -163,37 +246,36 @@ export default function EditProfileLayout() {
                     ml="16px"
                   >
                     <Typography fontSize="16px" fontWeight={700}>
-                      {profile.firstName} {profile.lastName}
+                      {name}
                     </Typography>
-                    <Typography fontSize="14px" fontWeight={400} color="#666">
-                      @{profile.username || 'username'}
-                    </Typography>
+                    {profile.username && (
+                      <Typography fontSize="14px" fontWeight={400} color="#666">
+                        @{profile.username}
+                      </Typography>
+                    )}
                   </Box>
                 </Box>
-                <Button variant="contained" size="small">
-                  Змінити фото
-                </Button>
+                <Box display="flex" gap={1}>
+                  <Button
+                    component="label"
+                    variant="outlined"
+                    size="small"
+                    onClick={handlePhotoDelete}
+                  >
+                    {t('profile.deletePhoto')}
+                  </Button>
+                  <Button component="label" variant="contained" size="small">
+                    {t('profile.changePhoto')}
+                    <input type="file" hidden accept="image/*" onChange={handlePhotoUpload} />
+                  </Button>
+                </Box>
               </Box>
 
               <Box display="flex" flexDirection="column" gap={3} mb="50px">
                 <TextField
-                  label="Ім’я"
+                  label={t('profile.firstName')}
                   value={profile.firstName}
                   onChange={(e) => handleChange('firstName', e.target.value)}
-                  InputProps={{
-                    sx: {
-                      '& .MuiInputBase-input': {
-                        px: 2, // 16px
-                        py: '10px',
-                      },
-                      borderRadius: '10px',
-                    },
-                  }}
-                />
-                <TextField
-                  label="Прізвище"
-                  value={profile.lastName}
-                  onChange={(e) => handleChange('lastName', e.target.value)}
                   InputProps={{
                     sx: {
                       '& .MuiInputBase-input': {
@@ -205,9 +287,9 @@ export default function EditProfileLayout() {
                   }}
                 />
                 <TextField
-                  label="Псевдонім"
-                  value={profile.username}
-                  onChange={(e) => handleChange('username', e.target.value)}
+                  label={t('profile.lastName')}
+                  value={profile.lastName}
+                  onChange={(e) => handleChange('lastName', e.target.value)}
                   InputProps={{
                     sx: {
                       '& .MuiInputBase-input': {
@@ -228,7 +310,7 @@ export default function EditProfileLayout() {
                 px="2px"
                 py="16px"
               >
-                Дата народження
+                {t('profile.birthDate')}
               </Typography>
               <Box display="flex" flexDirection="column">
                 <TextField
@@ -259,14 +341,13 @@ export default function EditProfileLayout() {
                   py="16px"
                   mt="32px"
                 >
-                  Стать
+                  {t('profile.gender')}
                 </Typography>
                 <FormControl fullWidth>
                   <Select
                     labelId="gender-label"
                     value={profile.gender}
                     onChange={(e) => handleChange('gender', e.target.value)}
-                    displayEmpty
                     fullWidth
                     sx={{
                       borderRadius: '10px',
@@ -285,7 +366,7 @@ export default function EditProfileLayout() {
                   >
                     {GENDERS.map((option) => (
                       <MenuItem key={option.value} value={option.value}>
-                        {option.label}
+                        {t(`profile.genders.${option.value.toLowerCase()}`)}
                       </MenuItem>
                     ))}
                   </Select>
@@ -299,7 +380,7 @@ export default function EditProfileLayout() {
                   py="16px"
                   mt="32px"
                 >
-                  Місцезнаходження
+                  {t('profile.location')}
                 </Typography>
                 <TextField
                   placeholder="м. Львів"
@@ -330,7 +411,7 @@ export default function EditProfileLayout() {
                 py="16px"
                 mt="32px"
               >
-                Біо
+                {t('profile.bio')}
               </Typography>
               <TextField
                 placeholder="Біо"
@@ -348,7 +429,7 @@ export default function EditProfileLayout() {
 
               <Box my={4} display="flex" justifyContent="end" alignItems="center">
                 <Button variant="contained" onClick={handleSubmit}>
-                  Зберегти зміни
+                  {t('profile.saveChangesLabel')}
                 </Button>
               </Box>
             </>

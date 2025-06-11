@@ -5,6 +5,7 @@ import type { ChatPreview, MessageData, UserPreview } from '../../types/chats';
 import Message from './Message';
 import { chatsService } from '../../services/chatsService';
 import type { Socket } from 'socket.io-client';
+import { useTranslation } from 'react-i18next';
 
 export interface ChatScreenProps {
   selectedChat: ChatPreview | null;
@@ -17,6 +18,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
 
   const [messages, setMessages] = useState<MessageData[]>();
   const [messageInput, setMessageInput] = useState<string>('');
+  const { t } = useTranslation();
 
   const otherUser = selectedChat?.participants.find((user) => user.id !== currentUser.id);
   //щоб передавати оновлені значення до useEffect
@@ -182,7 +184,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
           }}
         >
           <Typography variant="h6" color="text.secondary">
-            Виберіть чат, щоб почати спілкування
+            {t('chats.chooseChat')}
           </Typography>
         </Box>
       ) : (
@@ -262,7 +264,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
                     : null}
               </Typography>
               <Typography variant="body1" component="p" sx={{ color: 'grey', fontSize: '14px' }}>
-                {otherUser ? (otherUser?.isOnline ? 'В мережі' : 'Не в мережі') : ''}
+                {otherUser ? (otherUser?.isOnline ? t('chats.online') : t('chats.offline')) : ''}
               </Typography>
             </Box>
           </Box>
