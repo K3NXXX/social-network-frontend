@@ -74,13 +74,20 @@ export const postService = {
   ): Promise<{
     data: PostType[];
     page: number;
-    lastPage: number;
+    totalPages: number;
   }> {
     try {
       const response = await axiosInstance.get(POST_ENDPOINTS.PUBLIC_USER_POSTS(userId), {
         params: { page: pageNumber, take },
       });
-      return response.data;
+
+      const { data, page, totalPages } = response.data;
+
+      return {
+        data,
+        page,
+        totalPages,
+      };
     } catch (error) {
       console.error('Failed to fetch user posts:', error);
       throw error;

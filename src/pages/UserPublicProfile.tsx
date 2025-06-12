@@ -14,8 +14,6 @@ export default function UserPublicProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const isThisMe = currentUser?.id === userData?.id;
 
-  console.log('current', currentUser);
-
   const toggleFollowUser = async (id: string) => {
     try {
       const isNowFollowing = await userService.followUser(id);
@@ -45,7 +43,7 @@ export default function UserPublicProfile() {
       if (!userData) return;
       try {
         const currentUser = await authService.getCurrentUser();
-        const followings = await userService.getUsersFollowing(currentUser.id);
+        const followings = await userService.getUsersFollowing(currentUser?.id as string);
         const isUserFollowed = followings.some((user: User) => user.id === userData.id);
         setIsFollowing(isUserFollowed);
         setCurrentUser(currentUser);
