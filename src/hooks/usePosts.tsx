@@ -13,7 +13,7 @@ export function usePosts(
 ) {
   const [posts, setPosts] = useState<PostType[]>([]);
   const [page, setPage] = useState(1);
-  const [lastPage, setLastPage] = useState(1);
+  const [totalPages, setLastPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
@@ -35,5 +35,5 @@ export function usePosts(
     fetchPosts(1);
   }, []);
 
-  return { posts, setPosts, page, lastPage, loading, fetchPosts, loaderRef };
+  return { posts, setPosts, page, totalPages, loading, fetchPosts, loaderRef };
 }
