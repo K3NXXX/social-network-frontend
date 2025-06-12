@@ -45,6 +45,8 @@ export default function ProfilePage({
   const [tab, setTab] = useState(0);
   const { t } = useTranslation();
 
+  console.log('public blocked', blockedUsers);
+
   const displayedTabs =
     isPublicProfile && !isThisMe
       ? [t('profile.tabs.posts'), t('profile.tabs.tagged')]
@@ -57,6 +59,7 @@ export default function ProfilePage({
   };
 
   const handleUnblock = async () => {
+    if (!isPublicProfile) return;
     try {
       await userService.unblockUser(publicUserData.id);
       const updated = await userService.getBlockedUsers();
@@ -94,8 +97,15 @@ export default function ProfilePage({
       try {
         const result = await userService.getBlockedUsers();
         setBlockedUsers(result);
-        const isBlockedNow = result.some((user: any) => user.blocked?.id === publicUserData.id);
-        setIsBlocked(isBlockedNow);
+        if (publicUserData?.id) {
+          const isBlockedNow = result.some((user: any) => user.blocked?.id === publicUserData.id);
+          setIsBlocked(isBlockedNow);
+        } else if (profile?.id) {
+          const isBlockedNow = result.some((user: any) => user.blocked?.id === profile.id);
+          setIsBlocked(isBlockedNow);
+        } else {
+          setIsBlocked(false);
+        }
       } catch (error) {
         setBlockedUsers(null);
         setIsBlocked(false);
@@ -104,7 +114,7 @@ export default function ProfilePage({
     };
 
     getBlockedUsers();
-  }, [publicUserData.id]);
+  }, [publicUserData, profile]);
 
   if (loading) {
     return <GlobalLoader />;
@@ -325,6 +335,7 @@ export default function ProfilePage({
           isOpened={isShowFollowersFormOpened}
           userId={isPublicProfile ? publicUserData.id : profile.id}
           setProfile={setProfile}
+          blockedUsers={blockedUsers}
         />
       )}
 
