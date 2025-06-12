@@ -70,14 +70,13 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
           <Typography
             variant="subtitle1"
             fontWeight="bold"
-            sx={{ textAlign: 'left', display: 'block' }}
+            sx={{ textAlign: 'left', display: 'block', color: 'var(--text-color)' }}
           >
             {user.firstName} {user.lastName}
           </Typography>
           <Typography
             variant="caption"
-            color="text.secondary"
-            sx={{ textAlign: 'left', display: 'block' }}
+            sx={{ textAlign: 'left', display: 'block', color: 'var(--text-color)' }}
           >
             {formatCreatedAt(createdAt)}
           </Typography>

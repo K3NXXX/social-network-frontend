@@ -311,19 +311,53 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
             >
               <TextField
                 variant="outlined"
-                sx={{
-                  flex: 1,
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '30px',
-                    '& fieldset': {
-                      border: '1px solid #dedede',
-                    },
-                  },
-                  color: '#dedede',
-                }}
                 placeholder="Напишіть своє повідомлення тут..."
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
+                InputProps={{
+                  sx: {
+                    color: 'var(--text-color)',
+                    opacity: 0.7,
+                    borderRadius: '20px',
+                    '& input': {
+                      padding: '1.5px 0px',
+                      color: 'var(--text-color)',
+                    },
+                    '&.Mui-focused': {
+                      color: 'var(--primary-color)',
+                      opacity: 1,
+                    },
+                    '&.MuiFormLabel-filled': {
+                      color: 'var(--primary-color)',
+                    },
+                  },
+                }}
+                sx={{
+                  flex: 1,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '20px',
+                    borderColor: 'var(--border-color)',
+                    padding: 0,
+                    '& input': {
+                      paddingTop: 1.5,
+                      paddingBottom: 1.5,
+                      paddingLeft: 1.5,
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                    },
+                    '& fieldset': {
+                      borderColor: 'var(--border-color)',
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--border-color)',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '2px',
+                    },
+                  },
+                }}
               ></TextField>
               <IconButton
                 onClick={() => handleSendMessage(messageInput)}

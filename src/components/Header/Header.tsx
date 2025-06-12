@@ -12,7 +12,6 @@ import { userService } from '../../services/userService';
 import type { SearchUsers } from '../../types/user';
 import Logo from '../../ui/Logo';
 import SearchItem from '../../ui/SearchItem';
-import { ThemeToggle } from '../ThemeToggle';
 
 export default function Header() {
   const [searchValue, setSearchValue] = useState('');
@@ -103,9 +102,6 @@ export default function Header() {
               <PersonOutlineIcon sx={{ cursor: 'pointer', color: 'var(--text-color)' }} />
             </Box>
           </Box>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <ThemeToggle />
-          </Box>
           <TextField
             autoComplete="off"
             placeholder="Пошук..."
@@ -127,12 +123,21 @@ export default function Header() {
                 </InputAdornment>
               ),
               sx: {
+                color: 'var(--text-color)',
+                opacity: 0.7,
                 borderRadius: '20px',
                 padding: 0,
                 width: '350px',
                 '& input': {
                   padding: '1.5px 0px',
                   color: 'var(--text-color)',
+                },
+                '&.Mui-focused': {
+                  color: 'var(--primary-color)',
+                  opacity: 1,
+                },
+                '&.MuiFormLabel-filled': {
+                  color: 'var(--primary-color)',
                 },
               },
             }}
@@ -145,8 +150,18 @@ export default function Header() {
                   paddingTop: 1.5,
                   paddingBottom: 1.5,
                 },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                },
                 '& fieldset': {
                   borderColor: 'var(--border-color)',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--border-color)',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                  borderWidth: '2px',
                 },
               },
             }}

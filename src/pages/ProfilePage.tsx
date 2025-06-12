@@ -253,7 +253,7 @@ export default function ProfilePage({
           {tab === 0 && (
             <>
               {displayedPosts.length === 0 && !postLoading ? (
-                <Typography align="center" color="#737373">
+                <Typography align="center" sx={{ color: 'var(--text-color)', opacity: 0.7 }}>
                   Немає публікацій.
                 </Typography>
               ) : (
@@ -264,8 +264,8 @@ export default function ProfilePage({
                       sx={{
                         p: 1.5,
                         borderRadius: 2,
-                        border: '1px solid #e0e0e0',
-                        backgroundColor: 'var(--background-color)',
+                        border: '1px solid var(--border-color)',
+                        backgroundColor: 'var(--secondary-color)',
                         boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
                         display: 'flex',
                         flexDirection: 'row',
@@ -278,13 +278,20 @@ export default function ProfilePage({
                           <Typography fontWeight="bold" fontSize={15} paddingRight="4px">
                             {profile.firstName} {profile.lastName}
                           </Typography>
-                          <Typography fontSize={14} fontWeight="normal" color="#737373">
+                          <Typography
+                            fontSize={14}
+                            fontWeight="normal"
+                            sx={{ color: 'var(--text-color)', opacity: 0.7 }}
+                          >
                             @{profile.username}
                           </Typography>
-                          <Typography color="#737373" paddingX="3px">
+                          <Typography sx={{ color: 'var(--text-color)' }} paddingX="3px">
                             ·
                           </Typography>
-                          <Typography fontSize={14} color="#737373">
+                          <Typography
+                            fontSize={14}
+                            sx={{ color: 'var(--text-color)', opacity: 0.7 }}
+                          >
                             {new Date(post.createdAt).toLocaleString('uk-UA', {
                               day: 'numeric',
                               month: 'long',
@@ -327,13 +334,13 @@ export default function ProfilePage({
           )}
 
           {tab === 1 && (
-            <Typography align="center" color="#737373">
+            <Typography align="center" sx={{ color: 'var(--text-color)', opacity: 0.7 }}>
               Немає збережених публікацій.
             </Typography>
           )}
 
           {tab === 2 && (
-            <Typography align="center" color="#737373">
+            <Typography align="center" sx={{ color: 'var(--text-color)', opacity: 0.7 }}>
               Немає позначених публікацій.
             </Typography>
           )}

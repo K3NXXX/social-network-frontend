@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { 
-  Box, 
-  TextField, 
-  Button, 
-  Typography, 
-  Container, 
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Container,
   Paper,
   Link,
   Alert,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../services/AuthContext';
@@ -25,7 +25,7 @@ const Login: React.FC = () => {
     password: '',
   });
   const [submitError, setSubmitError] = useState<string | null>(null);
-  
+
   const { login, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -55,7 +55,7 @@ const Login: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -90,7 +90,7 @@ const Login: React.FC = () => {
           justifyContent: 'center',
         }}
       >
-        <Paper 
+        <Paper
           elevation={3}
           sx={{
             p: 4,
@@ -98,10 +98,11 @@ const Login: React.FC = () => {
             flexDirection: 'column',
             alignItems: 'center',
             width: '100%',
+            backgroundColor: 'var(--secondary-color)',
           }}
         >
           <Logo size="large" />
-          <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
+          <Typography component="h1" variant="h5" sx={{ mb: 2, color: 'var(--text-color)' }}>
             Увійти до СоцМережі
           </Typography>
 
@@ -110,7 +111,7 @@ const Login: React.FC = () => {
               {submitError}
             </Alert>
           )}
-          
+
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
             <TextField
               margin="normal"
@@ -126,6 +127,45 @@ const Login: React.FC = () => {
               error={!!formErrors.email}
               helperText={formErrors.email}
               disabled={loading}
+              InputLabelProps={{
+                sx: {
+                  color: 'var(--text-color)',
+                  opacity: 0.7,
+                  '&.Mui-focused': {
+                    color: 'var(--primary-color)',
+                    opacity: 1,
+                  },
+                  '&.MuiFormLabel-filled': {
+                    color: 'var(--primary-color)',
+                  },
+                },
+              }}
+              InputProps={{
+                sx: {
+                  '& input': {
+                    color: 'var(--text-color)',
+                  },
+                  '& input::placeholder': {
+                    color: 'var(--text-color)',
+                  },
+                },
+              }}
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--border-color)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                },
+                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                  borderWidth: '2px',
+                },
+                '&:hover .MuiInputLabel-root:not(.Mui-focused):not(.Mui-error):not(.MuiFormLabel-filled)':
+                  {
+                    color: 'var(--border-color-hover)',
+                  },
+              }}
             />
             <TextField
               margin="normal"
@@ -141,19 +181,63 @@ const Login: React.FC = () => {
               error={!!formErrors.password}
               helperText={formErrors.password}
               disabled={loading}
+              InputLabelProps={{
+                sx: {
+                  color: 'var(--text-color)',
+                  opacity: 0.7,
+                  '&.Mui-focused': {
+                    color: 'var(--primary-color)',
+                    opacity: 1,
+                  },
+                  '&.MuiFormLabel-filled': {
+                    color: 'var(--primary-color)',
+                  },
+                },
+              }}
+              InputProps={{
+                sx: {
+                  '& input': {
+                    color: 'var(--text-color)',
+                  },
+                  '& input::placeholder': {
+                    color: 'var(--text-color)',
+                  },
+                },
+              }}
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--border-color)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--border-color-hover)',
+                },
+                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                  borderWidth: '2px',
+                },
+                '&:hover .MuiInputLabel-root:not(.Mui-focused):not(.Mui-error):not(.MuiFormLabel-filled)':
+                  {
+                    color: 'var(--border-color-hover)',
+                  },
+              }}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, backgroundColor: 'var(--primary-color)' }}
               disabled={loading}
             >
               {loading ? <CircularProgress size={24} /> : 'Увійти'}
             </Button>
             <Box sx={{ textAlign: 'center' }}>
-              <Link component={RouterLink} to="/register" variant="body2">
-                {"Немає облікового запису? Зареєструватись"}
+              <Link
+                component={RouterLink}
+                to="/register"
+                variant="body2"
+                sx={{ color: 'var(--primary-color)' }}
+              >
+                {'Немає облікового запису? Зареєструватись'}
               </Link>
             </Box>
           </Box>
@@ -163,4 +247,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login; 
+export default Login;

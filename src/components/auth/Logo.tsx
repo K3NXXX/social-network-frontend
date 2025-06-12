@@ -18,12 +18,7 @@ const Logo: React.FC<LogoProps> = ({ size = 'medium' }) => {
   };
 
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      mb={2}
-    >
+    <Box display="flex" alignItems="center" justifyContent="center" mb={2}>
       <Typography
         variant="h4"
         component="div"
@@ -34,10 +29,10 @@ const Logo: React.FC<LogoProps> = ({ size = 'medium' }) => {
           letterSpacing: '0.5px',
         }}
       >
-        <span style={{ color: '#444' }}>Соц</span>Мережа
+        <span style={{ color: 'var(--text-color)' }}>Соц</span>Мережа
       </Typography>
     </Box>
   );
 };
 
-export default Logo; 
+export default Logo;

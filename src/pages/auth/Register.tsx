@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { 
-  Box, 
-  TextField, 
-  Button, 
-  Typography, 
-  Container, 
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Container,
   Paper,
   Link,
   Alert,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../services/AuthContext';
@@ -21,17 +21,17 @@ const Register: React.FC = () => {
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
   const [formErrors, setFormErrors] = useState({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
   const [submitError, setSubmitError] = useState<string | null>(null);
-  
+
   const { register, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -42,7 +42,7 @@ const Register: React.FC = () => {
       lastName: '',
       email: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
     };
 
     if (!formData.firstName.trim()) {
@@ -57,12 +57,12 @@ const Register: React.FC = () => {
       errors.lastName = "Прізвище обов'язкове";
       valid = false;
     } else if (formData.lastName.length < 2) {
-      errors.lastName = "Прізвище має бути довшим за 1 символ";
+      errors.lastName = 'Прізвище має бути довшим за 1 символ';
       valid = false;
     }
 
     if (!formData.email) {
-      errors.email = 'Електронна пошта обов\'язкова';
+      errors.email = "Електронна пошта обов'язкова";
       valid = false;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       errors.email = 'Електронна пошта невірна';
@@ -70,7 +70,7 @@ const Register: React.FC = () => {
     }
 
     if (!formData.password) {
-      errors.password = 'Пароль обов\'язковий';
+      errors.password = "Пароль обов'язковий";
       valid = false;
     } else if (formData.password.length < 8) {
       errors.password = 'Пароль має бути довшим за 7 символів';
@@ -88,7 +88,7 @@ const Register: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -106,7 +106,7 @@ const Register: React.FC = () => {
         lastName: formData.lastName,
         email: formData.email,
         password: formData.password,
-        confirmPassword: formData.confirmPassword
+        confirmPassword: formData.confirmPassword,
       });
       navigate('/');
     } catch (error) {
@@ -126,7 +126,7 @@ const Register: React.FC = () => {
           justifyContent: 'center',
         }}
       >
-        <Paper 
+        <Paper
           elevation={3}
           sx={{
             p: 4,
@@ -134,10 +134,11 @@ const Register: React.FC = () => {
             flexDirection: 'column',
             alignItems: 'center',
             width: '100%',
+            backgroundColor: 'var(--secondary-color)',
           }}
         >
           <Logo size="large" />
-          <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
+          <Typography component="h1" variant="h5" sx={{ mb: 2, color: 'var(--text-color)' }}>
             Зареєструватись у СоцМережі
           </Typography>
 
@@ -146,7 +147,7 @@ const Register: React.FC = () => {
               {submitError}
             </Alert>
           )}
-          
+
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
             <TextField
               margin="normal"
@@ -162,6 +163,45 @@ const Register: React.FC = () => {
               error={!!formErrors.firstName}
               helperText={formErrors.firstName}
               disabled={loading}
+              InputLabelProps={{
+                sx: {
+                  color: 'var(--text-color)',
+                  opacity: 0.7,
+                  '&.Mui-focused': {
+                    color: 'var(--primary-color)',
+                    opacity: 1,
+                  },
+                  '&.MuiFormLabel-filled': {
+                    color: 'var(--primary-color)',
+                  },
+                },
+              }}
+              InputProps={{
+                sx: {
+                  '& input': {
+                    color: 'var(--text-color)',
+                  },
+                  '& input::placeholder': {
+                    color: 'var(--text-color)',
+                  },
+                },
+              }}
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--border-color)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                },
+                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                  borderWidth: '2px',
+                },
+                '&:hover .MuiInputLabel-root:not(.Mui-focused):not(.Mui-error):not(.MuiFormLabel-filled)':
+                  {
+                    color: 'var(--primary-color)',
+                  },
+              }}
             />
             <TextField
               margin="normal"
@@ -176,6 +216,45 @@ const Register: React.FC = () => {
               error={!!formErrors.lastName}
               helperText={formErrors.lastName}
               disabled={loading}
+              InputLabelProps={{
+                sx: {
+                  color: 'var(--text-color)',
+                  opacity: 0.7,
+                  '&.Mui-focused': {
+                    color: 'var(--primary-color)',
+                    opacity: 1,
+                  },
+                  '&.MuiFormLabel-filled': {
+                    color: 'var(--primary-color)',
+                  },
+                },
+              }}
+              InputProps={{
+                sx: {
+                  '& input': {
+                    color: 'var(--text-color)',
+                  },
+                  '& input::placeholder': {
+                    color: 'var(--text-color)',
+                  },
+                },
+              }}
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--border-color)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                },
+                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                  borderWidth: '2px',
+                },
+                '&:hover .MuiInputLabel-root:not(.Mui-focused):not(.Mui-error):not(.MuiFormLabel-filled)':
+                  {
+                    color: 'var(--primary-color)',
+                  },
+              }}
             />
             <TextField
               margin="normal"
@@ -190,6 +269,45 @@ const Register: React.FC = () => {
               error={!!formErrors.email}
               helperText={formErrors.email}
               disabled={loading}
+              InputLabelProps={{
+                sx: {
+                  color: 'var(--text-color)',
+                  opacity: 0.7,
+                  '&.Mui-focused': {
+                    color: 'var(--primary-color)',
+                    opacity: 1,
+                  },
+                  '&.MuiFormLabel-filled': {
+                    color: 'var(--primary-color)',
+                  },
+                },
+              }}
+              InputProps={{
+                sx: {
+                  '& input': {
+                    color: 'var(--text-color)',
+                  },
+                  '& input::placeholder': {
+                    color: 'var(--text-color)',
+                  },
+                },
+              }}
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--border-color)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                },
+                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                  borderWidth: '2px',
+                },
+                '&:hover .MuiInputLabel-root:not(.Mui-focused):not(.Mui-error):not(.MuiFormLabel-filled)':
+                  {
+                    color: 'var(--primary-color)',
+                  },
+              }}
             />
             <TextField
               margin="normal"
@@ -205,6 +323,45 @@ const Register: React.FC = () => {
               error={!!formErrors.password}
               helperText={formErrors.password}
               disabled={loading}
+              InputLabelProps={{
+                sx: {
+                  color: 'var(--text-color)',
+                  opacity: 0.7,
+                  '&.Mui-focused': {
+                    color: 'var(--primary-color)',
+                    opacity: 1,
+                  },
+                  '&.MuiFormLabel-filled': {
+                    color: 'var(--primary-color)',
+                  },
+                },
+              }}
+              InputProps={{
+                sx: {
+                  '& input': {
+                    color: 'var(--text-color)',
+                  },
+                  '& input::placeholder': {
+                    color: 'var(--text-color)',
+                  },
+                },
+              }}
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--border-color)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                },
+                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                  borderWidth: '2px',
+                },
+                '&:hover .MuiInputLabel-root:not(.Mui-focused):not(.Mui-error):not(.MuiFormLabel-filled)':
+                  {
+                    color: 'var(--primary-color)',
+                  },
+              }}
             />
             <TextField
               margin="normal"
@@ -220,19 +377,63 @@ const Register: React.FC = () => {
               error={!!formErrors.confirmPassword}
               helperText={formErrors.confirmPassword}
               disabled={loading}
+              InputLabelProps={{
+                sx: {
+                  color: 'var(--text-color)',
+                  opacity: 0.7,
+                  '&.Mui-focused': {
+                    color: 'var(--primary-color)',
+                    opacity: 1,
+                  },
+                  '&.MuiFormLabel-filled': {
+                    color: 'var(--primary-color)',
+                  },
+                },
+              }}
+              InputProps={{
+                sx: {
+                  '& input': {
+                    color: 'var(--text-color)',
+                  },
+                  '& input::placeholder': {
+                    color: 'var(--text-color)',
+                  },
+                },
+              }}
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--border-color)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                },
+                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--primary-color)',
+                  borderWidth: '2px',
+                },
+                '&:hover .MuiInputLabel-root:not(.Mui-focused):not(.Mui-error):not(.MuiFormLabel-filled)':
+                  {
+                    color: 'var(--primary-color)',
+                  },
+              }}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, backgroundColor: 'var(--primary-color)' }}
               disabled={loading}
             >
               {loading ? <CircularProgress size={24} /> : 'Зареєструватись'}
             </Button>
             <Box sx={{ textAlign: 'center' }}>
-              <Link component={RouterLink} to="/login" variant="body2">
-                {"Вже маєте обліковий запис? Увійти"}
+              <Link
+                component={RouterLink}
+                to="/login"
+                variant="body2"
+                sx={{ color: 'var(--primary-color)' }}
+              >
+                {'Вже маєте обліковий запис? Увійти'}
               </Link>
             </Box>
           </Box>
@@ -242,4 +443,4 @@ const Register: React.FC = () => {
   );
 };
 
-export default Register; 
+export default Register;

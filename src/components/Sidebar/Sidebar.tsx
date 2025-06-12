@@ -5,12 +5,16 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
 import { sidebarList } from '../../lists/sidebar.list';
 import { authService } from '../../services/authService';
+import { useTheme } from '../../contexts/ThemeContext';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import Logo from '../../ui/Logo';
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
 
@@ -100,6 +104,35 @@ export default function Sidebar() {
               </Link>
             );
           })}
+      </Box>
+
+      <Box
+        onClick={toggleTheme}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: isCollapsed ? 0 : '20px',
+          padding: '10px 8px',
+          borderRadius: 4,
+          width: '100%',
+          marginBottom: '10px',
+          cursor: 'pointer',
+          '&:hover': {
+            backgroundColor: '#2a2340',
+          },
+          justifyContent: isCollapsed ? 'center' : 'flex-start',
+        }}
+      >
+        {theme === 'light' ? (
+          <DarkModeIcon sx={{ color: 'white', fontSize: '30px' }} />
+        ) : (
+          <LightModeIcon sx={{ color: 'white', fontSize: '30px' }} />
+        )}
+        {!isCollapsed && (
+          <Typography sx={{ color: 'white', fontSize: '17px' }}>
+            {theme === 'light' ? 'Темна тема' : 'Світла тема'}
+          </Typography>
+        )}
       </Box>
 
       {sidebarList
