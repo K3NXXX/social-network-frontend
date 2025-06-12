@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { userService } from '../../services/userService';
 import type { UserPublicProfile } from '../../types/user';
+import ShareProfileMenu from './ShareProfileMenu';
 
 interface IPublicUserOptionsMenuProps {
   isOpened: boolean;
@@ -11,6 +12,9 @@ interface IPublicUserOptionsMenuProps {
   setPublicUserData?: React.Dispatch<React.SetStateAction<UserPublicProfile>>;
   onBlocked?: () => void;
   toggleFollowUser: (id: string) => void;
+  isFollowing: boolean;
+  isBlocked: boolean;
+  handleUnblock: () => void;
 }
 
 export default function PublicUserOptionsMenu({
@@ -20,15 +24,24 @@ export default function PublicUserOptionsMenu({
   setPublicUserData,
   onBlocked,
   toggleFollowUser,
+  isFollowing,
+  isBlocked,
+  handleUnblock,
 }: IPublicUserOptionsMenuProps) {
   const { t } = useTranslation();
   const [isConfirmBlockingUser, setIsConfirmBlockingUser] = useState(false);
+  const [isShareMenuOpened, setIsShareMenuOpened] = useState(false);
 
   const handleBlockUser = async (userId: string) => {
     await userService.blockUser(userId);
-    toggleFollowUser(userId);
+    if (isFollowing) toggleFollowUser(userId);
     setPublicUserData?.((prev) => (prev ? { ...prev, isBlocked: true } : prev));
     onBlocked?.();
+    onClose(false);
+  };
+
+  const handleUnblockUser = () => {
+    handleUnblock();
     onClose(false);
   };
   return (
@@ -50,29 +63,56 @@ export default function PublicUserOptionsMenu({
           }}
         >
           <Box display="flex" flexDirection="column" alignItems="center">
-            <Button
-              onClick={() => setIsConfirmBlockingUser(true)}
-              sx={{
-                padding: '15px 0',
-                width: '100%',
-                borderBottom: '1px solid #2c2a4a',
-                outline: 'none',
-              }}
-            >
-              <Typography
+            {isBlocked ? (
+              <Button
+                onClick={handleUnblockUser}
                 sx={{
-                  color: '#fc4f4f',
-                  fontFamily: 'Ubuntu, sans-serif',
-                  fontSize: 16,
-                  fontWeight: 500,
-                  userSelect: 'none',
-                  textAlign: 'center',
+                  padding: '15px 0',
+                  width: '100%',
+                  borderBottom: '1px solid #2c2a4a',
+                  outline: 'none',
                 }}
               >
-                Заблокувати користувача
-              </Typography>
-            </Button>
+                <Typography
+                  sx={{
+                    color: '#fc4f4f',
+                    fontFamily: 'Ubuntu, sans-serif',
+                    fontSize: 16,
+                    fontWeight: 500,
+                    userSelect: 'none',
+                    textAlign: 'center',
+                  }}
+                >
+                  Розблокувати користувача
+                </Typography>
+              </Button>
+            ) : (
+              <Button
+                onClick={() => setIsConfirmBlockingUser(true)}
+                sx={{
+                  padding: '15px 0',
+                  width: '100%',
+                  borderBottom: '1px solid #2c2a4a',
+                  outline: 'none',
+                }}
+              >
+                <Typography
+                  sx={{
+                    color: '#fc4f4f',
+                    fontFamily: 'Ubuntu, sans-serif',
+                    fontSize: 16,
+                    fontWeight: 500,
+                    userSelect: 'none',
+                    textAlign: 'center',
+                  }}
+                >
+                  Заблокувати користувача
+                </Typography>
+              </Button>
+            )}
+
             <Button
+              onClick={() => setIsShareMenuOpened(true)}
               sx={{
                 padding: '15px 0',
                 width: '100%',
@@ -187,6 +227,14 @@ export default function PublicUserOptionsMenu({
             </Button>
           </Box>
         </Dialog>
+      )}
+
+      {isShareMenuOpened && (
+        <ShareProfileMenu
+          publicUserData={publicUserData}
+          open={isShareMenuOpened}
+          onClose={() => setIsShareMenuOpened(false)}
+        />
       )}
     </>
   );

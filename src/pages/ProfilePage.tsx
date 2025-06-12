@@ -356,6 +356,9 @@ export default function ProfilePage({
           setPublicUserData={setPublicUserData}
           onBlocked={() => setIsBlocked(true)}
           toggleFollowUser={toggleFollowUser}
+          isFollowing={isFollowing}
+          isBlocked={isBlocked}
+          handleUnblock={handleUnblock}
         />
       )}
     </Container>
