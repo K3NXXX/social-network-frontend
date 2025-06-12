@@ -2,6 +2,7 @@ import React from 'react';
 import Post from './Post';
 import { Box, CircularProgress } from '@mui/material';
 import type { PostType } from '../../types/post';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   posts: PostType[];
@@ -10,6 +11,8 @@ type Props = {
 };
 
 const PostsList: React.FC<Props> = ({ posts, loading, onDelete }) => {
+  const { t } = useTranslation();
+
   if (!posts.length && loading) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
@@ -21,7 +24,7 @@ const PostsList: React.FC<Props> = ({ posts, loading, onDelete }) => {
   if (!posts.length && !loading) {
     return (
       <Box textAlign="center" mt={4}>
-        <p>Постів ще немає.</p>
+        <p>{t('posts.emptyPostsLabel')}</p>
       </Box>
     );
   }

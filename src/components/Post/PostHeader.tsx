@@ -17,6 +17,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import type { User } from '../../types/post';
 import { formatCreatedAt } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 
 interface Props {
   user: User;
@@ -30,7 +31,7 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [, setCurrentTime] = useState(Date.now());
-
+  const locale = i18n.language;
   const open = Boolean(anchorEl);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -81,7 +82,7 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
             color="text.secondary"
             sx={{ textAlign: 'left', display: 'block' }}
           >
-            {formatCreatedAt(createdAt)}
+            {formatCreatedAt(createdAt, locale as 'uk' | 'en')}
           </Typography>
         </Box>
       </Stack>

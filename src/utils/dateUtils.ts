@@ -1,11 +1,13 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/uk';
+import 'dayjs/locale/en';
 
 dayjs.extend(relativeTime);
-dayjs.locale('uk');
 
-export const formatCreatedAt = (createdAt: string) => {
+export const formatCreatedAt = (createdAt: string, locale: 'uk' | 'en' = 'en') => {
+  dayjs.locale(locale);
+
   const date = dayjs(createdAt);
   const now = dayjs();
 

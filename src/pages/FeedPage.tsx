@@ -5,9 +5,11 @@ import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { postService } from '../services/postService';
 import CreatePostCard from '../components/Post/CreatePostCard';
 import { usePosts } from '../hooks/usePosts';
+import { useTranslation } from 'react-i18next';
 
 const FeedPage: React.FC = () => {
   const [showDiscover, setShowDiscover] = useState(false);
+  const { t } = useTranslation();
 
   const {
     posts: feedPosts,
@@ -83,7 +85,7 @@ const FeedPage: React.FC = () => {
           <>
             <Divider sx={{ my: 4 }} />
             <Typography variant="h6" align="center" color="text.secondary" mb={4}>
-              Більше немає постів від тих, за ким ви стежите. Ось цікаві публікації для вас:
+              {t('posts.feedEndDiscoverLabel')}
             </Typography>
             <PostsList posts={discoverPosts} loading={loadingDiscover} onDelete={handleDelete} />
           </>
