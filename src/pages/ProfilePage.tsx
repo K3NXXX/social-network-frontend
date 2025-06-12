@@ -204,7 +204,7 @@ export default function ProfilePage({
                   {t('profile.viewArchiveLabel')}
                 </NoOutlineButton>
               )}
-              {isPublicProfile && (
+              {isPublicProfile && !isThisMe && (
                 <Box
                   onClick={() => setIsPublicUserMenuOpened(true)}
                   sx={{
