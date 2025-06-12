@@ -6,12 +6,13 @@ import { useNavigate } from 'react-router-dom';
 import UserPosts from '../components/Post/UserPosts.tsx';
 import ShowFollowersForm from '../components/user/ShowFollowersForm.tsx';
 import ShowFollowingsForm from '../components/user/ShowFollowingsForm.tsx';
+import { PAGES } from '../constants/pages.constants.ts';
 import { useAuth } from '../services/AuthContext.tsx';
 import axiosInstance from '../services/axiosConfig.ts';
 import type { UserPublicProfile } from '../types/user.ts';
 import GlobalLoader from '../ui/GlobalLoader.tsx';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
-import { PAGES } from '../constants/pages.constants.ts';
+import PublicUserOptionsMenu from '../components/user/PublicUserOptionsMenu.tsx';
 
 interface IProfilePageProps {
   isPublicProfile: boolean;
@@ -33,6 +34,7 @@ export default function ProfilePage({
   const [error, setError] = useState<string | null>(null);
   const [isShowFollowersFormOpened, setIsShowFollowersFormOpened] = useState(false);
   const [isShowFollowingsFormOpened, setIsShowFollowingsFormOpened] = useState(false);
+  const [isPublicUserMenuOpened, setIsPublicUserMenuOpened] = useState(false);
   const { logout } = useAuth();
   const [tab, setTab] = useState(0);
   const { t } = useTranslation();
@@ -145,6 +147,7 @@ export default function ProfilePage({
               )}
               {isPublicProfile && (
                 <Box
+                  onClick={() => setIsPublicUserMenuOpened(true)}
                   sx={{
                     backgroundColor: '#aaaaaa',
                     padding: '5px',
@@ -279,6 +282,13 @@ export default function ProfilePage({
           isOpened={isShowFollowingsFormOpened}
           userId={isPublicProfile ? publicUserData.id : profile.id}
           setProfile={setProfile}
+        />
+      )}
+
+      {isPublicUserMenuOpened && (
+        <PublicUserOptionsMenu
+          onClose={() => setIsPublicUserMenuOpened(false)}
+          isOpened={PublicUserOptionsMenu}
         />
       )}
     </Container>
