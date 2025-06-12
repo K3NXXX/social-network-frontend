@@ -1,4 +1,4 @@
-import { Box, Typography, TextField, InputAdornment } from '@mui/material';
+import { Avatar, Box, MenuItem, Select, type SelectChangeEvent, Typography, TextField, InputAdornment } from '@mui/material';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ChatBar from '../components/chats/ChatBar';
 import ChatScreen from '../components/chats/ChatScreen';
@@ -71,7 +71,7 @@ const ChatsPage: React.FC = () => {
         // const data = await chatsService.fetchAllUsers();
         // setUsers(data);
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching user:', error);
       }
     };
 

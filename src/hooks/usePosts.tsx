@@ -9,7 +9,8 @@ interface FetchPostsResponse {
 
 export function usePosts(
   fetchFunction: (page: number, take: number) => Promise<FetchPostsResponse>,
-  take = 5
+  take = 5,
+  deps: any[] = []
 ) {
   const [posts, setPosts] = useState<PostType[]>([]);
   const [page, setPage] = useState(1);
@@ -32,8 +33,9 @@ export function usePosts(
   };
 
   useEffect(() => {
+    setPosts([]);
     fetchPosts(1);
-  }, []);
+  }, deps);
 
   return { posts, setPosts, page, totalPages, loading, fetchPosts, loaderRef };
 }

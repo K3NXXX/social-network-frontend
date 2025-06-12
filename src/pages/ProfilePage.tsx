@@ -4,15 +4,14 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import UserPosts from '../components/Post/UserPosts.tsx';
-import ShowFollowersForm from '../components/users/ShowFollowersForm.tsx';
-import ShowFollowingsForm from '../components/users/ShowFollowingsForm.tsx';
+import ShowFollowersForm from '../components/user/ShowFollowersForm.tsx';
+import ShowFollowingsForm from '../components/user/ShowFollowingsForm.tsx';
 import { useAuth } from '../services/AuthContext.tsx';
 import axiosInstance from '../services/axiosConfig.ts';
 import type { UserPublicProfile } from '../types/user.ts';
 import GlobalLoader from '../ui/GlobalLoader.tsx';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
 import { PAGES } from '../constants/pages.constants.ts';
-import type { User } from '../types/auth.ts';
 
 interface IProfilePageProps {
   isPublicProfile: boolean;

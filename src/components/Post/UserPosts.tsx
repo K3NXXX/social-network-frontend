@@ -3,8 +3,8 @@ import React from 'react';
 import type { UserPublicProfile } from '../../types/user.ts';
 import { usePosts } from '../../hooks/usePosts.tsx';
 import { postService } from '../../services/postService.ts';
-import UserPost from './UserPost.tsx';
 import { useTranslation } from 'react-i18next';
+import Post from './Post.tsx';
 
 type Props = {
   isPublicProfile: boolean;
@@ -18,7 +18,11 @@ const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData }) => {
     ? () => postService.fetchPublicUserPosts(publicUserData?.id)
     : () => postService.fetchUserPosts();
 
-  const { posts, loading } = usePosts(postFetcher);
+  const { posts, setPosts, loading } = usePosts(postFetcher, 5, [publicUserData?.id]);
+
+  const handleDelete = (postId: string) => {
+    setPosts((prev) => prev.filter((post) => post.id !== postId));
+  };
 
   if (!posts && loading) {
     return (
@@ -40,7 +44,7 @@ const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData }) => {
     <Box display="flex" flexDirection="column">
       {posts.map((post: any, index: number) => (
         <Box key={post.id + index}>
-          <UserPost post={post} />
+          <Post post={post} onDelete={handleDelete} />
         </Box>
       ))}
     </Box>
