@@ -13,7 +13,7 @@ export default function UserPublicProfile() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const isThisMe = currentUser?.id === userData?.id;
-
+  const [blockedMessage, setBlockedMessage] = useState(false);
   const toggleFollowUser = async (id: string) => {
     try {
       const isNowFollowing = await userService.followUser(id);
@@ -31,7 +31,11 @@ export default function UserPublicProfile() {
       try {
         const data = await userService.getUserPublicProfile(id);
         setUserData(data);
-      } catch {
+      } catch (error: any) {
+        if (error.response.data.message === 'You are blocked by this user.') {
+          setBlockedMessage(true);
+        }
+        console.log('error getting user profile', error);
         setUserData(null);
       }
     };
@@ -56,8 +60,18 @@ export default function UserPublicProfile() {
     checkIfFollowing();
   }, [userData]);
 
-  if (!userData) {
+  if (!userData && !blockedMessage) {
     return <CircularProgress />;
+  }
+
+  if (blockedMessage) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px' }}>
+        <p style={{ color: 'gray', fontSize: '18px' }}>
+          Цей користувач заблокував вас. Ви не можете переглядати його профіль.
+        </p>
+      </div>
+    );
   }
 
   return (
