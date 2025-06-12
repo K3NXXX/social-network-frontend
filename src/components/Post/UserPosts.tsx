@@ -15,7 +15,7 @@ const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData }) => {
     ? () => postService.fetchPublicUserPosts(publicUserData?.id)
     : () => postService.fetchUserPosts();
 
-  const { posts, setPosts, loading } = usePosts(postFetcher);
+  const { posts, setPosts, loading } = usePosts(postFetcher, 5, [publicUserData?.id]);
 
   const handleDelete = (postId: string) => {
     setPosts((prev) => prev.filter((post) => post.id !== postId));
