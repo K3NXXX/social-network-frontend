@@ -345,6 +345,7 @@ export default function ProfilePage({
           isOpened={isShowFollowingsFormOpened}
           userId={isPublicProfile ? publicUserData.id : profile.id}
           setProfile={setProfile}
+          blockedUsers={blockedUsers}
         />
       )}
 

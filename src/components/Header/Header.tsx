@@ -99,7 +99,9 @@ export default function Header() {
               </Link>
             </Box>
             <Box sx={{ cursor: 'pointer' }}>
-              <PersonOutlineIcon sx={{ cursor: 'pointer' }} />
+              <Link style={{ textDecoration: 'none' }} to={PAGES.PROFILE}>
+                <PersonOutlineIcon sx={{ cursor: 'pointer', color: 'black' }} />
+              </Link>
             </Box>
           </Box>
           <TextField
