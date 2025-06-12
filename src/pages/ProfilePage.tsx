@@ -223,7 +223,7 @@ export default function ProfilePage({
           <Box display="flex" gap={4} marginTop="32px" marginBottom="20px">
             <Box display="flex" gap={0.5}>
               <Typography fontWeight="bold" fontSize="15px">
-                {isPublicProfile ? publicUserData.posts : profile.posts}
+                {isBlocked ? 0 : isPublicProfile ? publicUserData.posts : profile.posts}
               </Typography>
               <Typography color="#737373" fontSize="15px">
                 {t('profile.postsLabel')}
@@ -235,10 +235,10 @@ export default function ProfilePage({
               }}
               display="flex"
               gap={0.5}
-              sx={{ cursor: 'pointer' }}
+              sx={{ cursor: isBlocked ? '' : 'pointer' }}
             >
               <Typography fontWeight="bold" fontSize="15px">
-                {isPublicProfile ? publicUserData.followers : profile.followers}
+                {isBlocked ? 0 : isPublicProfile ? publicUserData.followers : profile.followers}
               </Typography>
               <Typography color="#737373" fontSize="15px">
                 {t('profile.followersLabel')}
@@ -251,10 +251,10 @@ export default function ProfilePage({
               }}
               display="flex"
               gap={0.5}
-              sx={{ cursor: 'pointer' }}
+              sx={{ cursor: isBlocked ? '' : 'pointer' }}
             >
               <Typography fontWeight="bold" fontSize="15px">
-                {isPublicProfile ? publicUserData.following : profile.following}
+                {isBlocked ? 0 : isPublicProfile ? publicUserData.following : profile.following}
               </Typography>
               <Typography color="#737373" fontSize="15px">
                 {t('profile.followingsLabel')}
@@ -329,7 +329,7 @@ export default function ProfilePage({
           )}
         </Box>
       </Box>
-      {isShowFollowersFormOpened && (
+      {isShowFollowersFormOpened && !isBlocked && (
         <ShowFollowersForm
           onClose={() => setIsShowFollowersFormOpened(false)}
           isOpened={isShowFollowersFormOpened}
@@ -339,7 +339,7 @@ export default function ProfilePage({
         />
       )}
 
-      {isShowFollowingsFormOpened && (
+      {isShowFollowingsFormOpened && !isBlocked && (
         <ShowFollowingsForm
           onClose={() => setIsShowFollowingsFormOpened(false)}
           isOpened={isShowFollowingsFormOpened}
