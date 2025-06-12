@@ -1,23 +1,17 @@
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import {
-  Avatar,
-  Box,
-  CircularProgress,
-  Container,
-  Divider,
-  Tab,
-  Tabs,
-  Typography,
-} from '@mui/material';
+import { Avatar, Box, Container, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { usePosts } from '../hooks/usePosts.tsx';
+import UserPosts from '../components/Post/UserPosts.tsx';
+import ShowFollowersForm from '../components/user/ShowFollowersForm.tsx';
+import ShowFollowingsForm from '../components/user/ShowFollowingsForm.tsx';
 import { useAuth } from '../services/AuthContext.tsx';
 import axiosInstance from '../services/axiosConfig.ts';
-import { postService } from '../services/postService.ts';
 import type { UserPublicProfile } from '../types/user.ts';
 import GlobalLoader from '../ui/GlobalLoader.tsx';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
+import { PAGES } from '../constants/pages.constants.ts';
 
 interface IProfilePageProps {
   isPublicProfile: boolean;
@@ -37,24 +31,17 @@ export default function ProfilePage({
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isShowFollowersFormOpened, setIsShowFollowersFormOpened] = useState(false);
+  const [isShowFollowingsFormOpened, setIsShowFollowingsFormOpened] = useState(false);
   const { logout } = useAuth();
   const [tab, setTab] = useState(0);
+  const { t } = useTranslation();
   const displayedTabs =
-    isPublicProfile && !isThisMe ? ['Пости', 'Позначене'] : ['Пости', 'Збережене', 'Позначене'];
+    isPublicProfile && !isThisMe
+      ? [t('profile.tabs.posts'), t('profile.tabs.tagged')]
+      : [t('profile.tabs.posts'), t('profile.tabs.saved'), t('profile.tabs.tagged')];
 
   const navigate = useNavigate();
-
-  const {
-    posts,
-    // setPosts,
-    // page,
-    // lastPage,
-    loading: postLoading,
-    // fetchPosts,
-    loaderRef,
-  } = usePosts(postService.fetchUserPosts);
-
-  const displayedPosts = isPublicProfile ? publicUserData?.posts || [] : posts;
 
   const handleChangeTab = (_: any, newValue: number) => {
     setTab(newValue);
@@ -64,7 +51,6 @@ export default function ProfilePage({
     const fetchProfile = async () => {
       try {
         const response = await axiosInstance.get('/api/user/profile');
-        console.log(response.data);
         setProfile(response.data);
       } catch (err: any) {
         console.error('Profile fetch error:', err);
@@ -97,10 +83,13 @@ export default function ProfilePage({
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth={false} sx={{ maxWidth: '935px', py: 4 }}>
       <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} alignItems="center" gap={4}>
         <Box width={220} display="flex" justifyContent="center" alignItems="center">
-          <Avatar src={profile.avatarUrl} sx={{ width: 120, height: 120 }} />
+          <Avatar
+            src={isPublicProfile ? publicUserData?.avatarUrl : profile?.avatarUrl}
+            sx={{ width: 120, height: 120 }}
+          />
         </Box>
         <Box flex={1}>
           <Box display="flex" alignItems="center" flexWrap="wrap" position={'relative'}>
@@ -133,30 +122,25 @@ export default function ProfilePage({
                   size="small"
                   sx={{ backgroundColor: isFollowing ? 'var(--primary-color)' : '' }}
                 >
-                  Стежити
+                  {isFollowing ? t('profile.followingLabel') : t('profile.followLabel')}
                 </NoOutlineButton>
               ) : (
                 <NoOutlineButton
                   variant="contained"
                   size="small"
-                  sx={{ backgroundColor: 'var(--primary-color)' }}
-                  onClick={() => navigate('/profile/edit')}
+                  onClick={() => navigate(PAGES.EDIT_PROFILE)}
                 >
-                  Редагувати профіль
+                  {t('profile.editProfileLabel')}
                 </NoOutlineButton>
               )}
 
               {isPublicProfile && !isThisMe ? (
                 <NoOutlineButton variant="contained" size="small">
-                  Повідомлення
+                  {t('profile.messageLabel')}
                 </NoOutlineButton>
               ) : (
-                <NoOutlineButton
-                  variant="contained"
-                  size="small"
-                  sx={{ backgroundColor: 'var(--primary-color)' }}
-                >
-                  Переглянути архів
+                <NoOutlineButton variant="contained" size="small">
+                  {t('profile.viewArchiveLabel')}
                 </NoOutlineButton>
               )}
               {isPublicProfile && (
@@ -177,28 +161,41 @@ export default function ProfilePage({
           <Box display="flex" gap={4} marginTop="32px" marginBottom="20px">
             <Box display="flex" gap={0.5}>
               <Typography fontWeight="bold" fontSize="15px">
-                {isPublicProfile ? publicUserData.posts.length : profile.posts.length}
+                {isPublicProfile ? publicUserData.posts : profile.posts}
               </Typography>
-              <Typography sx={{ color: 'var(--text-color)', fontSize: '15px' }}>
-                публікацій
+              <Typography color="#737373" fontSize="15px">
+                {t('profile.postsLabel')}
               </Typography>
             </Box>
-
-            <Box display="flex" gap={0.5}>
+            <Box
+              onClick={() => {
+                setIsShowFollowersFormOpened(true);
+              }}
+              display="flex"
+              gap={0.5}
+              sx={{ cursor: 'pointer' }}
+            >
               <Typography fontWeight="bold" fontSize="15px">
                 {isPublicProfile ? publicUserData.followers : profile.followers}
               </Typography>
-              <Typography sx={{ color: 'var(--text-color)', fontSize: '15px' }}>
-                підписників
+              <Typography color="#737373" fontSize="15px">
+                {t('profile.followersLabel')}
               </Typography>
             </Box>
 
-            <Box display="flex" gap={0.5}>
+            <Box
+              onClick={() => {
+                setIsShowFollowingsFormOpened(true);
+              }}
+              display="flex"
+              gap={0.5}
+              sx={{ cursor: 'pointer' }}
+            >
               <Typography fontWeight="bold" fontSize="15px">
                 {isPublicProfile ? publicUserData.following : profile.following}
               </Typography>
-              <Typography sx={{ color: 'var(--text-color)', fontSize: '15px' }}>
-                підписок
+              <Typography color="#737373" fontSize="15px">
+                {t('profile.followingsLabel')}
               </Typography>
             </Box>
           </Box>
@@ -252,100 +249,40 @@ export default function ProfilePage({
         <Box mt={2}>
           {tab === 0 && (
             <>
-              {displayedPosts.length === 0 && !postLoading ? (
-                <Typography align="center" sx={{ color: 'var(--text-color)', opacity: 0.7 }}>
-                  Немає публікацій.
-                </Typography>
-              ) : (
-                <Box display="flex" flexDirection="column" gap={2}>
-                  {displayedPosts.map((post: any) => (
-                    <Box
-                      key={post.id}
-                      sx={{
-                        p: 1.5,
-                        borderRadius: 2,
-                        border: '1px solid var(--border-color)',
-                        backgroundColor: 'var(--secondary-color)',
-                        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        gap: 1,
-                      }}
-                    >
-                      <Avatar src={profile.avatarUrl} sx={{ width: 36, height: 36 }} />
-                      <Box display="flex" flexDirection="column" alignItems="start">
-                        <Box display="flex" alignItems="center" flexWrap="wrap">
-                          <Typography fontWeight="bold" fontSize={15} paddingRight="4px">
-                            {profile.firstName} {profile.lastName}
-                          </Typography>
-                          <Typography
-                            fontSize={14}
-                            fontWeight="normal"
-                            sx={{ color: 'var(--text-color)', opacity: 0.7 }}
-                          >
-                            @{profile.username}
-                          </Typography>
-                          <Typography sx={{ color: 'var(--text-color)' }} paddingX="3px">
-                            ·
-                          </Typography>
-                          <Typography
-                            fontSize={14}
-                            sx={{ color: 'var(--text-color)', opacity: 0.7 }}
-                          >
-                            {new Date(post.createdAt).toLocaleString('uk-UA', {
-                              day: 'numeric',
-                              month: 'long',
-                            })}
-                          </Typography>
-                        </Box>
-
-                        {post.content && (
-                          <Typography fontSize={15} textAlign="left">
-                            {post.content}
-                          </Typography>
-                        )}
-
-                        {post.photo && (
-                          <Box
-                            component="img"
-                            src={post.photo}
-                            alt="Пост"
-                            sx={{
-                              width: '100%',
-                              borderRadius: 4,
-                              objectFit: 'cover',
-                              maxHeight: 500,
-                              mt: 1,
-                            }}
-                          />
-                        )}
-                      </Box>
-                    </Box>
-                  ))}
-                </Box>
-              )}
-              {postLoading && (
-                <Box display="flex" justifyContent="center" my={2}>
-                  <CircularProgress />
-                </Box>
-              )}
-              <div ref={loaderRef} />
+              <UserPosts isPublicProfile={isPublicProfile} publicUserData={publicUserData} />
             </>
           )}
 
           {tab === 1 && (
-            <Typography align="center" sx={{ color: 'var(--text-color)', opacity: 0.7 }}>
-              Немає збережених публікацій.
+            <Typography align="center" color="#737373">
+              {t('profile.noSavedPostsLabel')}
             </Typography>
           )}
 
           {tab === 2 && (
-            <Typography align="center" sx={{ color: 'var(--text-color)', opacity: 0.7 }}>
-              Немає позначених публікацій.
+            <Typography align="center" color="#737373">
+              {t('profile.noTaggedPostsLabel')}
             </Typography>
           )}
         </Box>
       </Box>
+      {isShowFollowersFormOpened && (
+        <ShowFollowersForm
+          onClose={() => setIsShowFollowersFormOpened(false)}
+          isOpened={isShowFollowersFormOpened}
+          userId={isPublicProfile ? publicUserData.id : profile.id}
+          setProfile={setProfile}
+        />
+      )}
+
+      {isShowFollowingsFormOpened && (
+        <ShowFollowingsForm
+          onClose={() => setIsShowFollowingsFormOpened(false)}
+          isOpened={isShowFollowingsFormOpened}
+          userId={isPublicProfile ? publicUserData.id : profile.id}
+          setProfile={setProfile}
+        />
+      )}
     </Container>
   );
 }

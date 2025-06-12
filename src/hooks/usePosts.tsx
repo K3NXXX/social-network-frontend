@@ -4,12 +4,13 @@ import type { PostType } from '../types/post';
 interface FetchPostsResponse {
   data: PostType[];
   page: number;
-  lastPage: number;
+  totalPages: number;
 }
 
 export function usePosts(
   fetchFunction: (page: number, take: number) => Promise<FetchPostsResponse>,
-  take = 5
+  take = 5,
+  deps: any[] = []
 ) {
   const [posts, setPosts] = useState<PostType[]>([]);
   const [page, setPage] = useState(1);
@@ -20,10 +21,10 @@ export function usePosts(
   const fetchPosts = async (pageNumber = 1) => {
     setLoading(true);
     try {
-      const { data, page: currentPage, lastPage } = await fetchFunction(pageNumber, take);
+      const { data, page: currentPage, totalPages } = await fetchFunction(pageNumber, take);
       setPosts((prev) => (pageNumber === 1 ? data : [...prev, ...data]));
       setPage(currentPage);
-      setLastPage(lastPage);
+      setLastPage(totalPages);
     } catch (error) {
       console.error('Failed to fetch posts:', error);
     } finally {
@@ -32,8 +33,9 @@ export function usePosts(
   };
 
   useEffect(() => {
+    setPosts([]);
     fetchPosts(1);
-  }, []);
+  }, deps);
 
   return { posts, setPosts, page, lastPage, loading, fetchPosts, loaderRef };
 }

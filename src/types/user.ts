@@ -25,3 +25,23 @@ export interface UserPublicProfile {
   location: string;
   posts: [];
 }
+
+export interface UserFollowers {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string | null;
+  avatarUrl: string | null;
+  createdAt: string;
+  isFollowed: string;
+}
+
+export interface UserFollowings {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string | null;
+  avatarUrl: string | null;
+  isFollowed: boolean;
+  createdAt: string;
+}

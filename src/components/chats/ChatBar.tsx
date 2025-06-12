@@ -23,7 +23,14 @@ const ChatBar: React.FC<ChatBarProps> = ({ data, onSelect, sx, socketRef }) => {
   const otherUser = participants.find((user) => user.id !== currentUser.id);
 
   //для оновлення останнього повідомлення при переписці
-  const [newMessage, setNewMessage] = useState<MessageData | null>(lastMessage);
+  const [newMessage, setNewMessage] = useState<MessageData | null>(null);
+  useEffect(() => {
+    if (lastMessage) {
+      // console.log('Last Message:', lastMessage.content, lastMessage);
+      setNewMessage(lastMessage);
+    }
+  }, [lastMessage]);
+  // console.log(newMessage, lastMessage, 'data:', data);
 
   const baseStyles = {
     width: '100%',
@@ -39,6 +46,8 @@ const ChatBar: React.FC<ChatBarProps> = ({ data, onSelect, sx, socketRef }) => {
     if (!socket) return;
 
     const handleGetMessage = (message: any) => {
+      // console.log('got a new message on the chatbar:', message);
+      // console.log('chat ids: ', message.chatId, data.chatId);
       if (message.chatId === data.chatId) {
         setNewMessage({
           id: message.id,
@@ -104,9 +113,15 @@ const ChatBar: React.FC<ChatBarProps> = ({ data, onSelect, sx, socketRef }) => {
         </Typography>
         <Typography variant="body1" component="p" sx={{ color: 'grey' }}>
           {newMessage
-            ? newMessage?.sender.id === currentUser.id
-              ? `Ви: ${formatLastMessage(newMessage.content, 16)}`
-              : `${formatLastMessage(newMessage.content, 20)}`
+            ? newMessage?.sender
+              ? newMessage.sender.id === currentUser.id
+                ? `Ви: ${formatLastMessage(newMessage.content, 16)}`
+                : `${formatLastMessage(newMessage.content, 20)}`
+              : newMessage.senderId
+                ? newMessage.senderId === currentUser.id
+                  ? `Ви: ${formatLastMessage(newMessage.content, 16)}`
+                  : `${formatLastMessage(newMessage.content, 20)}`
+                : 'Повідомлень ще немає-'
             : 'Повідомлень ще немає'}
         </Typography>
       </Box>

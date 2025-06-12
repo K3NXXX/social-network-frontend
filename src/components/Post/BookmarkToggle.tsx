@@ -1,22 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { IconButton } from '@mui/material';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 
-const BookmarkToggle: React.FC = () => {
-  const [bookmarked, setBookmarked] = useState(false);
+interface Props {
+  saved: boolean;
+  onToggleSave: () => void;
+}
 
-  const handleToggle = () => {
-    setBookmarked((prev) => !prev);
-  };
-
+const BookmarkToggle: React.FC<Props> = ({ saved, onToggleSave }) => {
   return (
-    <IconButton
-      onClick={handleToggle}
-      color={bookmarked ? 'primary' : 'default'}
-      aria-label="bookmark"
-    >
-      {bookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+    <IconButton onClick={onToggleSave} color={saved ? 'primary' : 'default'} aria-label="bookmark">
+      {saved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
     </IconButton>
   );
 };
