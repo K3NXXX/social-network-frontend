@@ -19,7 +19,7 @@ export default function Sidebar() {
   console.log(i18n.language);
 
   const toggleLanguage = () => {
-    const nextLang = i18n.language === 'ua' ? 'en' : 'ua';
+    const nextLang = i18n.language === 'uk' ? 'en' : 'uk';
     i18n.changeLanguage(nextLang);
   };
 

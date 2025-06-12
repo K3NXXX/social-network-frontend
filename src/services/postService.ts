@@ -74,7 +74,7 @@ export const postService = {
   ): Promise<{
     data: PostType[];
     page: number;
-    lastPage: number;
+    totalPages: number;
   }> {
     try {
       const response = await axiosInstance.get(POST_ENDPOINTS.PUBLIC_USER_POSTS(userId), {

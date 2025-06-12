@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Divider, Typography } from '@mui/material';
 import PostsList from '../components/Post/PostList';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { postService } from '../services/postService';
 import CreatePostCard from '../components/Post/CreatePostCard';
 import { usePosts } from '../hooks/usePosts';
+import { useTranslation } from 'react-i18next';
 
 const FeedPage: React.FC = () => {
   const [showDiscover, setShowDiscover] = useState(false);
+  const { t } = useTranslation();
 
   const {
     posts: feedPosts,
     setPosts: setFeedPosts,
     page: feedPage,
-    lastPage: feedLastPage,
+    totalPages: feedLastPage,
     loading: loadingFeed,
     fetchPosts: fetchFeedPosts,
     loaderRef,
@@ -23,7 +25,7 @@ const FeedPage: React.FC = () => {
     posts: discoverPosts,
     setPosts: setDiscoverPosts,
     page: discoverPage,
-    lastPage: discoverLastPage,
+    totalPages: discoverLastPage,
     loading: loadingDiscover,
     fetchPosts: fetchDiscoverPosts,
   } = usePosts(postService.fetchDiscoverPosts);
@@ -48,6 +50,15 @@ const FeedPage: React.FC = () => {
     },
     { threshold: 1 }
   );
+
+  useEffect(() => {
+    if (feedLastPage === 0 && !showDiscover) {
+      setShowDiscover(true);
+      if (discoverPosts.length === 0 && discoverPage === 1) {
+        fetchDiscoverPosts(1);
+      }
+    }
+  }, [feedLastPage, showDiscover, discoverPosts.length, discoverPage]);
 
   const handleDelete = (postId: string) => {
     setFeedPosts((prev) => prev.filter((post) => post.id !== postId));
@@ -74,14 +85,14 @@ const FeedPage: React.FC = () => {
           <>
             <Divider sx={{ my: 4 }} />
             <Typography variant="h6" align="center" color="text.secondary" mb={4}>
-              Більше немає постів від тих, за ким ви стежите. Ось цікаві публікації для вас:
+              {t('posts.feedEndDiscoverLabel')}
             </Typography>
             <PostsList posts={discoverPosts} loading={loadingDiscover} onDelete={handleDelete} />
           </>
         )}
       </Box>
 
-      {feedLastPage > 1 && <div ref={loaderRef} style={{ height: '1px' }} />}
+      <div ref={loaderRef} style={{ height: '1px' }} />
     </Box>
   );
 };

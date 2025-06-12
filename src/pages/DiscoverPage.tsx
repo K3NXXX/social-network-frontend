@@ -6,14 +6,14 @@ import { postService } from '../services/postService';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 
 const DiscoverPage: React.FC = () => {
-  const { posts, setPosts, page, lastPage, loading, fetchPosts, loaderRef } = usePosts(
+  const { posts, setPosts, page, totalPages, loading, fetchPosts, loaderRef } = usePosts(
     postService.fetchDiscoverPosts
   );
 
   useIntersectionObserver(
     loaderRef,
     () => {
-      if (page < lastPage && !loading) {
+      if (page < totalPages && !loading) {
         fetchPosts(page + 1);
       }
     },
