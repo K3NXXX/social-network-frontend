@@ -3,6 +3,7 @@ import React from 'react';
 import type { UserPublicProfile } from '../../types/user.ts';
 import { usePosts } from '../../hooks/usePosts.tsx';
 import { postService } from '../../services/postService.ts';
+import { useTranslation } from 'react-i18next';
 import Post from './Post.tsx';
 
 type Props = {
@@ -11,6 +12,8 @@ type Props = {
 };
 
 const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData }) => {
+  const { t } = useTranslation();
+
   const postFetcher = isPublicProfile
     ? () => postService.fetchPublicUserPosts(publicUserData?.id)
     : () => postService.fetchUserPosts();
@@ -32,7 +35,7 @@ const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData }) => {
   if (!posts && !loading) {
     return (
       <Box textAlign="center" mt={4}>
-        <p>Постів ще немає.</p>
+        <p>{t('posts.emptyPostsLabel')}</p>
       </Box>
     );
   }
