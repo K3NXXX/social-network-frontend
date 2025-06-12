@@ -4,19 +4,22 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import UserPosts from '../components/Post/UserPosts.tsx';
+import PublicUserOptionsMenu from '../components/user/PublicUserOptionsMenu.tsx';
 import ShowFollowersForm from '../components/user/ShowFollowersForm.tsx';
 import ShowFollowingsForm from '../components/user/ShowFollowingsForm.tsx';
 import { PAGES } from '../constants/pages.constants.ts';
 import { useAuth } from '../services/AuthContext.tsx';
 import axiosInstance from '../services/axiosConfig.ts';
+import { userService } from '../services/userService.ts';
+import type { User } from '../types/auth.ts';
 import type { UserPublicProfile } from '../types/user.ts';
 import GlobalLoader from '../ui/GlobalLoader.tsx';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
-import PublicUserOptionsMenu from '../components/user/PublicUserOptionsMenu.tsx';
 
 interface IProfilePageProps {
   isPublicProfile: boolean;
   publicUserData: UserPublicProfile;
+  setPublicUserData?: React.Dispatch<React.SetStateAction<UserPublicProfile>>;
   toggleFollowUser: (id: string) => void;
   isFollowing: boolean;
   isThisMe: boolean;
@@ -25,6 +28,7 @@ interface IProfilePageProps {
 export default function ProfilePage({
   isPublicProfile,
   publicUserData,
+  setPublicUserData,
   toggleFollowUser,
   isFollowing,
   isThisMe,
@@ -35,9 +39,12 @@ export default function ProfilePage({
   const [isShowFollowersFormOpened, setIsShowFollowersFormOpened] = useState(false);
   const [isShowFollowingsFormOpened, setIsShowFollowingsFormOpened] = useState(false);
   const [isPublicUserMenuOpened, setIsPublicUserMenuOpened] = useState(false);
+  const [blockedUsers, setBlockedUsers] = useState<{ blocked: User }[] | null>(null);
+  const [isBlocked, setIsBlocked] = useState(false);
   const { logout } = useAuth();
   const [tab, setTab] = useState(0);
   const { t } = useTranslation();
+
   const displayedTabs =
     isPublicProfile && !isThisMe
       ? [t('profile.tabs.posts'), t('profile.tabs.tagged')]
@@ -47,6 +54,18 @@ export default function ProfilePage({
 
   const handleChangeTab = (_: any, newValue: number) => {
     setTab(newValue);
+  };
+
+  const handleUnblock = async () => {
+    try {
+      await userService.unblockUser(publicUserData.id);
+      const updated = await userService.getBlockedUsers();
+      setBlockedUsers(updated);
+      const isBlockedNow = updated.some((user: any) => user.blocked?.id === publicUserData.id);
+      setIsBlocked(isBlockedNow);
+    } catch (error) {
+      console.log('Помилка при розблокуванні користувача:', error);
+    }
   };
 
   useEffect(() => {
@@ -69,6 +88,23 @@ export default function ProfilePage({
 
     fetchProfile();
   }, [logout]);
+
+  useEffect(() => {
+    const getBlockedUsers = async () => {
+      try {
+        const result = await userService.getBlockedUsers();
+        setBlockedUsers(result);
+        const isBlockedNow = result.some((user: any) => user.blocked?.id === publicUserData.id);
+        setIsBlocked(isBlockedNow);
+      } catch (error) {
+        setBlockedUsers(null);
+        setIsBlocked(false);
+        console.log('Error getting blocked users: ', error);
+      }
+    };
+
+    getBlockedUsers();
+  }, [publicUserData.id]);
 
   if (loading) {
     return <GlobalLoader />;
@@ -118,14 +154,27 @@ export default function ProfilePage({
             )}
             <Box display="flex" gap={1} ml={4}>
               {isPublicProfile && !isThisMe ? (
-                <NoOutlineButton
-                  onClickCapture={() => toggleFollowUser(publicUserData.id)}
-                  variant="contained"
-                  size="small"
-                  sx={{ backgroundColor: isFollowing ? '#737373' : '' }}
-                >
-                  {isFollowing ? t('profile.followingLabel') : t('profile.followLabel')}
-                </NoOutlineButton>
+                isBlocked ? (
+                  <NoOutlineButton
+                    onClick={() => {
+                      handleUnblock();
+                    }}
+                    variant="contained"
+                    size="small"
+                    sx={{ backgroundColor: '#d9534f' }}
+                  >
+                    Розблокувати
+                  </NoOutlineButton>
+                ) : (
+                  <NoOutlineButton
+                    onClickCapture={() => toggleFollowUser(publicUserData.id)}
+                    variant="contained"
+                    size="small"
+                    sx={{ backgroundColor: isFollowing ? '#737373' : '' }}
+                  >
+                    {isFollowing ? t('profile.followingLabel') : t('profile.followLabel')}
+                  </NoOutlineButton>
+                )
               ) : (
                 <NoOutlineButton
                   variant="contained"
@@ -224,33 +273,36 @@ export default function ProfilePage({
               },
             }}
           >
-            {displayedTabs.map((label, index) => (
-              <Tab
-                key={label + index}
-                label={label}
-                sx={{
-                  outline: 'none',
-                  border: 'none',
-                  transition: 'none',
-                  '&:focus': {
+            {!isBlocked &&
+              displayedTabs.map((label, index) => (
+                <Tab
+                  key={label + index}
+                  label={label}
+                  sx={{
                     outline: 'none',
-                  },
-                  '&:hover': {
-                    backgroundColor: 'transparent',
-                  },
-                  '&.Mui-selected': {
+                    border: 'none',
                     transition: 'none',
-                  },
-                }}
-              />
-            ))}
+                    '&:focus': {
+                      outline: 'none',
+                    },
+                    '&:hover': {
+                      backgroundColor: 'transparent',
+                    },
+                    '&.Mui-selected': {
+                      transition: 'none',
+                    },
+                  }}
+                />
+              ))}
           </Tabs>
         </Box>
 
         <Box mt={2}>
           {tab === 0 && (
             <>
-              <UserPosts isPublicProfile={isPublicProfile} publicUserData={publicUserData} />
+              {!isBlocked && (
+                <UserPosts isPublicProfile={isPublicProfile} publicUserData={publicUserData} />
+              )}
             </>
           )}
 
@@ -288,7 +340,11 @@ export default function ProfilePage({
       {isPublicUserMenuOpened && (
         <PublicUserOptionsMenu
           onClose={() => setIsPublicUserMenuOpened(false)}
-          isOpened={PublicUserOptionsMenu}
+          isOpened={isPublicUserMenuOpened}
+          publicUserData={publicUserData}
+          setPublicUserData={setPublicUserData}
+          onBlocked={() => setIsBlocked(true)}
+          toggleFollowUser={toggleFollowUser}
         />
       )}
     </Container>

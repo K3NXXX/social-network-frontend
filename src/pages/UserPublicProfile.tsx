@@ -45,6 +45,7 @@ export default function UserPublicProfile() {
       if (!userData) return;
       try {
         const currentUser = await authService.getCurrentUser();
+        if (!currentUser) return;
         const followings = await userService.getUsersFollowing(currentUser.id);
         const isUserFollowed = followings.some((user: User) => user.id === userData.id);
         setIsFollowing(isUserFollowed);
@@ -65,6 +66,7 @@ export default function UserPublicProfile() {
     <ProfilePage
       isPublicProfile={true}
       publicUserData={userData}
+      setPublicUserData={setUserData}
       toggleFollowUser={toggleFollowUser}
       isFollowing={isFollowing}
       isThisMe={isThisMe}
