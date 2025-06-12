@@ -1,13 +1,13 @@
 import axios from 'axios';
 import axiosInstance from './axiosConfig';
 import type {
+  AuthResponse,
   LoginCredentials,
   RegisterCredentials,
-  AuthResponse,
   RegisterResponse,
-  VerificationResponse,
   ResendVerificationResponse,
   User,
+  VerificationResponse,
 } from '../types/auth';
 
 const AUTH_ENDPOINTS = {
@@ -129,7 +129,7 @@ export const authService = {
     }
   },
 
-  getCurrentUser(): User | null {
+  async getCurrentUser(): Promise<User | null> {
     const userStr = localStorage.getItem('user');
     if (userStr) {
       return JSON.parse(userStr);
