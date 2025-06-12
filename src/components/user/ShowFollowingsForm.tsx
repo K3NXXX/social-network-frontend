@@ -18,6 +18,7 @@ interface IShowFollowingsFormProps {
   onClose: (isShowFollowersFormOpened: boolean) => void;
   userId: string;
   setProfile: (data: User) => void;
+  blockedUsers: { blocked: User }[] | null;
 }
 
 export default function ShowFollowingsForm({
@@ -25,11 +26,16 @@ export default function ShowFollowingsForm({
   onClose,
   userId,
   setProfile,
+  blockedUsers,
 }: IShowFollowingsFormProps) {
   const [searchValue, setSearchValue] = useState('');
   const [userFollowings, setUserFollowings] = useState<UserFollowings[] | []>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { t } = useTranslation();
+
+  const isUserBlocked = (userIdToCheck: string) => {
+    return blockedUsers?.some((blockedUser) => blockedUser.blocked.id === userIdToCheck);
+  };
 
   const handleFollowToggle = async (followerId: string) => {
     try {
@@ -216,7 +222,7 @@ export default function ShowFollowingsForm({
                     </Box>
                   </Link>
 
-                  {currentUser && currentUser.id !== item.id && (
+                  {currentUser && currentUser.id !== item.id && !isUserBlocked(item.id) && (
                     <NoOutlineButton
                       variant="contained"
                       size="small"

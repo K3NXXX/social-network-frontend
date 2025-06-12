@@ -6,6 +6,9 @@ const USER_ENDPOINTS = {
   FOLLOW_USER: 'api/follow',
   GET_USER_FOLLOWINGS: 'api/following',
   GET_USER_FOLLOWERS: 'api/followers',
+  BLOCK_USER: 'api/block',
+  UNBLOCK_USER: 'api/unblock',
+  GET_BLOCKED_USERS: 'api/user/blocked-users',
 };
 
 export const userService = {
@@ -32,6 +35,21 @@ export const userService = {
 
   async getUsersFollowing(id: string) {
     const { data } = await axiosInstance.get(`${USER_ENDPOINTS.GET_USER_FOLLOWINGS}/${id}`);
+    return data;
+  },
+
+  async blockUser(id: string) {
+    const { data } = await axiosInstance.post(`${USER_ENDPOINTS.BLOCK_USER}/${id}`);
+    return data;
+  },
+
+  async unblockUser(id: string) {
+    const { data } = await axiosInstance.delete(`${USER_ENDPOINTS.UNBLOCK_USER}/${id}`);
+    return data;
+  },
+
+  async getBlockedUsers() {
+    const { data } = await axiosInstance.get(USER_ENDPOINTS.GET_BLOCKED_USERS);
     return data;
   },
 };
