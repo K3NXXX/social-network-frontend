@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
 import { userService } from '../../services/userService';
+import type { Notification } from '../../types/notifications';
 import type { SearchUsers } from '../../types/user';
 import Logo from '../../ui/Logo';
 import SearchItem from '../../ui/SearchItem';
@@ -18,6 +19,10 @@ export default function Header() {
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState<SearchUsers[] | []>([]);
   const { t } = useTranslation();
+  const [notifications, setNotifications] = useState<Notification[] | null>(null);
+
+  const unreadNotifications = notifications?.filter((n) => !n.isRead);
+
   const debounceSearch = useCallback(
     debounce(async (value: string) => {
       if (value.trim().length < 2) return setSearchResults([]);
@@ -30,6 +35,19 @@ export default function Header() {
     }, 500),
     []
   );
+
+  useEffect(() => {
+    const getNotifications = async () => {
+      try {
+        const result = await userService.getUserNotifications();
+        setNotifications(result);
+      } catch (error) {
+        console.error('error getting notifications: ', error);
+        setNotifications(null);
+      }
+    };
+    getNotifications();
+  }, []);
 
   useEffect(() => {
     debounceSearch(searchValue);
@@ -55,25 +73,29 @@ export default function Header() {
         <Box position="relative" display="flex" alignItems="center" gap="0 20px">
           <Box justifySelf="end" display="flex" gap="0 30px">
             <Box sx={{ cursor: 'pointer' }} position="relative">
-              <NotificationsNoneIcon sx={{ cursor: 'pointer' }} />
-              <Box
-                sx={{
-                  width: 20,
-                  height: 20,
-                  backgroundColor: '#9885f4',
-                  borderRadius: 50,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                top="-11px"
-                right="-14px"
-                position="absolute"
-              >
-                <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '13px' }}>
-                  3
-                </Typography>
-              </Box>
+              <Link style={{ color: 'black' }} to={PAGES.NOTIFICATIONS}>
+                <NotificationsNoneIcon sx={{ cursor: 'pointer' }} />
+                {unreadNotifications && unreadNotifications?.length > 0 && (
+                  <Box
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      backgroundColor: '#9885f4',
+                      borderRadius: 50,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    top="-11px"
+                    right="-14px"
+                    position="absolute"
+                  >
+                    <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '13px' }}>
+                      {unreadNotifications?.length}
+                    </Typography>
+                  </Box>
+                )}
+              </Link>
             </Box>
             <Box sx={{ cursor: 'pointer' }} position="relative" display="flex" alignItems="center">
               <Link to={PAGES.CHATS} style={{ textDecoration: 'none' }}>
