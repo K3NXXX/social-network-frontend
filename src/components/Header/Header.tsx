@@ -10,16 +10,16 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
 import { userService } from '../../services/userService';
-import type { Notification } from '../../types/notifications';
 import type { SearchUsers } from '../../types/user';
 import Logo from '../../ui/Logo';
 import SearchItem from '../../ui/SearchItem';
+import { useNotificationStore } from '../../zustand/stores/notificationStore';
 
 export default function Header() {
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState<SearchUsers[] | []>([]);
   const { t } = useTranslation();
-  const [notifications, setNotifications] = useState<Notification[] | null>(null);
+  const { notifications, fetchNotifications } = useNotificationStore();
 
   const unreadNotifications = notifications?.filter((n) => !n.isRead);
 
@@ -37,17 +37,8 @@ export default function Header() {
   );
 
   useEffect(() => {
-    const getNotifications = async () => {
-      try {
-        const result = await userService.getUserNotifications();
-        setNotifications(result);
-      } catch (error) {
-        console.error('error getting notifications: ', error);
-        setNotifications(null);
-      }
-    };
-    getNotifications();
-  }, []);
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   useEffect(() => {
     debounceSearch(searchValue);

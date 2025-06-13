@@ -3,10 +3,11 @@ import { Avatar, Box, Button, Card, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../constants/pages.constants';
-import { userService } from '../services/userService';
-import type { Notification } from '../types/notifications';
+import { authService } from '../services/authService';
+import type { User } from '../types/auth';
 import GlobalLoader from '../ui/GlobalLoader';
 import { formatCreatedAt } from '../utils/dateUtils';
+import { useNotificationStore } from '../zustand/stores/notificationStore';
 
 const filterTypeMap: Record<string, string | null> = {
   Всі: null,
@@ -16,8 +17,10 @@ const filterTypeMap: Record<string, string | null> = {
 };
 
 export default function NotificationPage() {
-  const [notifications, setNotifications] = useState<Notification[] | null>(null);
   const [activeFilter, setActiveFilter] = useState('Всі');
+
+  const { notifications, fetchNotifications, markAllAsRead, initSocket } = useNotificationStore();
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const filteredNotifications = notifications?.filter((notification) => {
     const type = filterTypeMap[activeFilter];
@@ -31,30 +34,30 @@ export default function NotificationPage() {
     if (type === 'LIKE') return 'New like';
   };
 
-  const markAllAsRead = async () => {
-    try {
-      await userService.markAllAsRead();
-      const updated = notifications?.map((n) => ({ ...n, isRead: true })) ?? [];
-      setNotifications(updated);
-    } catch (error) {
-      console.log('error marking all as read: ', error);
-    }
-  };
-
   useEffect(() => {
-    const getNotifications = async () => {
+    const getCurrentUser = async () => {
       try {
-        const result = await userService.getUserNotifications();
-        setNotifications(result);
+        const currentUser = await authService.getCurrentUser();
+        setCurrentUser(currentUser);
       } catch (error) {
-        console.error('error getting notifications: ', error);
-        setNotifications(null);
+        console.log('error getting current user: ', error);
       }
     };
-    getNotifications();
+    getCurrentUser();
   }, []);
 
-  if (!notifications) return <GlobalLoader />;
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
+
+  useEffect(() => {
+    fetchNotifications();
+    if (currentUser?.id) {
+      initSocket(currentUser.id);
+    }
+  }, [fetchNotifications, initSocket, currentUser?.id]);
+
+  if (notifications === null) return <GlobalLoader />;
 
   return (
     <Card
