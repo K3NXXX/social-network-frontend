@@ -6,6 +6,7 @@ import Message from './Message';
 import { chatsService } from '../../services/chatsService';
 import type { Socket } from 'socket.io-client';
 import { useTranslation } from 'react-i18next';
+import SendIcon from '@mui/icons-material/Send';
 
 export interface ChatScreenProps {
   selectedChat: ChatPreview | null;
@@ -183,7 +184,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
             bgcolor: 'var(--background-color)',
           }}
         >
-          <Typography variant="h6" color="text.secondary">
+          <Typography variant="h6" sx={{ color: 'var(--secondary-color)' }}>
             {t('chats.chooseChat')}
           </Typography>
         </Box>
@@ -227,7 +228,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  bgcolor: '#9885f4',
+                  bgcolor: 'var(--primary-color)',
                   color: 'white',
                 }}
               >
@@ -255,7 +256,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
               <Typography
                 variant="body1"
                 component="p"
-                sx={{ color: 'black', fontWeight: 'bold', fontSize: '16px' }}
+                sx={{ color: 'var(--text-color)', fontWeight: 'bold', fontSize: '16px' }}
               >
                 {otherUser
                   ? fullNameString(otherUser)
@@ -263,7 +264,11 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
                     ? fullNameString(newChatUser)
                     : null}
               </Typography>
-              <Typography variant="body1" component="p" sx={{ color: 'grey', fontSize: '14px' }}>
+              <Typography
+                variant="body1"
+                component="p"
+                sx={{ color: 'var(--text-color)', opacity: 0.5, fontSize: '14px' }}
+              >
                 {otherUser
                   ? otherUser?.isOnline || otherUser?.isActive === 'ACTIVE'
                     ? t('chats.online')
@@ -375,16 +380,16 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
                 onClick={() => handleSendMessage(messageInput)}
                 sx={{
                   width: 50,
-                  height: '100%',
+                  height: '90%',
                   borderRadius: '35%',
-                  border: '1px solid #dedede',
+                  border: '1px solid var(--primary-color)',
                   marginLeft: '10px',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
               >
-                <img src={sendIcon} alt="send" style={{ width: 24, height: 24 }} />
+                <SendIcon sx={{ color: 'var(--text-color)' }} />
               </IconButton>
             </Box>
           </Box>

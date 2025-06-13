@@ -71,10 +71,25 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             variant="outlined"
-            sx={{
-              '& .MuiInputBase-input::placeholder': {
+            InputProps={{
+              sx: {
                 color: 'var(--text-color)',
-                opacity: 1,
+              },
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--primary-color)',
+                borderWidth: '1px',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--border-color)',
+              },
+              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--primary-color)',
+                borderWidth: '2px',
+              },
+              '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--error-color)',
               },
               backgroundColor: 'var(--background-color)',
             }}
@@ -86,7 +101,11 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
             <img
               src={previewUrl}
               alt="preview"
-              style={{ maxHeight: '200px', borderRadius: '8px', border: '1px solid #ccc' }}
+              style={{
+                maxHeight: '200px',
+                borderRadius: '8px',
+                border: '1px solid var(--border-color)',
+              }}
             />
           </Box>
         )}
@@ -104,13 +123,25 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
             onChange={handleImageChange}
           />
           <label htmlFor="upload-photo">
-            <Button variant="text" component="span" startIcon={<AddPhotoAlternateIcon />}>
+            <Button
+              variant="text"
+              component="span"
+              startIcon={<AddPhotoAlternateIcon />}
+              sx={{ color: 'var(--primary-color)' }}
+            >
               {t('posts.uploadPhotoLabel')}
             </Button>
           </label>
-          {imageFile && <span style={{ marginLeft: 8 }}>{imageFile.name}</span>}
+          {imageFile && (
+            <span style={{ marginLeft: 8, color: 'var(--text-color)' }}>{imageFile.name}</span>
+          )}
         </div>
-        <Button variant="contained" endIcon={<SendIcon />} onClick={handleSubmit}>
+        <Button
+          variant="contained"
+          endIcon={<SendIcon />}
+          onClick={handleSubmit}
+          sx={{ backgroundColor: 'var(--primary-color)' }}
+        >
           {t('posts.publishLabel')}
         </Button>
       </CardActions>

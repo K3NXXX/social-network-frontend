@@ -28,11 +28,13 @@ const PostActions: React.FC<Props> = ({
   <CardActions sx={{ justifyContent: 'space-between', pt: 0 }}>
     <Stack direction="row" spacing={2}>
       <Button
-        startIcon={liked ? <FavoriteIcon color="primary" /> : <FavoriteBorderIcon />}
+        startIcon={
+          liked ? <FavoriteIcon sx={{ color: 'var(--primary-color)' }} /> : <FavoriteBorderIcon />
+        }
         sx={{
           fontWeight: 'bold',
           textTransform: 'none',
-          color: liked ? 'primary' : '#757575',
+          color: liked ? 'var(--primary-color)' : '#757575',
         }}
         onClick={onToggleLike}
       >
@@ -40,7 +42,7 @@ const PostActions: React.FC<Props> = ({
       </Button>
       <Button
         startIcon={<ChatBubbleOutlineIcon />}
-        sx={{ fontWeight: 'bold', textTransform: 'none', color: '#757575' }}
+        sx={{ fontWeight: 'bold', textTransform: 'none', color: 'var(--primary-color)' }}
         onClick={onToggleComments}
       >
         {commentsCount}
@@ -49,7 +51,7 @@ const PostActions: React.FC<Props> = ({
 
     <Stack direction="row" spacing={2}>
       <IconButton>
-        <ShareIcon />
+        <ShareIcon sx={{ color: 'var(--primary-color)' }} />
       </IconButton>
       <BookmarkToggle saved={saved} onToggleSave={onToggleSave} />
     </Stack>

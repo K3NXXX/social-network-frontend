@@ -180,7 +180,7 @@ export default function Sidebar() {
         )}
         {!isCollapsed && (
           <Typography sx={{ color: 'white', fontSize: '17px' }}>
-            {theme === 'light' ? 'Темна тема' : 'Світла тема'}
+            {theme === 'light' ? t('sidebar.themeSwitchLight') : t('sidebar.themeSwitchDark')}
           </Typography>
         )}
       </Box>

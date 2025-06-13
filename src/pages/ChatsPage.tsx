@@ -278,19 +278,45 @@ const ChatsPage: React.FC = () => {
               </InputAdornment>
             ),
             sx: {
+              color: 'var(--text-color)',
+              opacity: 0.7,
+              borderRadius: '20px',
               padding: 0,
               '& input': {
                 padding: '1.5px 0px',
+                color: 'var(--text-color)',
+              },
+              '&.Mui-focused': {
+                color: 'var(--primary-color)',
+                opacity: 1,
+              },
+              '&.MuiFormLabel-filled': {
+                color: 'var(--primary-color)',
               },
             },
           }}
           sx={{
             '& .MuiOutlinedInput-root': {
+              borderRadius: '20px',
+              borderColor: 'var(--border-color)',
               margin: '10px 5px 0 5px',
               padding: 0,
               '& input': {
                 paddingTop: 1.5,
                 paddingBottom: 1.5,
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--primary-color)',
+              },
+              '& fieldset': {
+                borderColor: 'var(--border-color)',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--border-color)',
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--primary-color)',
+                borderWidth: '2px',
               },
             },
           }}

@@ -162,7 +162,7 @@ const EditUserPage = () => {
       )}
 
       <Box display="flex">
-        <Box sx={{ width: 240, borderRight: '1px solid #e0e0e0', px: 2 }}>
+        <Box sx={{ width: 240, borderRight: '1px solid var(--border-color)', px: 2 }}>
           <Typography fontSize="18px" fontWeight="bold" my={2} textAlign="left" px={2}>
             {t('profile.settingsLabel')}
           </Typography>

@@ -24,9 +24,10 @@ const SecuritySection = ({ email, username, onEmailChange, onUsernameChange }: P
         sx={{
           mt: 2,
           borderRadius: 4,
-          border: '1px solid #d3d3d3',
+          border: '1px solid var(--border-color)',
           overflow: 'hidden',
           textAlign: 'left',
+          backgroundColor: 'var(--secondary-color)',
         }}
       >
         <Box
@@ -35,19 +36,19 @@ const SecuritySection = ({ email, username, onEmailChange, onUsernameChange }: P
           alignItems="center"
           px={2}
           py={2}
-          sx={{ borderBottom: '1px solid #e0e0e0', cursor: 'pointer' }}
+          sx={{ borderBottom: '1px solid var(--border-color)', cursor: 'pointer' }}
           onClick={() => setOpenEmailModal(true)}
         >
           <Box>
-            <Typography variant="subtitle2" fontWeight={600}>
+            <Typography variant="subtitle2" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
               Email
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'var(--text-color)' }}>
               {email}
             </Typography>
           </Box>
           <IconButton size="small">
-            <ArrowForwardIosIcon fontSize="small" />
+            <ArrowForwardIosIcon fontSize="small" sx={{ color: 'var(--text-color)' }} />
           </IconButton>
         </Box>
 
@@ -57,19 +58,19 @@ const SecuritySection = ({ email, username, onEmailChange, onUsernameChange }: P
           alignItems="center"
           px={2}
           py={2}
-          sx={{ borderBottom: '1px solid #e0e0e0', cursor: 'pointer' }}
+          sx={{ borderBottom: '1px solid var(--border-color)', cursor: 'pointer' }}
           onClick={() => setOpenUsernameModal(true)}
         >
           <Box>
-            <Typography variant="subtitle2" fontWeight={600}>
+            <Typography variant="subtitle2" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
               Username
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'var(--text-color)' }}>
               {username}
             </Typography>
           </Box>
           <IconButton size="small">
-            <ArrowForwardIosIcon fontSize="small" />
+            <ArrowForwardIosIcon fontSize="small" sx={{ color: 'var(--text-color)' }} />
           </IconButton>
         </Box>
 
@@ -83,15 +84,15 @@ const SecuritySection = ({ email, username, onEmailChange, onUsernameChange }: P
           onClick={() => setOpenPasswordModal(true)}
         >
           <Box>
-            <Typography variant="subtitle2" fontWeight={600}>
+            <Typography variant="subtitle2" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
               Password
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'var(--text-color)' }}>
               Змінити пароль
             </Typography>
           </Box>
           <IconButton size="small">
-            <ArrowForwardIosIcon fontSize="small" />
+            <ArrowForwardIosIcon fontSize="small" sx={{ color: 'var(--text-color)' }} />
           </IconButton>
         </Box>
       </Paper>

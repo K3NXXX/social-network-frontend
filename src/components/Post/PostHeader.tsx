@@ -85,21 +85,40 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
         </Box>
       </Stack>
       <IconButton onClick={handleMenuOpen}>
-        <MoreHorizIcon />
+        <MoreHorizIcon sx={{ color: 'var(--text-color)' }} />
       </IconButton>
 
-      <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
-        <MenuItem>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleMenuClose}
+        sx={{
+          '& .MuiPaper-root': {
+            backgroundColor: 'var(--secondary-color)',
+          },
+        }}
+      >
+        <MenuItem
+          sx={{
+            color: 'var(--text-color)',
+          }}
+        >
           <ListItemIcon>
-            <ShareIcon fontSize="small" />
+            <ShareIcon fontSize="small" sx={{ color: 'var(--text-color)' }} />
           </ListItemIcon>
           {t('posts.shareLabel')}
         </MenuItem>
 
         {isOwner && [
-          <MenuItem key="edit" onClick={handleEditClick}>
+          <MenuItem
+            key="edit"
+            onClick={handleEditClick}
+            sx={{
+              color: 'var(--text-color)',
+            }}
+          >
             <ListItemIcon>
-              <EditIcon fontSize="small" />
+              <EditIcon fontSize="small" sx={{ color: 'var(--text-color)' }} />
             </ListItemIcon>
             {t('posts.editLabel')}
           </MenuItem>,

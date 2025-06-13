@@ -151,19 +151,20 @@ export default function Header() {
                   paddingTop: 1.5,
                   paddingBottom: 1.5,
                 },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'var(--primary-color)',
-                },
-                '& fieldset': {
-                  borderColor: 'var(--border-color)',
-                },
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'var(--border-color)',
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'var(--primary-color)',
-                  borderWidth: '2px',
-                },
+              },
+              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--primary-color)',
+                borderWidth: '1px',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--border-color)',
+              },
+              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--primary-color)',
+                borderWidth: '2px',
+              },
+              '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--error-color)',
               },
             }}
           />

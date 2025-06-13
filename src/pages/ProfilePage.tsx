@@ -129,24 +129,33 @@ export default function ProfilePage({
                   variant="contained"
                   size="small"
                   onClick={() => navigate(PAGES.EDIT_PROFILE)}
+                  sx={{ backgroundColor: 'var(--primary-color)' }}
                 >
                   {t('profile.editProfileLabel')}
                 </NoOutlineButton>
               )}
 
               {isPublicProfile && !isThisMe ? (
-                <NoOutlineButton variant="contained" size="small">
+                <NoOutlineButton
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: 'var(--primary-color)' }}
+                >
                   {t('profile.messageLabel')}
                 </NoOutlineButton>
               ) : (
-                <NoOutlineButton variant="contained" size="small">
+                <NoOutlineButton
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: 'var(--primary-color)' }}
+                >
                   {t('profile.viewArchiveLabel')}
                 </NoOutlineButton>
               )}
               {isPublicProfile && (
                 <Box
                   sx={{
-                    backgroundColor: '#aaaaaa',
+                    backgroundColor: 'var(--background-color)',
                     padding: '5px',
                     borderRadius: '10px',
                     cursor: 'pointer',

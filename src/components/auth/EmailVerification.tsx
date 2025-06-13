@@ -89,17 +89,17 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
 
   return (
     <Box component="form" onSubmit={handleVerify} sx={{ mt: 1, width: '100%' }}>
-      <Typography variant="body1" gutterBottom>
+      <Typography variant="body1" gutterBottom sx={{ color: 'var(--text-color)' }}>
         {t('auth.emailVerification.codeSentTo')} <strong>{email}</strong>{' '}
         {t('auth.emailVerification.enterCodeBelow')}
       </Typography>
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 2, color: 'var(--primary-color)' }}>
           {error}
         </Alert>
       )}
       {success && (
-        <Alert severity="success" sx={{ mb: 2 }}>
+        <Alert severity="success" sx={{ mb: 2, color: 'var(--primary-color)' }}>
           {success}
         </Alert>
       )}
@@ -120,6 +120,54 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           maxLength: 6,
         }}
         disabled={isLoading}
+        InputLabelProps={{
+          sx: {
+            color: 'var(--text-color)',
+            '&.Mui-focused': {
+              color: 'var(--primary-color)',
+            },
+            '&.MuiFormLabel-filled': {
+              color: 'var(--primary-color)',
+            },
+          },
+        }}
+        InputProps={{
+          sx: {
+            '& input': {
+              color: 'var(--text-color)',
+            },
+            '& input::placeholder': {
+              color: 'var(--text-color)',
+              opacity: 0.7,
+            },
+            '& input:-webkit-autofill': {
+              boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+              WebkitTextFillColor: 'var(--text-color) !important',
+              caretColor: 'var(--text-color) !important',
+            },
+            '& textarea:-webkit-autofill': {
+              boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+              WebkitTextFillColor: 'var(--text-color) !important',
+              caretColor: 'var(--text-color) !important',
+            },
+          },
+        }}
+        sx={{
+          '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'var(--primary-color)',
+            borderWidth: '1px',
+          },
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'var(--border-color)',
+          },
+          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'var(--primary-color)',
+            borderWidth: '2px',
+          },
+          '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'var(--error-color)',
+          },
+        }}
       />
       <Stack direction="row" spacing={2} sx={{ mt: 2, mb: 2 }}>
         <Button
@@ -127,6 +175,13 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           fullWidth
           variant="contained"
           disabled={isLoading || code.length !== 6}
+          sx={{
+            backgroundColor: 'var(--primary-color)',
+            '&.Mui-disabled': {
+              color: 'var(--text-color)',
+              opacity: 0.5,
+            },
+          }}
         >
           {isLoading ? <CircularProgress size={24} /> : t('auth.emailVerification.confirm')}
         </Button>
@@ -138,6 +193,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           variant="body2"
           onClick={onBack}
           disabled={isLoading}
+          sx={{ color: 'var(--primary-color)' }}
         >
           {t('auth.emailVerification.backToRegisterForm')}
         </Link>
@@ -145,7 +201,14 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           variant="text"
           onClick={handleResendCode}
           disabled={!canResend || isLoading}
-          sx={{ textTransform: 'none' }}
+          sx={{
+            textTransform: 'none',
+            color: 'var(--text-color)',
+            '&.Mui-disabled': {
+              color: 'var(--text-color)',
+              opacity: 0.5,
+            },
+          }}
         >
           {canResend
             ? t('auth.emailVerification.resendCode')

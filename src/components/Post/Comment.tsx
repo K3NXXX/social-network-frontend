@@ -55,7 +55,7 @@ const Comment: React.FC<CommentProps> = ({
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Box
             sx={{
-              bgcolor: '#f9f9fa',
+              bgcolor: 'var(--background-color)',
               borderRadius: 2,
               p: 1.2,
               mb: 0.5,
@@ -65,7 +65,7 @@ const Comment: React.FC<CommentProps> = ({
             <Typography
               variant="subtitle2"
               fontWeight="bold"
-              sx={{ textAlign: 'left', display: 'block' }}
+              sx={{ textAlign: 'left', display: 'block', color: 'var(--text-color)' }}
             >
               {`${comment.user?.firstName} ${comment.user?.lastName}`}
             </Typography>
@@ -78,27 +78,61 @@ const Comment: React.FC<CommentProps> = ({
                   value={editContent}
                   onChange={(e) => onEditContentChange(e.target.value)}
                   size="small"
-                  sx={{ backgroundColor: '#fff' }}
+                  InputProps={{
+                    sx: {
+                      color: 'var(--text-color)',
+                    },
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '1px',
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--border-color)',
+                    },
+                    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '2px',
+                    },
+                    '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--error-color)',
+                    },
+                  }}
                 />
                 <Stack direction="row" spacing={1}>
-                  <Button variant="contained" size="small" onClick={onConfirmEdit}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={onConfirmEdit}
+                    sx={{ backgroundColor: 'var(--primary-color)' }}
+                  >
                     {t('posts.saveLabel')}
                   </Button>
                 </Stack>
               </Stack>
             ) : (
-              <Typography variant="body2" sx={{ textAlign: 'left', display: 'block' }}>
+              <Typography
+                variant="body2"
+                sx={{ textAlign: 'left', display: 'block', color: 'var(--text-color)' }}
+              >
                 {comment.content}
               </Typography>
             )}
           </Box>
 
           <Button
-            startIcon={liked ? <FavoriteIcon color="primary" /> : <FavoriteBorderIcon />}
+            startIcon={
+              liked ? (
+                <FavoriteIcon sx={{ color: 'var(--primary-color)' }} />
+              ) : (
+                <FavoriteBorderIcon />
+              )
+            }
             sx={{
               fontWeight: 'bold',
               textTransform: 'none',
-              color: liked ? 'primary' : '#757575',
+              color: liked ? 'var(--primary-color)' : '#757575',
             }}
             onClick={handleToggleLike}
           >
@@ -106,12 +140,18 @@ const Comment: React.FC<CommentProps> = ({
           </Button>
         </Box>
 
-        <Stack direction="row" spacing={2} sx={{ color: 'text.secondary' }}>
+        <Stack direction="row" spacing={2} sx={{ color: 'var(--text-color)' }}>
           <Typography variant="caption">{formatCreatedAt(comment.createdAt)}</Typography>
           <Button
             variant="text"
             size="small"
-            sx={{ p: 0, fontSize: 12, textTransform: 'none', color: '#757575' }}
+            sx={{
+              p: 0,
+              fontSize: 12,
+              textTransform: 'none',
+              color: 'var(--text-color)',
+              opacity: 0.5,
+            }}
             onClick={onReplyClick}
           >
             {t('posts.commentReply')}
@@ -121,7 +161,13 @@ const Comment: React.FC<CommentProps> = ({
               <Button
                 variant="text"
                 size="small"
-                sx={{ p: 0, fontSize: 12, textTransform: 'none', color: '#757575' }}
+                sx={{
+                  p: 0,
+                  fontSize: 12,
+                  textTransform: 'none',
+                  color: 'var(--text-color)',
+                  opacity: 0.5,
+                }}
                 onClick={onDeleteClick}
               >
                 {t('posts.deleteLabel')}
@@ -129,7 +175,13 @@ const Comment: React.FC<CommentProps> = ({
               <Button
                 variant="text"
                 size="small"
-                sx={{ p: 0, fontSize: 12, textTransform: 'none', color: '#757575' }}
+                sx={{
+                  p: 0,
+                  fontSize: 12,
+                  textTransform: 'none',
+                  color: 'var(--text-color)',
+                  opacity: 0.5,
+                }}
                 onClick={onEditClick}
               >
                 {t('posts.editLabel')}
