@@ -1,5 +1,14 @@
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { Avatar, Box, Container, Divider, Tab, Tabs, Typography } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  CircularProgress,
+  Container,
+  Divider,
+  Tab,
+  Tabs,
+  Typography,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +23,6 @@ import { userService } from '../services/userService.ts';
 import type { User } from '../types/auth.ts';
 import type { PostType } from '../types/post.ts';
 import type { UserPublicProfile } from '../types/user.ts';
-import GlobalLoader from '../ui/GlobalLoader.tsx';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
 
 interface IProfilePageProps {
@@ -43,6 +51,8 @@ export default function ProfilePage({
   const [blockedUsers, setBlockedUsers] = useState<{ blocked: User }[] | null>(null);
   const [isBlocked, setIsBlocked] = useState(false);
   const [savedPosts, setSavedPosts] = useState<PostType[] | null>(null);
+  const [savedLoading, setSavedLoading] = useState(true);
+
   const [isSavedPosts, setIsSavedPosts] = useState(false);
   const { logout } = useAuth();
   const [tab, setTab] = useState(0);
@@ -96,12 +106,15 @@ export default function ProfilePage({
 
   useEffect(() => {
     const getSavedPosts = async () => {
+      setSavedLoading(true);
       try {
         const { data } = await userService.getSavedPosts();
         setSavedPosts(data);
       } catch (error: any) {
         console.error('Error getting saved posts: ', error);
         setSavedPosts(null);
+      } finally {
+        setSavedLoading(false);
       }
     };
 
@@ -141,7 +154,7 @@ export default function ProfilePage({
   }, [tab]);
 
   if (loading) {
-    return <GlobalLoader />;
+    return <CircularProgress />;
   }
 
   if (error) {
@@ -346,7 +359,11 @@ export default function ProfilePage({
 
           {tab === 1 && (
             <>
-              {savedPosts && savedPosts?.length > 0 ? (
+              {savedLoading ? (
+                <Box display="flex" justifyContent="center" mt={4}>
+                  <CircularProgress />
+                </Box>
+              ) : savedPosts && savedPosts.length > 0 ? (
                 <UserPosts
                   setSavedPosts={setSavedPosts}
                   savedPosts={savedPosts}
