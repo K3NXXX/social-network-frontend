@@ -563,7 +563,11 @@ const Register: React.FC = () => {
                   sx={{ mt: 3, mb: 2, backgroundColor: 'var(--primary-color)' }}
                   disabled={loading}
                 >
-                  {loading ? <CircularProgress size={24} /> : t('auth.register')}
+                  {loading ? (
+                    <CircularProgress size={24} sx={{ color: 'var(--primary-color)' }} />
+                  ) : (
+                    t('auth.register')
+                  )}
                 </Button>
                 <Box sx={{ textAlign: 'center' }}>
                   <Link

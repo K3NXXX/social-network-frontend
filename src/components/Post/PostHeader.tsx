@@ -84,7 +84,22 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
           </Typography>
         </Box>
       </Stack>
-      <IconButton onClick={handleMenuOpen}>
+      <IconButton
+        onClick={handleMenuOpen}
+        sx={{
+          '&:hover': {
+            color: 'var(--primary-color)',
+          },
+          '&:active': {
+            border: 'none',
+            outline: 'none',
+          },
+          '&:focus': {
+            border: 'none',
+            outline: 'none',
+          },
+        }}
+      >
         <MoreHorizIcon sx={{ color: 'var(--text-color)' }} />
       </IconButton>
 

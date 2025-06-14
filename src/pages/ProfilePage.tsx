@@ -120,7 +120,7 @@ export default function ProfilePage({
                   onClickCapture={() => toggleFollowUser(publicUserData.id)}
                   variant="contained"
                   size="small"
-                  sx={{ backgroundColor: isFollowing ? 'var(--primary-color)' : '' }}
+                  sx={{ backgroundColor: 'var(--primary-color)' }}
                 >
                   {isFollowing ? t('profile.followingLabel') : t('profile.followLabel')}
                 </NoOutlineButton>
@@ -161,7 +161,7 @@ export default function ProfilePage({
                     cursor: 'pointer',
                   }}
                 >
-                  <MoreHorizIcon sx={{ color: 'white' }} />
+                  <MoreHorizIcon sx={{ color: 'var(--text-color)' }} />
                 </Box>
               )}
             </Box>

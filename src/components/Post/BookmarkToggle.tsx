@@ -15,6 +15,17 @@ const BookmarkToggle: React.FC<Props> = ({ saved, onToggleSave }) => {
       aria-label="bookmark"
       sx={{
         color: 'var(--primary-color)',
+        '&:hover': {
+          color: 'var(--primary-color)',
+        },
+        '&:active': {
+          border: 'none',
+          outline: 'none',
+        },
+        '&:focus': {
+          border: 'none',
+          outline: 'none',
+        },
       }}
     >
       {saved ? <BookmarkIcon /> : <BookmarkBorderIcon />}

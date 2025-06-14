@@ -58,7 +58,7 @@ export default function UserPublicProfile() {
   }, [userData]);
 
   if (!userData) {
-    return <CircularProgress />;
+    return <CircularProgress sx={{ color: 'var(--primary-color)' }} />;
   }
 
   return (

@@ -156,7 +156,20 @@ const PostComments: React.FC<Props> = ({
             <Button
               size="small"
               onClick={() => toggleReplies(comment)}
-              sx={{ ml: 6, mt: 1, textTransform: 'none', color: 'var(--primary-color)' }}
+              sx={{
+                ml: 6,
+                mt: 1,
+                textTransform: 'none',
+                color: 'var(--primary-color)',
+                '&:focus': {
+                  outline: 'none', // Прибирає контур
+                  boxShadow: 'none', // Прибирає тінь, якщо вона є за замовчуванням
+                },
+                '&:focus-visible': {
+                  outline: 'none', // Прибирає контур
+                  boxShadow: 'none', // Прибирає тінь, якщо вона є за замовчуванням
+                },
+              }}
             >
               {isVisible
                 ? t('posts.hideAnswers')
@@ -254,7 +267,17 @@ const PostComments: React.FC<Props> = ({
             size="small"
             color="error"
             onClick={() => setReplyingTo(null)}
-            sx={{ alignSelf: 'center' }}
+            sx={{
+              alignSelf: 'center',
+              '&:focus': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+              '&:focus-visible': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+            }}
           >
             {t('posts.commentCancel')}
           </Button>
@@ -308,7 +331,20 @@ const PostComments: React.FC<Props> = ({
             },
           }}
         />
-        <IconButton onClick={handleSend} sx={{ color: 'var(--primary-color)' }}>
+        <IconButton
+          onClick={handleSend}
+          sx={{
+            color: 'var(--primary-color)',
+            '&:focus': {
+              outline: 'none', // Прибирає контур
+              boxShadow: 'none', // Прибирає тінь, якщо вона є за замовчуванням
+            },
+            '&:focus-visible': {
+              outline: 'none', // Прибирає контур
+              boxShadow: 'none', // Прибирає тінь, якщо вона є за замовчуванням
+            },
+          }}
+        >
           <SendIcon />
         </IconButton>
       </Stack>

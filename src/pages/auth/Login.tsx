@@ -275,7 +275,11 @@ const Login: React.FC = () => {
               sx={{ mt: 3, mb: 2, backgroundColor: 'var(--primary-color)' }}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} /> : t('auth.loginLabel')}
+              {loading ? (
+                <CircularProgress size={24} sx={{ color: 'var(--primary-color)' }} />
+              ) : (
+                t('auth.loginLabel')
+              )}
             </Button>
             <Box sx={{ textAlign: 'center' }}>
               <Link

@@ -126,7 +126,7 @@ const EditUserPage = () => {
   if (loading) {
     return (
       <Box sx={{ textAlign: 'center', mt: 10 }}>
-        <CircularProgress />
+        <CircularProgress sx={{ color: 'var(--primary-color)' }} />
       </Box>
     );
   }

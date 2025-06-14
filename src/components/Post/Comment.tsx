@@ -105,7 +105,17 @@ const Comment: React.FC<CommentProps> = ({
                     variant="contained"
                     size="small"
                     onClick={onConfirmEdit}
-                    sx={{ backgroundColor: 'var(--primary-color)' }}
+                    sx={{
+                      backgroundColor: 'var(--primary-color)',
+                      '&:focus': {
+                        outline: 'none',
+                        boxShadow: 'none',
+                      },
+                      '&:focus-visible': {
+                        outline: 'none',
+                        boxShadow: 'none',
+                      },
+                    }}
                   >
                     {t('posts.saveLabel')}
                   </Button>
@@ -133,6 +143,14 @@ const Comment: React.FC<CommentProps> = ({
               fontWeight: 'bold',
               textTransform: 'none',
               color: liked ? 'var(--primary-color)' : '#757575',
+              '&:focus': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+              '&:focus-visible': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
             }}
             onClick={handleToggleLike}
           >
@@ -151,6 +169,14 @@ const Comment: React.FC<CommentProps> = ({
               textTransform: 'none',
               color: 'var(--text-color)',
               opacity: 0.5,
+              '&:focus': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+              '&:focus-visible': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
             }}
             onClick={onReplyClick}
           >
@@ -167,6 +193,14 @@ const Comment: React.FC<CommentProps> = ({
                   textTransform: 'none',
                   color: 'var(--text-color)',
                   opacity: 0.5,
+                  '&:focus': {
+                    outline: 'none',
+                    boxShadow: 'none',
+                  },
+                  '&:focus-visible': {
+                    outline: 'none',
+                    boxShadow: 'none',
+                  },
                 }}
                 onClick={onDeleteClick}
               >
@@ -181,6 +215,14 @@ const Comment: React.FC<CommentProps> = ({
                   textTransform: 'none',
                   color: 'var(--text-color)',
                   opacity: 0.5,
+                  '&:focus': {
+                    outline: 'none',
+                    boxShadow: 'none',
+                  },
+                  '&:focus-visible': {
+                    outline: 'none',
+                    boxShadow: 'none',
+                  },
                 }}
                 onClick={onEditClick}
               >

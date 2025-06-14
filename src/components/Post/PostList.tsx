@@ -13,7 +13,7 @@ const PostsList: React.FC<Props> = ({ posts, loading, onDelete }) => {
   if (!posts.length && loading) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <CircularProgress />
+        <CircularProgress sx={{ color: 'var(--primary-color)' }} />
       </Box>
     );
   }

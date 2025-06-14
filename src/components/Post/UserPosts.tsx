@@ -24,7 +24,7 @@ const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData }) => {
   if (!posts && loading) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <CircularProgress />
+        <CircularProgress sx={{ color: 'var(--primary-color)' }} />
       </Box>
     );
   }

@@ -55,7 +55,19 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
   }, [open]);
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      sx={{
+        '& .MuiPaper-root': {
+          backgroundColor: 'var(--secondary-color)',
+        },
+        '& .MuiDialogTitle-root': {
+          color: 'var(--text-color)', // Колір тексту заголовка
+        },
+      }}
+    >
       <DialogTitle>Редагування поста</DialogTitle>
       <DialogContent>
         <TextField
@@ -64,7 +76,29 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
           minRows={3}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          sx={{ my: 2 }}
+          InputProps={{
+            sx: {
+              color: 'var(--text-color)',
+            },
+          }}
+          sx={{
+            my: 2,
+            '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '1px',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--border-color)',
+            },
+            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '2px',
+            },
+            '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--error-color)',
+            },
+            backgroundColor: 'var(--background-color)',
+          }}
         />
 
         {previewUrl ? (
@@ -95,7 +129,12 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
           </Box>
         ) : null}
 
-        <Button variant="contained" component="label" fullWidth>
+        <Button
+          variant="contained"
+          component="label"
+          fullWidth
+          sx={{ backgroundColor: 'var(--primary-color)' }}
+        >
           Завантажити нове фото
           <input
             hidden
@@ -106,10 +145,39 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
         </Button>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} disabled={loading}>
+        <Button
+          onClick={onClose}
+          disabled={loading}
+          sx={{
+            color: 'var(--primary-color)',
+            '&:focus': {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+            '&:focus-visible': {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+          }}
+        >
           Скасувати
         </Button>
-        <Button onClick={handleUpdate} disabled={loading} variant="contained">
+        <Button
+          onClick={handleUpdate}
+          disabled={loading}
+          variant="contained"
+          sx={{
+            backgroundColor: 'var(--primary-color)',
+            '&:focus': {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+            '&:focus-visible': {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+          }}
+        >
           Оновити
         </Button>
       </DialogActions>

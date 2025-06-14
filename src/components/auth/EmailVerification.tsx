@@ -183,7 +183,11 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
             },
           }}
         >
-          {isLoading ? <CircularProgress size={24} /> : t('auth.emailVerification.confirm')}
+          {isLoading ? (
+            <CircularProgress size={24} sx={{ color: 'var(--primary-color)' }} />
+          ) : (
+            t('auth.emailVerification.confirm')
+          )}
         </Button>
       </Stack>
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 2 }}>
