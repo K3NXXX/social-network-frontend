@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { PostType } from '../types/post';
 
 interface FetchPostsResponse {

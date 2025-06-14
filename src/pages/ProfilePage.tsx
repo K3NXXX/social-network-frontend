@@ -12,6 +12,7 @@ import { useAuth } from '../services/AuthContext.tsx';
 import axiosInstance from '../services/axiosConfig.ts';
 import { userService } from '../services/userService.ts';
 import type { User } from '../types/auth.ts';
+import type { PostType } from '../types/post.ts';
 import type { UserPublicProfile } from '../types/user.ts';
 import GlobalLoader from '../ui/GlobalLoader.tsx';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
@@ -41,12 +42,12 @@ export default function ProfilePage({
   const [isPublicUserMenuOpened, setIsPublicUserMenuOpened] = useState(false);
   const [blockedUsers, setBlockedUsers] = useState<{ blocked: User }[] | null>(null);
   const [isBlocked, setIsBlocked] = useState(false);
+  const [savedPosts, setSavesPosts] = useState<PostType[] | null>(null);
+  const [isSavedPosts, setIsSavedPosts] = useState(false);
   const { logout } = useAuth();
   const [tab, setTab] = useState(0);
   const { t } = useTranslation();
-
-  console.log('public blocked', blockedUsers);
-
+  console.log(savedPosts);
   const displayedTabs =
     isPublicProfile && !isThisMe
       ? [t('profile.tabs.posts'), t('profile.tabs.tagged')]
@@ -93,6 +94,20 @@ export default function ProfilePage({
   }, [logout]);
 
   useEffect(() => {
+    const getSavedPosts = async () => {
+      try {
+        const { data } = await userService.getSavedPosts();
+        setSavesPosts(data);
+      } catch (error: any) {
+        console.error('Error getting saved posts: ', error);
+        setSavesPosts(null);
+      }
+    };
+
+    getSavedPosts();
+  }, []);
+
+  useEffect(() => {
     const getBlockedUsers = async () => {
       try {
         const result = await userService.getBlockedUsers();
@@ -115,6 +130,14 @@ export default function ProfilePage({
 
     getBlockedUsers();
   }, [publicUserData, profile]);
+
+  useEffect(() => {
+    if (tab === 1) {
+      setIsSavedPosts(true);
+    } else {
+      setIsSavedPosts(false);
+    }
+  }, [tab]);
 
   if (loading) {
     return <GlobalLoader />;
@@ -308,18 +331,32 @@ export default function ProfilePage({
         </Box>
 
         <Box mt={2}>
-          {tab === 0 && (
+          {tab === 0 && !isBlocked && (
             <>
-              {!isBlocked && (
+              {(isPublicProfile ? publicUserData.posts : profile.posts) > 0 ? (
                 <UserPosts isPublicProfile={isPublicProfile} publicUserData={publicUserData} />
+              ) : (
+                <Typography align="center" color="#737373">
+                  {t('profile.noPostsLabel')}
+                </Typography>
               )}
             </>
           )}
 
           {tab === 1 && (
-            <Typography align="center" color="#737373">
-              {t('profile.noSavedPostsLabel')}
-            </Typography>
+            <>
+              {savedPosts && savedPosts?.length > 0 ? (
+                <UserPosts
+                  isSavedPosts={isSavedPosts}
+                  isPublicProfile={isPublicProfile}
+                  publicUserData={publicUserData}
+                />
+              ) : (
+                <Typography align="center" color="#737373">
+                  {t('profile.noSavedPostsLabel')}
+                </Typography>
+              )}
+            </>
           )}
 
           {tab === 2 && (

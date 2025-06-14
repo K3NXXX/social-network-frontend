@@ -9,6 +9,7 @@ const USER_ENDPOINTS = {
   BLOCK_USER: 'api/block',
   UNBLOCK_USER: 'api/unblock',
   GET_BLOCKED_USERS: 'api/user/blocked-users',
+  GET_SAVED_POST: 'api/user/saved',
 };
 
 export const userService = {
@@ -50,6 +51,11 @@ export const userService = {
 
   async getBlockedUsers() {
     const { data } = await axiosInstance.get(USER_ENDPOINTS.GET_BLOCKED_USERS);
+    return data;
+  },
+
+  async getSavedPosts() {
+    const { data } = await axiosInstance.get(USER_ENDPOINTS.GET_SAVED_POST);
     return data;
   },
 };

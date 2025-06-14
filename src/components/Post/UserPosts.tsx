@@ -1,24 +1,28 @@
 import { Box, CircularProgress } from '@mui/material';
 import React from 'react';
-import type { UserPublicProfile } from '../../types/user.ts';
+import { useTranslation } from 'react-i18next';
 import { usePosts } from '../../hooks/usePosts.tsx';
 import { postService } from '../../services/postService.ts';
-import { useTranslation } from 'react-i18next';
+import { userService } from '../../services/userService.ts';
+import type { UserPublicProfile } from '../../types/user.ts';
 import Post from './Post.tsx';
 
 type Props = {
   isPublicProfile: boolean;
   publicUserData: UserPublicProfile;
+  isSavedPosts?: boolean;
 };
 
-const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData }) => {
+const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData, isSavedPosts }) => {
   const { t } = useTranslation();
 
-  const postFetcher = isPublicProfile
-    ? () => postService.fetchPublicUserPosts(publicUserData?.id)
-    : () => postService.fetchUserPosts();
+  const postFetcher = isSavedPosts
+    ? () => userService.getSavedPosts()
+    : isPublicProfile
+      ? () => postService.fetchPublicUserPosts(publicUserData?.id)
+      : () => postService.fetchUserPosts();
 
-  const { posts, setPosts, loading } = usePosts(postFetcher, 5, [publicUserData?.id]);
+  const { posts, setPosts, loading } = usePosts(postFetcher, 5, [publicUserData?.id, isSavedPosts]);
 
   const handleDelete = (postId: string) => {
     setPosts((prev) => prev.filter((post) => post.id !== postId));
