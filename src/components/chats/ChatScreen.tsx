@@ -43,9 +43,9 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
         if (!otherUser) return;
         try {
           const data = await chatsService.fetchMessages(otherUser.id);
-          const { messages } = data;
           // тут також повертається hasNextPage:boolean для пагінації
-          setMessages(messages);
+          // щось поміняли на бек-енді і тепер повертаються лише повідомлення
+          setMessages(data);
         } catch (error) {
           console.error('Error fetching messages for the chat:', error);
         }

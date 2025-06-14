@@ -5,15 +5,18 @@ import ChatScreen from '../components/chats/ChatScreen';
 import { chatsService } from '../services/chatsService';
 import type { ChatPreview, ChatPreview_ChatCreated, UserPreview } from '../types/chats';
 import { io, Socket } from 'socket.io-client';
-
 import SearchBlock from '../components/chats/SearchBlock';
 import SearchIcon from '@mui/icons-material/Search';
 import { Close } from '@mui/icons-material';
 import debounce from 'lodash/debounce';
 import { userService } from '../services/userService';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 const ChatsPage: React.FC = () => {
+  const location = useLocation();
+  const userData: UserPreview = location.state?.userData;
+
   const { t } = useTranslation();
 
   const [selectedChat, setSelectedChat] = useState<ChatPreview | null>(null);
@@ -94,6 +97,24 @@ const ChatsPage: React.FC = () => {
     };
   }, []);
 
+  //якщо треба відкрити чат з юзером, у профілі якого натиснули на 'повідомлення'
+  useEffect(() => {
+    if (userData && chats.length > 0) {
+      const setChat = async () => {
+        const chat = await findChat(userData.id);
+        if (!chat) {
+          setNewChatUser(userData);
+          setSelectedChat(null);
+        } else {
+          setNewChatUser(undefined);
+          setSelectedChat(chat);
+        }
+      };
+
+      setChat();
+    }
+  }, [chats, userData]);
+
   //івенти join_chat / leave_chat коли користувач відкриває і міняє чати
   useEffect(() => {
     if (!selectedChat) return;
@@ -157,7 +178,6 @@ const ChatsPage: React.FC = () => {
       try {
         const data = await chatsService.fetchChat(friendId);
         if (data) {
-          //the data should be a ChatDetails chat
           console.log('found the chat on the backend:', data);
           const fetchedChat: ChatPreview = {
             chatId: data.id,

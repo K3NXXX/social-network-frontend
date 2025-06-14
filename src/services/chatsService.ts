@@ -37,10 +37,7 @@ export const chatsService = {
       throw error;
     }
   },
-
-  async fetchMessages(
-    receiverId: string
-  ): Promise<{ messages: MessageData[]; hasNextPage: boolean }> {
+  async fetchMessages(receiverId: string): Promise<MessageData[]> {
     try {
       const response = await axiosInstance.get(`${ENDPOINTS.MESSAGES}${receiverId}`);
       console.log('data about messages:', response.data);

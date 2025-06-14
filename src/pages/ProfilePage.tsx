@@ -1,8 +1,17 @@
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { Avatar, Box, Container, Divider, Tab, Tabs, Typography } from '@mui/material';
+import {
+  Avatar,
+  avatarGroupClasses,
+  Box,
+  Container,
+  Divider,
+  Tab,
+  Tabs,
+  Typography,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import UserPosts from '../components/Post/UserPosts.tsx';
 import PublicUserOptionsMenu from '../components/user/PublicUserOptionsMenu.tsx';
 import ShowFollowersForm from '../components/user/ShowFollowersForm.tsx';
@@ -15,6 +24,7 @@ import type { User } from '../types/auth.ts';
 import type { UserPublicProfile } from '../types/user.ts';
 import GlobalLoader from '../ui/GlobalLoader.tsx';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
+import { first, isMatchWith } from 'lodash';
 
 interface IProfilePageProps {
   isPublicProfile: boolean;
@@ -194,11 +204,12 @@ export default function ProfilePage({
                   {t('profile.editProfileLabel')}
                 </NoOutlineButton>
               )}
-
               {isPublicProfile && !isThisMe ? (
-                <NoOutlineButton variant="contained" size="small">
-                  {t('profile.messageLabel')}
-                </NoOutlineButton>
+                <Link to={`${PAGES.CHATS}`} state={{ userData: publicUserData }}>
+                  <NoOutlineButton variant="contained" size="small">
+                    {t('profile.messageLabel')}
+                  </NoOutlineButton>
+                </Link>
               ) : (
                 <NoOutlineButton variant="contained" size="small">
                   {t('profile.viewArchiveLabel')}
