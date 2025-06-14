@@ -1,9 +1,9 @@
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Box, IconButton, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
 import ChangeEmail from './ChangeEmail';
-import ChangePassword from './ChangePassword.tsx';
 import ChangeUsername from './ChangeUsername';
+import ChangePassword from './ChangePassword.tsx';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 interface Props {
   email: string;

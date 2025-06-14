@@ -1,6 +1,5 @@
 import { Box, Typography, Avatar, TextField, IconButton } from '@mui/material';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import sendIcon from '../../assets/paper-plane.svg';
 import type { ChatPreview, MessageData, UserPreview } from '../../types/chats';
 import Message from './Message';
 import { chatsService } from '../../services/chatsService';

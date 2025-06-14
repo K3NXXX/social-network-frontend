@@ -16,17 +16,28 @@ import SearchPage from './pages/SearchPage';
 import UserPublicProfile from './pages/UserPublicProfile';
 import { AuthProvider } from './services/AuthContext';
 import EditProfilePage from './pages/EditUserPage.tsx';
+import SearchSidebar from './components/Sidebar/SearchSidebar.tsx';
+import { useState } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext.tsx';
 
 function App() {
   const { pathname } = useLocation();
   const hideLayout = pathname === PAGES.LOGIN || pathname === PAGES.REGISTER;
+  const [searchSidebarCollapsed, setSearchSidebarCollapsed] = useState<boolean>(true);
 
   return (
     <ThemeProvider>
       <AuthProvider>
         <Box display="flex" sx={{ width: '100%', minHeight: '100vh' }}>
-          {!hideLayout && <Sidebar />}
+          {!hideLayout && (
+            <Box display={'flex'}>
+              <Sidebar
+                searchSidebarCollapsed={searchSidebarCollapsed}
+                setSearchSidebarCollapsed={setSearchSidebarCollapsed}
+              />
+              <SearchSidebar isCollapsed={searchSidebarCollapsed} />
+            </Box>
+          )}
           <Box sx={{ width: '100%' }}>
             {!hideLayout && <Header />}
             <Routes>

@@ -162,12 +162,12 @@ const PostComments: React.FC<Props> = ({
                 textTransform: 'none',
                 color: 'var(--primary-color)',
                 '&:focus': {
-                  outline: 'none', // Прибирає контур
-                  boxShadow: 'none', // Прибирає тінь, якщо вона є за замовчуванням
+                  outline: 'none',
+                  boxShadow: 'none',
                 },
                 '&:focus-visible': {
-                  outline: 'none', // Прибирає контур
-                  boxShadow: 'none', // Прибирає тінь, якщо вона є за замовчуванням
+                  outline: 'none',
+                  boxShadow: 'none',
                 },
               }}
             >
@@ -336,12 +336,12 @@ const PostComments: React.FC<Props> = ({
           sx={{
             color: 'var(--primary-color)',
             '&:focus': {
-              outline: 'none', // Прибирає контур
-              boxShadow: 'none', // Прибирає тінь, якщо вона є за замовчуванням
+              outline: 'none',
+              boxShadow: 'none',
             },
             '&:focus-visible': {
-              outline: 'none', // Прибирає контур
-              boxShadow: 'none', // Прибирає тінь, якщо вона є за замовчуванням
+              outline: 'none',
+              boxShadow: 'none',
             },
           }}
         >

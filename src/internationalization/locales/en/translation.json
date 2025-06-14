@@ -23,7 +23,9 @@
     "hideAnswers": "Hide answers",
     "showAnswers": "Show answers",
     "commentReply": "Reply to comment",
-    "commentCancel": "Cancel"
+    "commentCancel": "Cancel",
+    "emptyPostsLabel": "No posts here yet.",
+    "feedEndDiscoverLabel": "That’s all from people you follow — here’s something else you might like:"
   },
   "profile": {
     "postsLabel": "posts",

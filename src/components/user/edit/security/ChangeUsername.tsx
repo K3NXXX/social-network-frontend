@@ -1,8 +1,7 @@
-import CloseIcon from '@mui/icons-material/Close';
-import { Box, Button, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
 import { type FC, useState } from 'react';
+import { Box, Button, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import axiosInstance from '../../../../services/axiosConfig';
-import { NoOutlineButton } from '../../../../ui/NoOutlineButton';
 
 interface Props {
   open: boolean;
@@ -135,7 +134,7 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
             },
           }}
         />
-        <NoOutlineButton
+        <Button
           fullWidth
           variant="contained"
           sx={{ mt: 2, backgroundColor: 'var(--primary-color)' }}
@@ -143,7 +142,7 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
           disabled={!newUsername}
         >
           Зберегти
-        </NoOutlineButton>
+        </Button>
       </Paper>
     </Modal>
   );

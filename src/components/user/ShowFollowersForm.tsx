@@ -3,6 +3,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import { Avatar, Box, Dialog, InputAdornment, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
 import { authService } from '../../services/authService';
@@ -11,13 +12,13 @@ import type { User } from '../../types/auth';
 import type { UserFollowers } from '../../types/user';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
 import { customScrollBar } from '../../ui/customScrollBar';
-import { useTranslation } from 'react-i18next';
 
 interface IShowFollowersFormProps {
   isOpened: boolean;
   onClose: (isShowFollowersFormOpened: boolean) => void;
   userId: string;
   setProfile: (data: User) => void;
+  blockedUsers: { blocked: User }[] | null;
 }
 
 export default function ShowFollowersForm({
@@ -25,11 +26,19 @@ export default function ShowFollowersForm({
   onClose,
   userId,
   setProfile,
+  blockedUsers,
 }: IShowFollowersFormProps) {
   const [searchValue, setSearchValue] = useState('');
   const [userFollowers, setUserFollowers] = useState<UserFollowers[] | []>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { t } = useTranslation();
+
+  console.log('blocked', blockedUsers);
+
+  const isUserBlocked = (userIdToCheck: string) => {
+    return blockedUsers?.some((blockedUser) => blockedUser.blocked.id === userIdToCheck);
+  };
+
   const handleFollowToggle = async (followerId: string) => {
     try {
       const result = await userService.followUser(followerId);
@@ -214,15 +223,14 @@ export default function ShowFollowersForm({
                       </Box>
                     </Box>
                   </Link>
-                  {currentUser && currentUser.id !== item.id && (
+                  {currentUser && currentUser.id !== item.id && !isUserBlocked(item.id) && (
                     <NoOutlineButton
                       variant="contained"
                       size="small"
                       onClick={() => handleFollowToggle(item.id)}
                       sx={{
-                        backgroundColor: item.isFollowed ? '#747474' : '#6969bc',
+                        backgroundColor: item.isFollowed ? '#747474' : '',
                         color: '#fff',
-                        textTransform: 'none',
                       }}
                     >
                       {item.isFollowed ? t('profile.followingLabel') : t('profile.followLabel')}

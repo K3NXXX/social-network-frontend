@@ -29,10 +29,12 @@ export default function SearchItem({ result, setSearchValue, setSearchResults }:
           display: 'flex',
           alignItems: 'center',
           bgcolor: '#181424',
-          padding: '5px 10px',
+          padding: '12px 17px',
           gap: 2,
-          mb: 1,
           cursor: 'pointer',
+          '&:hover': {
+            backgroundColor: '#2a2340',
+          },
         }}
       >
         <Box>

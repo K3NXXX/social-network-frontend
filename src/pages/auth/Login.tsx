@@ -1,7 +1,6 @@
 import {
   Alert,
   Box,
-  Button,
   CircularProgress,
   Container,
   IconButton,
@@ -298,4 +297,5 @@ const Login: React.FC = () => {
     </Container>
   );
 };
+
 export default Login;

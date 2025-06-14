@@ -35,6 +35,17 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
     }
   }, [file]);
 
+  useEffect(() => {
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [file]);
+
   const handleUpdate = async () => {
     setLoading(true);
     try {
