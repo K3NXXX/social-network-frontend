@@ -42,12 +42,13 @@ export default function ProfilePage({
   const [isPublicUserMenuOpened, setIsPublicUserMenuOpened] = useState(false);
   const [blockedUsers, setBlockedUsers] = useState<{ blocked: User }[] | null>(null);
   const [isBlocked, setIsBlocked] = useState(false);
-  const [savedPosts, setSavesPosts] = useState<PostType[] | null>(null);
+  const [savedPosts, setSavedPosts] = useState<PostType[] | null>(null);
   const [isSavedPosts, setIsSavedPosts] = useState(false);
   const { logout } = useAuth();
   const [tab, setTab] = useState(0);
   const { t } = useTranslation();
-  console.log(savedPosts);
+  console.log('saved', savedPosts);
+
   const displayedTabs =
     isPublicProfile && !isThisMe
       ? [t('profile.tabs.posts'), t('profile.tabs.tagged')]
@@ -97,10 +98,10 @@ export default function ProfilePage({
     const getSavedPosts = async () => {
       try {
         const { data } = await userService.getSavedPosts();
-        setSavesPosts(data);
+        setSavedPosts(data);
       } catch (error: any) {
         console.error('Error getting saved posts: ', error);
-        setSavesPosts(null);
+        setSavedPosts(null);
       }
     };
 
@@ -347,6 +348,8 @@ export default function ProfilePage({
             <>
               {savedPosts && savedPosts?.length > 0 ? (
                 <UserPosts
+                  setSavedPosts={setSavedPosts}
+                  savedPosts={savedPosts}
                   isSavedPosts={isSavedPosts}
                   isPublicProfile={isPublicProfile}
                   publicUserData={publicUserData}
