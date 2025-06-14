@@ -1,7 +1,8 @@
-import { type FC, useState } from 'react';
-import { Box, Button, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { Box, Button, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
+import { type FC, useState } from 'react';
 import axiosInstance from '../../../../services/axiosConfig';
+import { NoOutlineButton } from '../../../../ui/NoOutlineButton';
 
 interface Props {
   open: boolean;
@@ -69,7 +70,13 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
           <Typography fontSize="20px" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
             Username
           </Typography>
-          <IconButton onClick={handleClose}>
+          <IconButton
+            sx={{
+              '&:focus': { outline: 'none' },
+              '&:focus-visible': { outline: 'none' },
+            }}
+            onClick={handleClose}
+          >
             <CloseIcon sx={{ color: 'var(--text-color)' }} />
           </IconButton>
         </Box>
@@ -128,7 +135,7 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
             },
           }}
         />
-        <Button
+        <NoOutlineButton
           fullWidth
           variant="contained"
           sx={{ mt: 2, backgroundColor: 'var(--primary-color)' }}
@@ -136,7 +143,7 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
           disabled={!newUsername}
         >
           Зберегти
-        </Button>
+        </NoOutlineButton>
       </Paper>
     </Modal>
   );

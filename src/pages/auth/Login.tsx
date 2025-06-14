@@ -21,6 +21,7 @@ import Logo from '../../ui/Logo';
 import { useTheme } from '../../contexts/ThemeContext';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import { NoOutlineButton } from '../../ui/NoOutlineButton';
 
 interface LoginFormInputs {
   email: string;
@@ -268,7 +269,7 @@ const Login: React.FC = () => {
                 />
               )}
             />
-            <Button
+            <NoOutlineButton
               type="submit"
               fullWidth
               variant="contained"
@@ -280,7 +281,7 @@ const Login: React.FC = () => {
               ) : (
                 t('auth.loginLabel')
               )}
-            </Button>
+            </NoOutlineButton>
             <Box sx={{ textAlign: 'center' }}>
               <Link
                 component={RouterLink}

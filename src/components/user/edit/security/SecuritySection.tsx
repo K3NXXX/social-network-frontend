@@ -1,9 +1,9 @@
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Box, IconButton, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
 import ChangeEmail from './ChangeEmail';
-import ChangeUsername from './ChangeUsername';
 import ChangePassword from './ChangePassword.tsx';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ChangeUsername from './ChangeUsername';
 
 interface Props {
   email: string;
@@ -47,7 +47,13 @@ const SecuritySection = ({ email, username, onEmailChange, onUsernameChange }: P
               {email}
             </Typography>
           </Box>
-          <IconButton size="small">
+          <IconButton
+            sx={{
+              '&:focus': { outline: 'none' },
+              '&:focus-visible': { outline: 'none' },
+            }}
+            size="small"
+          >
             <ArrowForwardIosIcon fontSize="small" sx={{ color: 'var(--text-color)' }} />
           </IconButton>
         </Box>
@@ -69,7 +75,13 @@ const SecuritySection = ({ email, username, onEmailChange, onUsernameChange }: P
               {username}
             </Typography>
           </Box>
-          <IconButton size="small">
+          <IconButton
+            sx={{
+              '&:focus': { outline: 'none' },
+              '&:focus-visible': { outline: 'none' },
+            }}
+            size="small"
+          >
             <ArrowForwardIosIcon fontSize="small" sx={{ color: 'var(--text-color)' }} />
           </IconButton>
         </Box>
@@ -91,7 +103,13 @@ const SecuritySection = ({ email, username, onEmailChange, onUsernameChange }: P
               Змінити пароль
             </Typography>
           </Box>
-          <IconButton size="small">
+          <IconButton
+            sx={{
+              '&:focus': { outline: 'none' },
+              '&:focus-visible': { outline: 'none' },
+            }}
+            size="small"
+          >
             <ArrowForwardIosIcon fontSize="small" sx={{ color: 'var(--text-color)' }} />
           </IconButton>
         </Box>

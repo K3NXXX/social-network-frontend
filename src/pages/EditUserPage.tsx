@@ -176,11 +176,11 @@ const EditUserPage = () => {
                     borderRadius: '8px',
                     mb: 1,
                     '&.Mui-selected': {
-                      backgroundColor: 'action.selected', // або свій колір, наприклад: '#f0f0f0'
+                      backgroundColor: 'action.selected',
                       borderRadius: '8px',
                     },
                     '&.Mui-selected:hover': {
-                      backgroundColor: 'action.hover', // колір при наведенні на активний
+                      backgroundColor: 'action.hover',
                     },
                   }}
                 >
@@ -197,7 +197,7 @@ const EditUserPage = () => {
           </List>
         </Box>
 
-        <Container maxWidth="sm">
+        <Container sx={{ width: '40%' }}>
           {activeSection === 'edit' && profile && (
             <ProfileSection
               profile={profile}

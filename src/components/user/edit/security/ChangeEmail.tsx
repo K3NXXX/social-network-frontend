@@ -1,7 +1,8 @@
-import { type FC, useState } from 'react';
-import { Box, Button, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { Box, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
+import { type FC, useState } from 'react';
 import axiosInstance from '../../../../services/axiosConfig';
+import { NoOutlineButton } from '../../../../ui/NoOutlineButton';
 
 interface Props {
   open: boolean;
@@ -71,7 +72,13 @@ const ChangeEmail: FC<Props> = ({ open, onClose, onEmailUpdated }) => {
           <Typography fontSize="20px" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
             Check your email
           </Typography>
-          <IconButton onClick={handleClose}>
+          <IconButton
+            sx={{
+              '&:focus': { outline: 'none' },
+              '&:focus-visible': { outline: 'none' },
+            }}
+            onClick={handleClose}
+          >
             <CloseIcon sx={{ color: 'var(--text-color)' }} />
           </IconButton>
         </Box>
@@ -119,7 +126,7 @@ const ChangeEmail: FC<Props> = ({ open, onClose, onEmailUpdated }) => {
                 },
               }}
             />
-            <Button
+            <NoOutlineButton
               fullWidth
               variant="contained"
               sx={{ mt: 2, backgroundColor: 'var(--primary-color)' }}
@@ -127,7 +134,7 @@ const ChangeEmail: FC<Props> = ({ open, onClose, onEmailUpdated }) => {
               disabled={!newEmail}
             >
               Send Code
-            </Button>
+            </NoOutlineButton>
           </>
         ) : (
           <>
@@ -184,7 +191,7 @@ const ChangeEmail: FC<Props> = ({ open, onClose, onEmailUpdated }) => {
                 },
               }}
             />
-            <Button
+            <NoOutlineButton
               fullWidth
               variant="contained"
               sx={{ mt: 2 }}
@@ -192,7 +199,7 @@ const ChangeEmail: FC<Props> = ({ open, onClose, onEmailUpdated }) => {
               disabled={!code}
             >
               Continue
-            </Button>
+            </NoOutlineButton>
           </>
         )}
       </Paper>

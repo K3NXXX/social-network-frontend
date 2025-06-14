@@ -1,7 +1,8 @@
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import {
   Alert,
   Box,
-  Button,
   CircularProgress,
   Container,
   Fade,
@@ -15,13 +16,12 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import EmailVerification from '../../components/auth/EmailVerification';
+import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../services/AuthContext';
 import { authService } from '../../services/authService';
 import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
 import Logo from '../../ui/Logo';
-import { useTheme } from '../../contexts/ThemeContext';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
+import { NoOutlineButton } from '../../ui/NoOutlineButton';
 
 interface RegisterFormData {
   firstName: string;
@@ -556,7 +556,7 @@ const Register: React.FC = () => {
                     },
                   }}
                 />
-                <Button
+                <NoOutlineButton
                   type="submit"
                   fullWidth
                   variant="contained"
@@ -568,7 +568,7 @@ const Register: React.FC = () => {
                   ) : (
                     t('auth.register')
                   )}
-                </Button>
+                </NoOutlineButton>
                 <Box sx={{ textAlign: 'center' }}>
                   <Link
                     component={RouterLink}

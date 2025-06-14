@@ -12,6 +12,7 @@ import type { ChangeEvent, FormEvent } from 'react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { authService } from '../../services/authService';
+import { NoOutlineButton } from '../../ui/NoOutlineButton';
 
 interface EmailVerificationProps {
   email: string;
@@ -19,7 +20,7 @@ interface EmailVerificationProps {
   onBack: () => void;
 }
 
-const RESEND_COOLDOWN = 60; // seconds
+const RESEND_COOLDOWN = 60;
 
 const EmailVerification: React.FC<EmailVerificationProps> = ({
   email,
@@ -170,7 +171,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
         }}
       />
       <Stack direction="row" spacing={2} sx={{ mt: 2, mb: 2 }}>
-        <Button
+        <NoOutlineButton
           type="submit"
           fullWidth
           variant="contained"
@@ -188,7 +189,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           ) : (
             t('auth.emailVerification.confirm')
           )}
-        </Button>
+        </NoOutlineButton>
       </Stack>
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 2 }}>
         <Link
@@ -201,7 +202,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
         >
           {t('auth.emailVerification.backToRegisterForm')}
         </Link>
-        <Button
+        <NoOutlineButton
           variant="text"
           onClick={handleResendCode}
           disabled={!canResend || isLoading}
@@ -217,7 +218,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           {canResend
             ? t('auth.emailVerification.resendCode')
             : t('auth.emailVerification.availableIn', { seconds: countdown })}
-        </Button>
+        </NoOutlineButton>
       </Stack>
     </Box>
   );
