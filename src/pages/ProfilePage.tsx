@@ -120,7 +120,7 @@ export default function ProfilePage({
                   onClickCapture={() => toggleFollowUser(publicUserData.id)}
                   variant="contained"
                   size="small"
-                  sx={{ backgroundColor: 'var(--primary-color)' }}
+                  sx={{ background: isFollowing ? 'gray' : '#6969BC', textTransform: 'none' }}
                 >
                   {isFollowing ? t('profile.followingLabel') : t('profile.followLabel')}
                 </NoOutlineButton>
@@ -129,7 +129,7 @@ export default function ProfilePage({
                   variant="contained"
                   size="small"
                   onClick={() => navigate(PAGES.EDIT_PROFILE)}
-                  sx={{ backgroundColor: 'var(--primary-color)' }}
+                  sx={{ background: '#6969BC', textTransform: 'none' }}
                 >
                   {t('profile.editProfileLabel')}
                 </NoOutlineButton>
@@ -139,7 +139,7 @@ export default function ProfilePage({
                 <NoOutlineButton
                   variant="contained"
                   size="small"
-                  sx={{ backgroundColor: 'var(--primary-color)' }}
+                  sx={{ background: '#6969BC', textTransform: 'none' }}
                 >
                   {t('profile.messageLabel')}
                 </NoOutlineButton>
@@ -147,7 +147,7 @@ export default function ProfilePage({
                 <NoOutlineButton
                   variant="contained"
                   size="small"
-                  sx={{ backgroundColor: 'var(--primary-color)' }}
+                  sx={{ background: '#6969BC', textTransform: 'none' }}
                 >
                   {t('profile.viewArchiveLabel')}
                 </NoOutlineButton>

@@ -222,8 +222,9 @@ export default function ShowFollowingsForm({
                       size="small"
                       onClick={() => handleFollowToggle(item.id)}
                       sx={{
-                        backgroundColor: item.isFollowed ? '#747474' : '',
+                        backgroundColor: item.isFollowed ? '#747474' : '#6969bc',
                         color: '#fff',
+                        textTransform: 'none',
                       }}
                     >
                       {item.isFollowed ? t('profile.followingLabel') : t('profile.followLabel')}
