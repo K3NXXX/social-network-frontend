@@ -16,6 +16,7 @@ import { useAuth } from '../../services/AuthContext';
 import { postService } from '../../services/postService';
 import type { PostType } from '../../types/post';
 import { useTranslation } from 'react-i18next';
+import { NoOutlineButton } from '../../ui/NoOutlineButton';
 
 type Props = {
   onPostCreated: (post: PostType) => void;
@@ -136,14 +137,14 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
             <span style={{ marginLeft: 8, color: 'var(--text-color)' }}>{imageFile.name}</span>
           )}
         </div>
-        <Button
+        <NoOutlineButton
           variant="contained"
           endIcon={<SendIcon />}
           onClick={handleSubmit}
           sx={{ backgroundColor: 'var(--primary-color)' }}
         >
           {t('posts.publishLabel')}
-        </Button>
+        </NoOutlineButton>
       </CardActions>
     </Card>
   );

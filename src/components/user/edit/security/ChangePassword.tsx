@@ -2,6 +2,7 @@ import { type FC, useState } from 'react';
 import { Box, Button, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import axiosInstance from '../../../../services/axiosConfig';
+import { NoOutlineButton } from '../../../../ui/NoOutlineButton';
 
 interface Props {
   open: boolean;
@@ -162,7 +163,7 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
             },
           }}
         />
-        <Button
+        <NoOutlineButton
           fullWidth
           variant="contained"
           sx={{ mt: 2, backgroundColor: 'var(--primary-color)' }}
@@ -170,7 +171,7 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
           disabled={!currentPassword && !newPassword}
         >
           Зберегти
-        </Button>
+        </NoOutlineButton>
       </Paper>
     </Modal>
   );

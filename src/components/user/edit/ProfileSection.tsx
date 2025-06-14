@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { NoOutlineButton } from '../../../ui/NoOutlineButton';
 
 interface Profile {
   profile: any;
@@ -419,9 +420,9 @@ const ProfileSection = ({
       />
 
       <Box my={4} display="flex" justifyContent="end" alignItems="center">
-        <Button sx={{ background: '#6969BC' }} variant="contained" onClick={handleSubmit}>
+        <NoOutlineButton sx={{ background: '#6969BC' }} variant="contained" onClick={handleSubmit}>
           {t('profile.saveChangesLabel')}
-        </Button>
+        </NoOutlineButton>
       </Box>
     </>
   );

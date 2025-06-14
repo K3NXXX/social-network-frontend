@@ -229,7 +229,7 @@ export default function ShowFollowersForm({
                       size="small"
                       onClick={() => handleFollowToggle(item.id)}
                       sx={{
-                        backgroundColor: item.isFollowed ? '#747474' : '',
+                        backgroundColor: item.isFollowed ? '#747474' : 'var(--primary-color)',
                         color: '#fff',
                       }}
                     >
