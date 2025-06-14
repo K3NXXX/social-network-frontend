@@ -16,6 +16,8 @@ import SearchPage from './pages/SearchPage';
 import UserPublicProfile from './pages/UserPublicProfile';
 import { AuthProvider } from './services/AuthContext';
 import EditProfilePage from './pages/EditUserPage.tsx';
+import SearchSidebar from './components/Sidebar/SearchSidebar.tsx';
+import { useState } from 'react';
 
 function App() {
   const { pathname } = useLocation();
@@ -71,11 +73,22 @@ function App() {
     },
   });
 
+  //щоб Sidebar міг контролювати SearchSidebar
+  const [searchSidebarCollapsed, setSearchSidebarCollapsed] = useState<boolean>(true);
+
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>
         <Box display="flex" sx={{ width: '100%', minHeight: '100vh' }}>
-          {!hideLayout && <Sidebar />}
+          {!hideLayout && (
+            <Box display={'flex'}>
+              <Sidebar
+                searchSidebarCollapsed={searchSidebarCollapsed}
+                setSearchSidebarCollapsed={setSearchSidebarCollapsed}
+              />
+              <SearchSidebar isCollapsed={searchSidebarCollapsed} />
+            </Box>
+          )}
           <Box sx={{ width: '100%' }}>
             {!hideLayout && <Header />}
             <Routes>

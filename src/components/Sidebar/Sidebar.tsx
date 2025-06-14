@@ -1,5 +1,5 @@
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
@@ -7,14 +7,17 @@ import i18n from '../../internationalization/i18n';
 import { sidebarList } from '../../lists/sidebar.list';
 import { authService } from '../../services/authService';
 import Logo from '../../ui/Logo';
-import { useTranslation } from 'react-i18next';
+import SidebarListItem from './SidebarListItem';
 
-export default function Sidebar() {
+interface SidebarProps {
+  searchSidebarCollapsed: boolean;
+  setSearchSidebarCollapsed: (value: boolean) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ setSearchSidebarCollapsed, searchSidebarCollapsed }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
-
-  const { t } = useTranslation();
 
   console.log(i18n.language);
 
@@ -67,7 +70,10 @@ export default function Sidebar() {
             display: 'flex',
             justifyContent: 'center',
           }}
-          onClick={toggleCollapse}
+          onClick={() => {
+            toggleCollapse();
+            setSearchSidebarCollapsed(true);
+          }}
         >
           <ArrowForwardIosIcon
             sx={{
@@ -85,33 +91,33 @@ export default function Sidebar() {
           .filter((item) => item.id !== 7 && item.id !== 8)
           .map((item) => {
             const isActivePath = pathname === item.url;
-            return (
-              <Link key={item.id} to={item.url!} style={{ textDecoration: 'none', width: '100%' }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: isCollapsed ? 0 : '20px',
-                    padding: '10px 8px',
-                    borderRadius: 4,
-                    width: '100%',
-                    marginBottom: '10px',
-                    backgroundColor: isActivePath ? '#2a2340' : '',
-                    '&:hover': {
-                      backgroundColor: '#2a2340',
-                    },
-                    justifyContent: isCollapsed ? 'center' : 'flex-start',
-                  }}
+            if (item.id !== 5)
+              return (
+                <Link
+                  key={item.id}
+                  to={item.url!}
+                  style={{ textDecoration: 'none', width: '100%' }}
                 >
-                  <item.icon sx={{ color: 'white', fontSize: '30px' }} />
-                  {!isCollapsed && (
-                    <Typography sx={{ color: 'white', fontSize: '17px' }}>
-                      {t(item.labelKey)}
-                    </Typography>
-                  )}
-                </Box>
-              </Link>
-            );
+                  <SidebarListItem
+                    item={item}
+                    onClickCallback={undefined}
+                    backgroundColor={isActivePath ? '#2a2340' : ''}
+                    isCollapsed={isCollapsed}
+                  />
+                </Link>
+              );
+            else
+              return (
+                <SidebarListItem
+                  item={item}
+                  onClickCallback={() => {
+                    setIsCollapsed(!isCollapsed);
+                    setSearchSidebarCollapsed(!searchSidebarCollapsed);
+                  }}
+                  backgroundColor={searchSidebarCollapsed ? '' : '#2a2340'}
+                  isCollapsed={isCollapsed}
+                />
+              );
           })}
 
         {sidebarList
@@ -125,29 +131,12 @@ export default function Sidebar() {
                 width: '100%',
               }}
             >
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: isCollapsed ? 0 : '20px',
-                  padding: '10px 8px',
-                  borderRadius: 4,
-                  width: '100%',
-                  cursor: 'pointer',
-                  marginBottom: '10px',
-                  '&:hover': {
-                    backgroundColor: '#2a2340',
-                  },
-                  justifyContent: isCollapsed ? 'center' : 'flex-start',
-                }}
-              >
-                <item.icon sx={{ color: 'white', fontSize: '30px' }} />
-                {!isCollapsed && (
-                  <Typography sx={{ color: 'white', fontSize: '17px' }}>
-                    {t(item.labelKey)}
-                  </Typography>
-                )}
-              </Box>
+              <SidebarListItem
+                item={item}
+                onClickCallback={undefined}
+                backgroundColor={''}
+                isCollapsed={isCollapsed}
+              />
             </Box>
           ))}
       </Box>
@@ -156,31 +145,16 @@ export default function Sidebar() {
         .filter((item) => item.id === 8)
         .map((item) => (
           <Link key={item.id} to={item.url!} style={{ textDecoration: 'none' }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '10px 8px',
-                borderRadius: 4,
-                width: '100%',
-                gap: isCollapsed ? 0 : '20px',
-                justifyContent: isCollapsed ? 'center' : 'flex-start',
-                cursor: 'pointer',
-                '&:hover': {
-                  backgroundColor: '#2a2340',
-                },
-              }}
-              onClick={logout}
-            >
-              <item.icon sx={{ color: 'white', fontSize: '30px' }} />
-              {!isCollapsed && (
-                <Typography sx={{ color: 'white', fontSize: '17px' }}>
-                  {t(item.labelKey)}
-                </Typography>
-              )}
-            </Box>
+            <SidebarListItem
+              item={item}
+              onClickCallback={logout}
+              backgroundColor={''}
+              isCollapsed={isCollapsed}
+            />
           </Link>
         ))}
     </Box>
   );
-}
+};
+
+export default Sidebar;

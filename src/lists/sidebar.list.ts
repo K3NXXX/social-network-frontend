@@ -11,7 +11,7 @@ import type { OverridableComponent } from '@mui/material/OverridableComponent';
 
 import { PAGES } from '../constants/pages.constants';
 
-interface ISidebarList {
+export interface ISidebarList {
   id: number;
   icon: OverridableComponent<SvgIconTypeMap>;
   labelKey: string;

@@ -1,4 +1,4 @@
-import { Avatar, Box, MenuItem, Select, type SelectChangeEvent, Typography, TextField, InputAdornment } from '@mui/material';
+import { Box, Typography, TextField, InputAdornment } from '@mui/material';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ChatBar from '../components/chats/ChatBar';
 import ChatScreen from '../components/chats/ChatScreen';
@@ -14,7 +14,6 @@ import { userService } from '../services/userService';
 import { useTranslation } from 'react-i18next';
 
 const ChatsPage: React.FC = () => {
-  // const currentUser = chatsService.getUser();
   const { t } = useTranslation();
 
   const [selectedChat, setSelectedChat] = useState<ChatPreview | null>(null);
@@ -66,17 +65,7 @@ const ChatsPage: React.FC = () => {
       }
     };
 
-    const loadUsers = async () => {
-      try {
-        // const data = await chatsService.fetchAllUsers();
-        // setUsers(data);
-      } catch (error) {
-        console.error('Error fetching user:', error);
-      }
-    };
-
     loadChats();
-    loadUsers();
 
     //події з веб-сокетами
     socketRef.current = io('https://vetra-8c5dfe3bdee7.herokuapp.com', {
@@ -139,8 +128,6 @@ const ChatsPage: React.FC = () => {
     if (!socket.connected) socket.connect();
 
     const handleChatCreated = async (newChat: ChatPreview_ChatCreated) => {
-      console.log('chat_created caught:', newChat);
-
       const chatData: ChatPreview = {
         chatId: newChat.id,
         isGroup: newChat.isGroup,
@@ -148,51 +135,16 @@ const ChatsPage: React.FC = () => {
         lastMessage: newChat.messages[newChat.messages.length - 1],
         participants: [newChat.participants[0].user, newChat.participants[1].user],
       };
-      console.log(chatData, ': new chat data here!!!');
       setChats((chats) => [chatData, ...chats]);
       setSelectedChat(chatData);
       setNewChatUser(undefined);
       lastChatIdRef.current = chatData.chatId;
-      // const friend = newChatUserRef.current;
-      // if (false) {
-      //   // //коротко - якщо цей юзер надіслав перше повідомлення в новий чат
-      //   // //чомусь версія в else для нього не працює, список чатів повернувся пустий
-      //   // console.log('creating a new chat: ', newChatId);
-      //   // const currentUser: UserPreviewWithStatus = JSON.parse(localStorage.getItem('user') || '');
-      //   // const newChatData: ChatPreview = {
-      //   //   chatId: newChatId,
-      //   //   name: null,
-      //   //   isGroup: false,
-      //   //   lastMessage: null,
-      //   //   participants: [currentUser, { ...friend, isOnline: false }],
-      //   // };
-      //   // setChats((chats) => [newChatData, ...chats]);
-      //   // setSelectedChat(newChatData);
-      //   // lastChatIdRef.current = newChatData.chatId;
-      //   // socket.emit('join_chat', newChatData.chatId);
-      // } else {
-      //   //коротко - якщо цей юзер отримав повідомлення в новому чаті
-      //   try {
-      //     const data = await chatsService.fetchChats();
-      //     setChats(data);
-      //     const foundChat = data.find((chat) => chat.chatId === newChatId);
-      //     console.log('chats:', data, 'new chat:', foundChat);
-      //     if (foundChat) {
-      //       setSelectedChat(foundChat);
-      //       lastChatIdRef.current = foundChat.chatId;
-      //       socket.emit('join_chat', foundChat.chatId);
-      //     } else console.log('found chat is null????????:', foundChat);
-      //   } catch (error) {
-      //     console.error('Error fetching chats:', error);
-      //   }
-      // }
     };
 
     socket.on('chat_created', handleChatCreated);
 
     return () => {
       socket.off('chat_created', handleChatCreated);
-      // socket.off('message', handleGetMessage);
     };
   }, [socketRef.current]);
 
@@ -214,7 +166,6 @@ const ChatsPage: React.FC = () => {
             lastMessage: null,
             participants: data.participants.map((p) => ({
               ...p,
-              //not the best idea but it will reset the chat
               isOnline: false,
             })),
           };
@@ -232,15 +183,12 @@ const ChatsPage: React.FC = () => {
       sx={{
         display: 'flex',
         height: `calc(${window.innerHeight}px - ${headerHeight}px)`,
-        // я намагався зробити, щоб сторінка просто займала доступне вертикальне місце,
-        // але для цього батьківській компоненті треба додати display: flex, flexDirection: column
-        // від яких усі інші сторінки попливуть(
       }}
     >
       {/* бічна панель */}
       <Box
         sx={{
-          width: '320px',
+          width: '340px',
           flexShrink: 0,
           bgcolor: 'white',
           display: 'flex',
