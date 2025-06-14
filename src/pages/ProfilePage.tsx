@@ -52,12 +52,10 @@ export default function ProfilePage({
   const [isBlocked, setIsBlocked] = useState(false);
   const [savedPosts, setSavedPosts] = useState<PostType[] | null>(null);
   const [savedLoading, setSavedLoading] = useState(true);
-
   const [isSavedPosts, setIsSavedPosts] = useState(false);
   const { logout } = useAuth();
   const [tab, setTab] = useState(0);
   const { t } = useTranslation();
-  console.log('saved', savedPosts);
 
   const displayedTabs =
     isPublicProfile && !isThisMe

@@ -33,8 +33,6 @@ export default function ShowFollowersForm({
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { t } = useTranslation();
 
-  console.log('blocked', blockedUsers);
-
   const isUserBlocked = (userIdToCheck: string) => {
     return blockedUsers?.some((blockedUser) => blockedUser.blocked.id === userIdToCheck);
   };
@@ -46,7 +44,9 @@ export default function ShowFollowersForm({
       setProfile(updatedData);
       setUserFollowers((prev) =>
         prev.map((follower) =>
-          follower.id === followerId ? { ...follower, isFollowed: result.following } : follower
+          follower.follower.id === followerId
+            ? { ...follower, isFollowed: result.following }
+            : follower
         )
       );
     } catch (error) {
@@ -195,17 +195,17 @@ export default function ShowFollowersForm({
                   gap="0 20px"
                   alignItems="center"
                   justifyContent="space-between"
-                  key={item.id}
+                  key={item.follower.id}
                 >
                   <Link
-                    to={`${PAGES.VIEW_PUBLIC_PROFILE}/${item.id}`}
+                    to={`${PAGES.VIEW_PUBLIC_PROFILE}/${item.follower.id}`}
                     style={{ textDecoration: 'none' }}
                     onClick={() => onClose(false)}
                   >
                     <Box display="flex" gap="0 20px" alignItems="center">
-                      <Avatar src={item.avatarUrl ? item?.avatarUrl : ''} />
+                      <Avatar src={item.follower.avatarUrl ? item?.follower.avatarUrl : ''} />
                       <Box display="flex" flexDirection="column" gap="2px 0">
-                        {item.username && (
+                        {item.follower.username && (
                           <Typography
                             sx={{
                               fontWeight: 500,
@@ -214,28 +214,32 @@ export default function ShowFollowersForm({
                               cursor: 'pointer',
                             }}
                           >
-                            @{item.username}
+                            @{item.follower.username}
                           </Typography>
                         )}
                         <Typography sx={{ fontWeight: 500, color: '#bdbdbd', fontSize: '15px' }}>
-                          {item.firstName + ' ' + item.lastName}
+                          {item.follower.firstName + ' ' + item.follower.lastName}
                         </Typography>
                       </Box>
                     </Box>
                   </Link>
-                  {currentUser && currentUser.id !== item.id && !isUserBlocked(item.id) && (
-                    <NoOutlineButton
-                      variant="contained"
-                      size="small"
-                      onClick={() => handleFollowToggle(item.id)}
-                      sx={{
-                        backgroundColor: item.isFollowed ? '#747474' : '',
-                        color: '#fff',
-                      }}
-                    >
-                      {item.isFollowed ? t('profile.followingLabel') : t('profile.followLabel')}
-                    </NoOutlineButton>
-                  )}
+                  {currentUser &&
+                    currentUser.id !== item.follower.id &&
+                    !isUserBlocked(item.follower.id) && (
+                      <NoOutlineButton
+                        variant="contained"
+                        size="small"
+                        onClick={() => handleFollowToggle(item.follower.id)}
+                        sx={{
+                          backgroundColor: item.follower.isFollowed ? '#747474' : '',
+                          color: '#fff',
+                        }}
+                      >
+                        {item.follower.isFollowed
+                          ? t('profile.followingLabel')
+                          : t('profile.followLabel')}
+                      </NoOutlineButton>
+                    )}
                 </Box>
               ))
             ) : (
