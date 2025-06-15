@@ -33,8 +33,6 @@ export default function ShowFollowersForm({
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { t } = useTranslation();
 
-  console.log('blocked', blockedUsers);
-
   const isUserBlocked = (userIdToCheck: string) => {
     return blockedUsers?.some((blockedUser) => blockedUser.blocked.id === userIdToCheck);
   };

@@ -15,9 +15,10 @@ import EditPostModal from './EditPostModal';
 interface Props {
   post: PostType;
   onDelete: (id: string) => void;
+  onUnsave?: (id: string) => void; // ← новий пропс
 }
 
-const Post: React.FC<Props> = ({ post, onDelete }) => {
+const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
   const { user } = useAuth();
   const [liked, setLiked] = useState(post.liked);
   const [likesCount, setLikesCount] = useState(post._count.likes);
@@ -139,6 +140,7 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
     try {
       if (saved) {
         await postService.unsavePost(post.id);
+        onUnsave?.(post.id);
       } else {
         await postService.savePost(post.id);
       }

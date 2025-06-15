@@ -32,8 +32,8 @@ export interface UserFollowers {
   lastName: string;
   username: string | null;
   avatarUrl: string | null;
-  createdAt: string;
   isFollowed: string;
+  createdAt: string;
 }
 
 export interface UserFollowings {
