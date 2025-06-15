@@ -155,9 +155,12 @@ const EditUserPage = () => {
             py: 1.5,
             boxShadow: 3,
             zIndex: 1300,
+            padding: '0 10px',
           }}
         >
-          <Typography fontSize="14px">{message}</Typography>
+          <Typography fontSize="14px" fontFamily={'Ubuntu, sans-serif'}>
+            {message}
+          </Typography>
         </Box>
       )}
 
