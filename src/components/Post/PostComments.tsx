@@ -156,10 +156,23 @@ const PostComments: React.FC<Props> = ({
             <Button
               size="small"
               onClick={() => toggleReplies(comment)}
-              sx={{ ml: 6, mt: 1, textTransform: 'none' }}
+              sx={{
+                ml: 6,
+                mt: 1,
+                textTransform: 'none',
+                color: 'var(--primary-color)',
+                '&:focus': {
+                  outline: 'none',
+                  boxShadow: 'none',
+                },
+                '&:focus-visible': {
+                  outline: 'none',
+                  boxShadow: 'none',
+                },
+              }}
             >
-              {isVisible ?
-                t('posts.hideAnswers')
+              {isVisible
+                ? t('posts.hideAnswers')
                 : `${t('posts.hideAnswers')} (${comment._count.replies})`}
             </Button>
           )}
@@ -233,7 +246,7 @@ const PostComments: React.FC<Props> = ({
             p: 1,
             borderLeft: '4px solid #6969cb',
             borderRadius: 2,
-            backgroundColor: '#f1f1f7',
+            backgroundColor: 'var(--background-color)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -242,10 +255,10 @@ const PostComments: React.FC<Props> = ({
           }}
         >
           <Box sx={{ textAlign: 'left' }}>
-            <Typography variant="subtitle2" color="primary" sx={{ mb: 0.5 }}>
+            <Typography variant="subtitle2" sx={{ mb: 0.5, color: 'var(--text-color)' }}>
               {t('posts.commentReply')}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'var(--text-color)' }}>
               <strong>{`${replyingTo.user.firstName} ${replyingTo.user.lastName}`}</strong>: "
               {replyingTo.content}"
             </Typography>
@@ -254,7 +267,17 @@ const PostComments: React.FC<Props> = ({
             size="small"
             color="error"
             onClick={() => setReplyingTo(null)}
-            sx={{ alignSelf: 'center' }}
+            sx={{
+              alignSelf: 'center',
+              '&:focus': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+              '&:focus-visible': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+            }}
           >
             {t('posts.commentCancel')}
           </Button>
@@ -280,11 +303,48 @@ const PostComments: React.FC<Props> = ({
               handleSend();
             }
           }}
+          InputProps={{
+            sx: {
+              '& textarea': {
+                color: 'var(--text-color)',
+              },
+              '& textarea::placeholder': {
+                color: 'var(--text-color)',
+                opacity: 0.7,
+              },
+            },
+          }}
           sx={{
-            backgroundColor: '#F8F8FC',
+            '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '1px',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--border-color)',
+            },
+            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '2px',
+            },
+            '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--error-color)',
+            },
           }}
         />
-        <IconButton onClick={handleSend} sx={{ color: 'primary.main' }}>
+        <IconButton
+          onClick={handleSend}
+          sx={{
+            color: 'var(--primary-color)',
+            '&:focus': {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+            '&:focus-visible': {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+          }}
+        >
           <SendIcon />
         </IconButton>
       </Stack>

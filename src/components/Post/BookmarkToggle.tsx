@@ -10,7 +10,24 @@ interface Props {
 
 const BookmarkToggle: React.FC<Props> = ({ saved, onToggleSave }) => {
   return (
-    <IconButton onClick={onToggleSave} color={saved ? 'primary' : 'default'} aria-label="bookmark">
+    <IconButton
+      onClick={onToggleSave}
+      aria-label="bookmark"
+      sx={{
+        color: 'var(--primary-color)',
+        '&:hover': {
+          color: 'var(--primary-color)',
+        },
+        '&:active': {
+          border: 'none',
+          outline: 'none',
+        },
+        '&:focus': {
+          border: 'none',
+          outline: 'none',
+        },
+      }}
+    >
       {saved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
     </IconButton>
   );

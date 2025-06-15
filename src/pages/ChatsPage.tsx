@@ -145,6 +145,7 @@ const ChatsPage: React.FC = () => {
 
     return () => {
       socket.off('chat_created', handleChatCreated);
+      // socket.off('message', handleGetMessage);
     };
   }, [socketRef.current]);
 
@@ -190,10 +191,10 @@ const ChatsPage: React.FC = () => {
         sx={{
           width: '340px',
           flexShrink: 0,
-          bgcolor: 'white',
+          bgcolor: 'var(--background-color)',
           display: 'flex',
           flexDirection: 'column',
-          borderRight: '1px solid #dedede',
+          borderRight: '1px solid var(--border-color)',
         }}
       >
         <TextField
@@ -217,19 +218,45 @@ const ChatsPage: React.FC = () => {
               </InputAdornment>
             ),
             sx: {
+              color: 'var(--text-color)',
+              opacity: 0.7,
+              borderRadius: '20px',
               padding: 0,
               '& input': {
                 padding: '1.5px 0px',
+                color: 'var(--text-color)',
+              },
+              '&.Mui-focused': {
+                color: 'var(--primary-color)',
+                opacity: 1,
+              },
+              '&.MuiFormLabel-filled': {
+                color: 'var(--primary-color)',
               },
             },
           }}
           sx={{
             '& .MuiOutlinedInput-root': {
+              borderRadius: '20px',
+              borderColor: 'var(--border-color)',
               margin: '10px 5px 0 5px',
               padding: 0,
               '& input': {
                 paddingTop: 1.5,
                 paddingBottom: 1.5,
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--primary-color)',
+              },
+              '& fieldset': {
+                borderColor: 'var(--border-color)',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--border-color)',
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--primary-color)',
+                borderWidth: '2px',
               },
             },
           }}
@@ -258,7 +285,12 @@ const ChatsPage: React.FC = () => {
         )}
         <Typography
           variant="body1"
-          sx={{ fontSize: 25, fontWeight: 'bold', margin: '10% 0 2% 0', color: 'black' }}
+          sx={{
+            fontSize: 25,
+            fontWeight: 'bold',
+            margin: '10% 0 2% 0',
+            color: 'var(--text-color)',
+          }}
         >
           {t('chats.chatsLabel')}
         </Typography>
@@ -272,7 +304,9 @@ const ChatsPage: React.FC = () => {
                 setSelectedChat(chat);
                 lastChatIdRef.current = chat.chatId;
               }}
-              sx={selectedChat?.chatId === chat.chatId ? { bgcolor: '#e6e6e6' } : null}
+              sx={
+                selectedChat?.chatId === chat.chatId ? { bgcolor: 'var(--background-color)' } : null
+              }
               socketRef={socketRef}
             />
           ))}

@@ -37,7 +37,7 @@ const ChatBar: React.FC<ChatBarProps> = ({ data, onSelect, sx, socketRef }) => {
     display: 'flex',
     height: 85,
     cursor: 'pointer',
-    ':hover': { bgcolor: '#e6e6e6' },
+    ':hover': { bgcolor: 'var(--secondary-color)' },
     transition: 'background-color 0.2s ease',
   };
 
@@ -107,11 +107,11 @@ const ChatBar: React.FC<ChatBarProps> = ({ data, onSelect, sx, socketRef }) => {
         <Typography
           variant="body1"
           component="p"
-          sx={{ color: 'black', fontWeight: 'bold', fontSize: '20px' }}
+          sx={{ color: 'var(--text-color)', fontWeight: 'bold', fontSize: '16px' }}
         >
           {`${otherUser?.firstName} ${otherUser?.lastName}`}
         </Typography>
-        <Typography variant="body1" component="p" sx={{ color: 'grey' }}>
+        <Typography variant="body1" component="p" sx={{ color: 'var(--text-color)', opacity: 0.5 }}>
           {newMessage
             ? newMessage?.sender
               ? newMessage.sender.id === currentUser.id

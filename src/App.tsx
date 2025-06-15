@@ -1,4 +1,4 @@
-import { Box, createTheme, ThemeProvider } from '@mui/material';
+import { Box } from '@mui/material';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -18,66 +18,15 @@ import { AuthProvider } from './services/AuthContext';
 import EditProfilePage from './pages/EditUserPage.tsx';
 import SearchSidebar from './components/Sidebar/SearchSidebar.tsx';
 import { useState } from 'react';
+import { ThemeProvider } from './contexts/ThemeContext.tsx';
 
 function App() {
   const { pathname } = useLocation();
   const hideLayout = pathname === PAGES.LOGIN || pathname === PAGES.REGISTER;
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: '#6969cb',
-      },
-    },
-    typography: {
-      fontFamily: '"Roboto", sans-serif',
-    },
-    components: {
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            borderRadius: '10px',
-            fontWeight: 'bolder',
-            textTransform: 'none',
-            '&:focus': {
-              outline: 'none',
-              boxShadow: 'none',
-            },
-            '&:focus-visible': {
-              outline: 'none',
-              boxShadow: 'none',
-            },
-          },
-        },
-      },
-      MuiIconButton: {
-        styleOverrides: {
-          root: {
-            '&:focus': {
-              outline: 'none',
-              boxShadow: 'none',
-            },
-            '&:focus-visible': {
-              outline: 'none',
-              boxShadow: 'none',
-            },
-          },
-        },
-      },
-      MuiCard: {
-        styleOverrides: {
-          root: {
-            borderRadius: '10px',
-          },
-        },
-      },
-    },
-  });
-
-  //щоб Sidebar міг контролювати SearchSidebar
   const [searchSidebarCollapsed, setSearchSidebarCollapsed] = useState<boolean>(true);
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider>
       <AuthProvider>
         <Box display="flex" sx={{ width: '100%', minHeight: '100vh' }}>
           {!hideLayout && (

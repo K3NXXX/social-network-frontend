@@ -2,6 +2,7 @@ import { type FC, useState } from 'react';
 import { Box, Button, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import axiosInstance from '../../../../services/axiosConfig';
+import { NoOutlineButton } from '../../../../ui/NoOutlineButton';
 
 interface Props {
   open: boolean;
@@ -62,18 +63,25 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
           transform: 'translate(-50%, -50%)',
           p: 3,
           borderRadius: 4,
+          backgroundColor: 'var(--secondary-color)',
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography fontSize="20px" fontWeight={600}>
+          <Typography fontSize="20px" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
             Username
           </Typography>
-          <IconButton onClick={handleClose}>
-            <CloseIcon />
+          <IconButton
+            sx={{
+              '&:focus': { outline: 'none' },
+              '&:focus-visible': { outline: 'none' },
+            }}
+            onClick={handleClose}
+          >
+            <CloseIcon sx={{ color: 'var(--text-color)' }} />
           </IconButton>
         </Box>
 
-        <Typography fontSize="15px" mb={2}>
+        <Typography fontSize="15px" mb={2} sx={{ color: 'var(--text-color)' }}>
           Введіть новий username
         </Typography>
 
@@ -101,6 +109,7 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
               '& .MuiInputBase-input': {
                 px: 2,
                 py: '10px',
+                color: 'var(--text-color)',
                 '&::-webkit-calendar-picker-indicator': {
                   filter: 'brightness(0)',
                   cursor: 'pointer',
@@ -109,16 +118,32 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
               borderRadius: '10px',
             },
           }}
+          sx={{
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color) !important',
+              borderWidth: '1px',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--border-color)',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '2px',
+            },
+            '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--error-color)',
+            },
+          }}
         />
-        <Button
+        <NoOutlineButton
           fullWidth
           variant="contained"
-          sx={{ mt: 2 }}
+          sx={{ mt: 2, backgroundColor: 'var(--primary-color)' }}
           onClick={handleSave}
           disabled={!newUsername}
         >
           Зберегти
-        </Button>
+        </NoOutlineButton>
       </Paper>
     </Modal>
   );

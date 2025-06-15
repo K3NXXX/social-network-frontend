@@ -63,7 +63,7 @@ export default function UserPublicProfile() {
   }, [userData]);
 
   if (!userData && !blockedMessage) {
-    return <CircularProgress />;
+    return <CircularProgress sx={{ color: 'var(--primary-color)' }} />;
   }
 
   if (blockedMessage) {

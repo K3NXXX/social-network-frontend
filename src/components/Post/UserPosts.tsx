@@ -43,7 +43,7 @@ const UserPosts: React.FC<Props> = ({
   if (!postsToRender?.length && loading && !isSavedPosts) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <CircularProgress />
+        <CircularProgress sx={{ color: 'var(--primary-color)' }} />
       </Box>
     );
   }

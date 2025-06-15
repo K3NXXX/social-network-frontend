@@ -8,6 +8,8 @@
     "search": "Пошук",
     "profile": "Профіль",
     "changeLanguage": "Змінити мову",
+    "themeSwitchLight": "Світла тема",
+    "themeSwitchDark": "Темна тема",
     "logout": "Вихід"
   },
   "posts": {

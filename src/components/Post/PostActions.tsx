@@ -28,11 +28,21 @@ const PostActions: React.FC<Props> = ({
   <CardActions sx={{ justifyContent: 'space-between', pt: 0 }}>
     <Stack direction="row" spacing={2}>
       <Button
-        startIcon={liked ? <FavoriteIcon color="primary" /> : <FavoriteBorderIcon />}
+        startIcon={
+          liked ? <FavoriteIcon sx={{ color: 'var(--primary-color)' }} /> : <FavoriteBorderIcon />
+        }
         sx={{
           fontWeight: 'bold',
           textTransform: 'none',
-          color: liked ? 'primary' : '#757575',
+          color: liked ? 'var(--primary-color)' : '#757575',
+          '&:focus': {
+            outline: 'none', // Прибирає контур
+            boxShadow: 'none', // Прибирає тінь, якщо вона є за замовчуванням
+          },
+          '&:focus-visible': {
+            outline: 'none', // Прибирає контур
+            boxShadow: 'none', // Прибирає тінь, якщо вона є за замовчуванням
+          },
         }}
         onClick={onToggleLike}
       >
@@ -40,7 +50,19 @@ const PostActions: React.FC<Props> = ({
       </Button>
       <Button
         startIcon={<ChatBubbleOutlineIcon />}
-        sx={{ fontWeight: 'bold', textTransform: 'none', color: '#757575' }}
+        sx={{
+          fontWeight: 'bold',
+          textTransform: 'none',
+          color: 'var(--primary-color)',
+          '&:focus': {
+            outline: 'none', // Прибирає контур
+            boxShadow: 'none', // Прибирає тінь, якщо вона є за замовчуванням
+          },
+          '&:focus-visible': {
+            outline: 'none', // Прибирає контур
+            boxShadow: 'none', // Прибирає тінь, якщо вона є за замовчуванням
+          },
+        }}
         onClick={onToggleComments}
       >
         {commentsCount}
@@ -48,8 +70,22 @@ const PostActions: React.FC<Props> = ({
     </Stack>
 
     <Stack direction="row" spacing={2}>
-      <IconButton>
-        <ShareIcon />
+      <IconButton
+        sx={{
+          '&:hover': {
+            color: 'var(--primary-color)',
+          },
+          '&:active': {
+            border: 'none',
+            outline: 'none',
+          },
+          '&:focus': {
+            border: 'none',
+            outline: 'none',
+          },
+        }}
+      >
+        <ShareIcon sx={{ color: 'var(--primary-color)' }} />
       </IconButton>
       <BookmarkToggle saved={saved} onToggleSave={onToggleSave} />
     </Stack>

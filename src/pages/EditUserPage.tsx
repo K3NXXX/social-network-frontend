@@ -126,7 +126,7 @@ const EditUserPage = () => {
   if (loading) {
     return (
       <Box sx={{ textAlign: 'center', mt: 10 }}>
-        <CircularProgress />
+        <CircularProgress sx={{ color: 'var(--primary-color)' }} />
       </Box>
     );
   }
@@ -155,14 +155,17 @@ const EditUserPage = () => {
             py: 1.5,
             boxShadow: 3,
             zIndex: 1300,
+            padding: '0 10px',
           }}
         >
-          <Typography fontSize="14px">{message}</Typography>
+          <Typography fontSize="14px" fontFamily={'Ubuntu, sans-serif'}>
+            {message}
+          </Typography>
         </Box>
       )}
 
       <Box display="flex">
-        <Box sx={{ width: 240, borderRight: '1px solid #e0e0e0', px: 2 }}>
+        <Box sx={{ width: 240, borderRight: '1px solid var(--border-color)', px: 2 }}>
           <Typography fontSize="18px" fontWeight="bold" my={2} textAlign="left" px={2}>
             {t('profile.settingsLabel')}
           </Typography>
@@ -176,11 +179,11 @@ const EditUserPage = () => {
                     borderRadius: '8px',
                     mb: 1,
                     '&.Mui-selected': {
-                      backgroundColor: 'action.selected', // або свій колір, наприклад: '#f0f0f0'
+                      backgroundColor: 'action.selected',
                       borderRadius: '8px',
                     },
                     '&.Mui-selected:hover': {
-                      backgroundColor: 'action.hover', // колір при наведенні на активний
+                      backgroundColor: 'action.hover',
                     },
                   }}
                 >
@@ -197,7 +200,7 @@ const EditUserPage = () => {
           </List>
         </Box>
 
-        <Container maxWidth="sm">
+        <Container sx={{ width: '40%' }}>
           {activeSection === 'edit' && profile && (
             <ProfileSection
               profile={profile}

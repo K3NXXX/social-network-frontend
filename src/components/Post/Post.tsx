@@ -151,7 +151,16 @@ const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
   };
 
   return (
-    <Card sx={{ width: '100%', maxWidth: '1200px', mx: 'auto', p: 2, mb: 4 }}>
+    <Card
+      sx={{
+        width: '100%',
+        maxWidth: '1200px',
+        mx: 'auto',
+        p: 2,
+        mb: 4,
+        backgroundColor: 'var(--secondary-color)',
+      }}
+    >
       <PostHeader
         user={post.user}
         createdAt={post.createdAt}

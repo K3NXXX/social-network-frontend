@@ -7,6 +7,8 @@
     "search": "Search",
     "profile": "Profile",
     "changeLanguage": "Change language",
+    "themeSwitchLight": "Light theme",
+    "themeSwitchDark": "Dark theme",
     "logout": "Logout"
   },
   "posts": {

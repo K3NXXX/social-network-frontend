@@ -38,7 +38,8 @@ export default function Header() {
   return (
     <Card
       sx={{
-        borderBottom: '1px solid #e0e0e0',
+        borderBottom: '1px solid var(--border-color)',
+        background: 'var(--background-color)',
         boxShadow: 'none',
         padding: '15px 20px',
         position: 'sticky',
@@ -55,12 +56,12 @@ export default function Header() {
         <Box position="relative" display="flex" alignItems="center" gap="0 20px">
           <Box justifySelf="end" display="flex" gap="0 30px">
             <Box sx={{ cursor: 'pointer' }} position="relative">
-              <NotificationsNoneIcon sx={{ cursor: 'pointer' }} />
+              <NotificationsNoneIcon sx={{ cursor: 'pointer', color: 'var(--text-color)' }} />
               <Box
                 sx={{
                   width: 20,
                   height: 20,
-                  backgroundColor: '#9885f4',
+                  backgroundColor: 'var(--primary-color)',
                   borderRadius: 50,
                   display: 'flex',
                   justifyContent: 'center',
@@ -77,12 +78,12 @@ export default function Header() {
             </Box>
             <Box sx={{ cursor: 'pointer' }} position="relative" display="flex" alignItems="center">
               <Link to={PAGES.CHATS} style={{ textDecoration: 'none' }}>
-                <ChatBubbleOutlineIcon sx={{ fontSize: '20px', color: 'black' }} />
+                <ChatBubbleOutlineIcon sx={{ fontSize: '20px', color: 'var(--text-color)' }} />
                 <Box
                   sx={{
                     width: 20,
                     height: 20,
-                    backgroundColor: '#9885f4',
+                    backgroundColor: 'var(--primary-color)',
                     borderRadius: 50,
                     display: 'flex',
                     justifyContent: 'center',
@@ -100,7 +101,7 @@ export default function Header() {
             </Box>
             <Box sx={{ cursor: 'pointer' }}>
               <Link style={{ textDecoration: 'none' }} to={PAGES.PROFILE}>
-                <PersonOutlineIcon sx={{ cursor: 'pointer', color: 'black' }} />
+                <PersonOutlineIcon sx={{ cursor: 'pointer', color: 'var(--text-color)' }} />
               </Link>
             </Box>
           </Box>
@@ -125,22 +126,47 @@ export default function Header() {
                 </InputAdornment>
               ),
               sx: {
+                color: 'var(--text-color)',
+                opacity: 0.7,
                 borderRadius: '20px',
                 padding: 0,
                 width: '350px',
                 '& input': {
                   padding: '1.5px 0px',
+                  color: 'var(--text-color)',
+                },
+                '&.Mui-focused': {
+                  color: 'var(--primary-color)',
+                  opacity: 1,
+                },
+                '&.MuiFormLabel-filled': {
+                  color: 'var(--primary-color)',
                 },
               },
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '20px',
+                borderColor: 'var(--border-color)',
                 padding: 0,
                 '& input': {
                   paddingTop: 1.5,
                   paddingBottom: 1.5,
                 },
+              },
+              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--primary-color)',
+                borderWidth: '1px',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--border-color)',
+              },
+              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--primary-color)',
+                borderWidth: '2px',
+              },
+              '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--error-color)',
               },
             }}
           />

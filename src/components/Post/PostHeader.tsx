@@ -73,35 +73,68 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
           <Typography
             variant="subtitle1"
             fontWeight="bold"
-            sx={{ textAlign: 'left', display: 'block' }}
+            sx={{ textAlign: 'left', display: 'block', color: 'var(--text-color)' }}
           >
             {user.firstName} {user.lastName}
           </Typography>
           <Typography
             variant="caption"
-            color="text.secondary"
-            sx={{ textAlign: 'left', display: 'block' }}
+            sx={{ textAlign: 'left', display: 'block', color: 'var(--text-color)' }}
           >
             {formatCreatedAt(createdAt, locale as 'uk' | 'en')}
           </Typography>
         </Box>
       </Stack>
-      <IconButton onClick={handleMenuOpen}>
-        <MoreHorizIcon />
+      <IconButton
+        onClick={handleMenuOpen}
+        sx={{
+          '&:hover': {
+            color: 'var(--primary-color)',
+          },
+          '&:active': {
+            border: 'none',
+            outline: 'none',
+          },
+          '&:focus': {
+            border: 'none',
+            outline: 'none',
+          },
+        }}
+      >
+        <MoreHorizIcon sx={{ color: 'var(--text-color)' }} />
       </IconButton>
 
-      <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
-        <MenuItem>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleMenuClose}
+        sx={{
+          '& .MuiPaper-root': {
+            backgroundColor: 'var(--secondary-color)',
+          },
+        }}
+      >
+        <MenuItem
+          sx={{
+            color: 'var(--text-color)',
+          }}
+        >
           <ListItemIcon>
-            <ShareIcon fontSize="small" />
+            <ShareIcon fontSize="small" sx={{ color: 'var(--text-color)' }} />
           </ListItemIcon>
           {t('posts.shareLabel')}
         </MenuItem>
 
         {isOwner && [
-          <MenuItem key="edit" onClick={handleEditClick}>
+          <MenuItem
+            key="edit"
+            onClick={handleEditClick}
+            sx={{
+              color: 'var(--text-color)',
+            }}
+          >
             <ListItemIcon>
-              <EditIcon fontSize="small" />
+              <EditIcon fontSize="small" sx={{ color: 'var(--text-color)' }} />
             </ListItemIcon>
             {t('posts.editLabel')}
           </MenuItem>,

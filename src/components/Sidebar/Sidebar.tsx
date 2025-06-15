@@ -1,12 +1,16 @@
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
 import i18n from '../../internationalization/i18n';
 import { sidebarList } from '../../lists/sidebar.list';
 import { authService } from '../../services/authService';
+import { useTheme } from '../../contexts/ThemeContext';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import Logo from '../../ui/Logo';
+import { useTranslation } from 'react-i18next';
 import SidebarListItem from './SidebarListItem';
 
 interface SidebarProps {
@@ -18,6 +22,9 @@ const Sidebar: React.FC<SidebarProps> = ({ setSearchSidebarCollapsed, searchSide
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+
+  const { t } = useTranslation();
 
   console.log(i18n.language);
 
@@ -131,14 +138,60 @@ const Sidebar: React.FC<SidebarProps> = ({ setSearchSidebarCollapsed, searchSide
                 width: '100%',
               }}
             >
-              <SidebarListItem
-                item={item}
-                onClickCallback={undefined}
-                backgroundColor={''}
-                isCollapsed={isCollapsed}
-              />
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: isCollapsed ? 0 : '20px',
+                  padding: '10px 8px',
+                  borderRadius: 4,
+                  width: '100%',
+                  cursor: 'pointer',
+                  marginBottom: '10px',
+                  '&:hover': {
+                    backgroundColor: '#2a2340',
+                  },
+                  justifyContent: isCollapsed ? 'center' : 'flex-start',
+                }}
+              >
+                <item.icon sx={{ color: 'white', fontSize: '30px' }} />
+                {!isCollapsed && (
+                  <Typography sx={{ color: 'white', fontSize: '17px' }}>
+                    {t(item.labelKey)}
+                  </Typography>
+                )}
+              </Box>
             </Box>
           ))}
+      </Box>
+
+      <Box
+        onClick={toggleTheme}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: isCollapsed ? 0 : '20px',
+          padding: '10px 8px',
+          borderRadius: 4,
+          width: '100%',
+          marginBottom: '10px',
+          cursor: 'pointer',
+          '&:hover': {
+            backgroundColor: '#2a2340',
+          },
+          justifyContent: isCollapsed ? 'center' : 'flex-start',
+        }}
+      >
+        {theme === 'light' ? (
+          <DarkModeIcon sx={{ color: 'white', fontSize: '30px' }} />
+        ) : (
+          <LightModeIcon sx={{ color: 'white', fontSize: '30px' }} />
+        )}
+        {!isCollapsed && (
+          <Typography sx={{ color: 'white', fontSize: '17px' }}>
+            {theme === 'light' ? t('sidebar.themeSwitchLight') : t('sidebar.themeSwitchDark')}
+          </Typography>
+        )}
       </Box>
 
       {sidebarList

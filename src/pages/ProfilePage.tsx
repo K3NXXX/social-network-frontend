@@ -215,7 +215,7 @@ export default function ProfilePage({
                     onClickCapture={() => toggleFollowUser(publicUserData.id)}
                     variant="contained"
                     size="small"
-                    sx={{ backgroundColor: isFollowing ? '#737373' : '' }}
+                    sx={{ backgroundColor: isFollowing ? '#737373' : 'var(--primary-color)' }}
                   >
                     {isFollowing ? t('profile.followingLabel') : t('profile.followLabel')}
                   </NoOutlineButton>
@@ -225,17 +225,26 @@ export default function ProfilePage({
                   variant="contained"
                   size="small"
                   onClick={() => navigate(PAGES.EDIT_PROFILE)}
+                  sx={{ backgroundColor: 'var(--primary-color)' }}
                 >
                   {t('profile.editProfileLabel')}
                 </NoOutlineButton>
               )}
 
               {isPublicProfile && !isThisMe ? (
-                <NoOutlineButton variant="contained" size="small">
+                <NoOutlineButton
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: 'var(--primary-color)' }}
+                >
                   {t('profile.messageLabel')}
                 </NoOutlineButton>
               ) : (
-                <NoOutlineButton variant="contained" size="small">
+                <NoOutlineButton
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: 'var(--primary-color)' }}
+                >
                   {t('profile.viewArchiveLabel')}
                 </NoOutlineButton>
               )}
@@ -243,13 +252,13 @@ export default function ProfilePage({
                 <Box
                   onClick={() => setIsPublicUserMenuOpened(true)}
                   sx={{
-                    backgroundColor: '#aaaaaa',
+                    backgroundColor: 'var(--background-color)',
                     padding: '5px',
                     borderRadius: '10px',
                     cursor: 'pointer',
                   }}
                 >
-                  <MoreHorizIcon sx={{ color: 'white' }} />
+                  <MoreHorizIcon sx={{ color: 'var(--text-color)' }} />
                 </Box>
               )}
             </Box>
@@ -314,7 +323,7 @@ export default function ProfilePage({
               sx: {
                 top: 0,
                 height: '1px',
-                backgroundColor: 'primary.main',
+                backgroundColor: 'var(--primary-color)',
               },
             }}
           >
@@ -324,6 +333,7 @@ export default function ProfilePage({
                   key={label + index}
                   label={label}
                   sx={{
+                    color: 'var(--text-color)',
                     outline: 'none',
                     border: 'none',
                     transition: 'none',
@@ -335,6 +345,7 @@ export default function ProfilePage({
                     },
                     '&.Mui-selected': {
                       transition: 'none',
+                      color: 'var(--primary-color)',
                     },
                   }}
                 />
