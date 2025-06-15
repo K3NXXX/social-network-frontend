@@ -44,9 +44,7 @@ export default function ShowFollowersForm({
       setProfile(updatedData);
       setUserFollowers((prev) =>
         prev.map((follower) =>
-          follower.follower.id === followerId
-            ? { ...follower, isFollowed: result.following }
-            : follower
+          follower.id === followerId ? { ...follower, isFollowed: result.following } : follower
         )
       );
     } catch (error) {
@@ -195,17 +193,17 @@ export default function ShowFollowersForm({
                   gap="0 20px"
                   alignItems="center"
                   justifyContent="space-between"
-                  key={item.follower.id}
+                  key={item.id}
                 >
                   <Link
-                    to={`${PAGES.VIEW_PUBLIC_PROFILE}/${item.follower.id}`}
+                    to={`${PAGES.VIEW_PUBLIC_PROFILE}/${item.id}`}
                     style={{ textDecoration: 'none' }}
                     onClick={() => onClose(false)}
                   >
                     <Box display="flex" gap="0 20px" alignItems="center">
-                      <Avatar src={item.follower.avatarUrl ? item?.follower.avatarUrl : ''} />
+                      <Avatar src={item.avatarUrl ? item?.avatarUrl : ''} />
                       <Box display="flex" flexDirection="column" gap="2px 0">
-                        {item.follower.username && (
+                        {item.username && (
                           <Typography
                             sx={{
                               fontWeight: 500,
@@ -214,32 +212,28 @@ export default function ShowFollowersForm({
                               cursor: 'pointer',
                             }}
                           >
-                            @{item.follower.username}
+                            @{item.username}
                           </Typography>
                         )}
                         <Typography sx={{ fontWeight: 500, color: '#bdbdbd', fontSize: '15px' }}>
-                          {item.follower.firstName + ' ' + item.follower.lastName}
+                          {item.firstName + ' ' + item.lastName}
                         </Typography>
                       </Box>
                     </Box>
                   </Link>
-                  {currentUser &&
-                    currentUser.id !== item.follower.id &&
-                    !isUserBlocked(item.follower.id) && (
-                      <NoOutlineButton
-                        variant="contained"
-                        size="small"
-                        onClick={() => handleFollowToggle(item.follower.id)}
-                        sx={{
-                          backgroundColor: item.follower.isFollowed ? '#747474' : '',
-                          color: '#fff',
-                        }}
-                      >
-                        {item.follower.isFollowed
-                          ? t('profile.followingLabel')
-                          : t('profile.followLabel')}
-                      </NoOutlineButton>
-                    )}
+                  {currentUser && currentUser.id !== item.id && !isUserBlocked(item.id) && (
+                    <NoOutlineButton
+                      variant="contained"
+                      size="small"
+                      onClick={() => handleFollowToggle(item.id)}
+                      sx={{
+                        backgroundColor: item.isFollowed ? '#747474' : '',
+                        color: '#fff',
+                      }}
+                    >
+                      {item.isFollowed ? t('profile.followingLabel') : t('profile.followLabel')}
+                    </NoOutlineButton>
+                  )}
                 </Box>
               ))
             ) : (
