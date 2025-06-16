@@ -13,6 +13,8 @@ export default function Header() {
 
   const pathnames = location.pathname.split('/').filter((x) => x);
 
+  const isPublicProfile = location.pathname.startsWith('/user/profile/');
+
   useEffect(() => {
     const getCurrentUser = async () => {
       try {
@@ -66,44 +68,59 @@ export default function Header() {
             Vetra
           </MUILink>
 
-          {pathnames.map((value, index) => {
-            const to = `/${pathnames.slice(0, index + 1).join('/')}`;
-            const isLast = index === pathnames.length - 1;
-            const label = decodeURIComponent(value);
+          {isPublicProfile ? (
+            <Typography
+              sx={{
+                color: theme === 'light' ? '#626166' : '#ffffff',
+                fontWeight: 500,
+                fontFamily: 'Ubuntu',
+                textTransform: 'capitalize',
+                fontSize: '17px',
+              }}
+            >
+              Public Profile
+            </Typography>
+          ) : (
+            pathnames.map((value, index) => {
+              const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+              const isLast = index === pathnames.length - 1;
+              const label = decodeURIComponent(value);
 
-            return isLast ? (
-              <Typography
-                key={to}
-                sx={{
-                  fontWeight: 500,
-                  fontFamily: 'Ubuntu',
-                  textTransform: 'capitalize',
-                  fontSize: '17px',
-                }}
-              >
-                {label}
-              </Typography>
-            ) : (
-              <MUILink
-                key={to}
-                component={Link}
-                to={to}
-                underline="hover"
-                sx={{
-                  color: '#2c2452',
-                  fontWeight: 500,
-                  fontFamily: 'Ubuntu',
-                  textTransform: 'capitalize',
-                  fontSize: '17px',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  },
-                }}
-              >
-                {label}
-              </MUILink>
-            );
-          })}
+              return isLast ? (
+                <Typography
+                  key={to}
+                  sx={{
+                    color: theme === 'light' ? '#626166' : '#ffffff',
+                    fontWeight: 500,
+                    fontFamily: 'Ubuntu',
+                    textTransform: 'capitalize',
+                    fontSize: '17px',
+                  }}
+                >
+                  {label}
+                </Typography>
+              ) : (
+                <MUILink
+                  key={to}
+                  component={Link}
+                  to={to}
+                  underline="hover"
+                  sx={{
+                    color: theme === 'light' ? '#2c2452' : '#ffffff',
+                    fontWeight: 500,
+                    fontFamily: 'Ubuntu',
+                    textTransform: 'capitalize',
+                    fontSize: '17px',
+                    '&:hover': {
+                      textDecoration: 'underline',
+                    },
+                  }}
+                >
+                  {label}
+                </MUILink>
+              );
+            })
+          )}
         </Breadcrumbs>
 
         <Box textAlign="right">
