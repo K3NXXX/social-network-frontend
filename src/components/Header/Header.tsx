@@ -24,6 +24,7 @@ export default function Header() {
       feed: t('breadcrumb.feed'),
       chats: t('breadcrumb.chats'),
       notifications: t('breadcrumb.notifications'),
+      edit: t('breadcrumb.edit'),
     };
     return mapping[segment.toLowerCase()] || decodeURIComponent(segment);
   };

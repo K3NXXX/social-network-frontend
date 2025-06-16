@@ -7,7 +7,8 @@
     "user": "user",
     "feed": "Feed",
     "chats": "Chats",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "edit": "Edit"
   },
   "sidebar": {
     "home": "Home",
@@ -86,7 +87,11 @@
     "shareProfile": "Share profile",
     "unblock": "Unblock",
     "unblockUser": "Unblock user",
-    "youAreBlocked": "This user has blocked you. You can't view their profile."
+    "youAreBlocked": "This user has blocked you. You can't view their profile.",
+    "edit": {
+      "email": "Email",
+      "username": "Username"
+    }
   },
   "chats": {
     "chooseToWrite": "Choose someone to messaging",
