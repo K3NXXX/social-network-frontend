@@ -9,15 +9,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Comment from './Comment';
 
 import { useTranslation } from 'react-i18next';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
-import { useAuth } from '../../services/AuthContext';
+import { userService } from '../../services/userService';
 import { postService } from '../../services/postService';
 import type { CommentType } from '../../types/post';
 import ReplyLoader from './ReplyLoader';
+import type { User } from '../../types/auth';
 
 interface Props {
   comments: CommentType[];
@@ -40,7 +41,6 @@ const PostComments: React.FC<Props> = ({
   onLoadMore,
   onUpdateComment,
 }) => {
-  const { user } = useAuth();
   const [newComment, setNewComment] = useState('');
   const { t } = useTranslation();
   const [visibleReplies, setVisibleReplies] = useState<Set<string>>(new Set());
@@ -50,6 +50,20 @@ const PostComments: React.FC<Props> = ({
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const [replyPages, setReplyPages] = useState<Record<string, number>>({});
   const take = 5;
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const profileData = await userService.getUserProfile();
+        setUser(profileData);
+      } catch (err: any) {
+        console.error('Profile fetch error:', err);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleSend = async () => {
     if (!newComment.trim()) return;
@@ -59,6 +73,15 @@ const PostComments: React.FC<Props> = ({
         newComment,
         replyingTo?.id ?? null
       );
+
+      if (user) {
+        createdComment.user = {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          avatarUrl: user.avatarUrl,
+        };
+      }
       onAddComment(createdComment);
 
       if (replyingTo) {
@@ -173,7 +196,7 @@ const PostComments: React.FC<Props> = ({
             >
               {isVisible
                 ? t('posts.hideAnswers')
-                : `${t('posts.hideAnswers')} (${comment._count.replies})`}
+                : `${t('posts.showAnswers')} (${comment._count.replies})`}
             </Button>
           )}
 

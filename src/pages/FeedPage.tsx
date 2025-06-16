@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Divider, Typography } from '@mui/material';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { Fab, Zoom } from '@mui/material';
 import PostsList from '../components/Post/PostList';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { postService } from '../services/postService';
@@ -9,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 const FeedPage: React.FC = () => {
   const [showDiscover, setShowDiscover] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const { t } = useTranslation();
 
   const {
@@ -65,6 +68,30 @@ const FeedPage: React.FC = () => {
     setDiscoverPosts((prev) => prev.filter((post) => post.id !== postId));
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleScrollToTopAndReload = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const checkIfAtTop = setInterval(() => {
+      if (window.scrollY === 0) {
+        clearInterval(checkIfAtTop);
+
+        setFeedPosts([]);
+        setDiscoverPosts([]);
+        setShowDiscover(false);
+        fetchFeedPosts(1);
+      }
+    }, 500);
+  };
+
   return (
     <Box
       component="main"
@@ -95,7 +122,7 @@ const FeedPage: React.FC = () => {
                 opacity: 0.7,
               }}
             >
-              Більше немає постів від тих, за ким ви стежите. Ось цікаві публікації для вас:
+              {t('posts.feedEndDiscoverLabel')}
             </Typography>
             <PostsList posts={discoverPosts} loading={loadingDiscover} onDelete={handleDelete} />
           </>
@@ -103,6 +130,32 @@ const FeedPage: React.FC = () => {
       </Box>
 
       <div ref={loaderRef} style={{ height: '1px' }} />
+
+      <Zoom in={showScrollTop}>
+        <Fab
+          color="primary"
+          size="small"
+          onClick={handleScrollToTopAndReload}
+          sx={{
+            position: 'fixed',
+            bottom: 32,
+            right: 32,
+            zIndex: 1000,
+            backgroundColor: 'var(--primary-color)',
+            color: '#fff',
+            '&:hover': {
+              backgroundColor: 'var(--primary-color)',
+              color: '#fff',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+            },
+            '&:focus': {
+              outline: 'none',
+            },
+          }}
+        >
+          <KeyboardArrowUpIcon />
+        </Fab>
+      </Zoom>
     </Box>
   );
 };

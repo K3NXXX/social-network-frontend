@@ -18,6 +18,8 @@ import type { User } from '../../types/post';
 import { formatCreatedAt } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
+import { useNavigate } from 'react-router-dom';
+import { PAGES } from '../../constants/pages.constants';
 
 interface Props {
   user: User;
@@ -33,7 +35,11 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
   const [, setCurrentTime] = useState(Date.now());
   const locale = i18n.language;
   const open = Boolean(anchorEl);
+  const navigate = useNavigate();
 
+  const handleProfileClick = () => {
+    navigate(`${PAGES.VIEW_PUBLIC_PROFILE}/${user.id}`);
+  };
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -63,8 +69,21 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
   }, []);
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-      <Stack direction="row" spacing={2} alignItems="center">
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        mb: 2,
+      }}
+    >
+      <Stack
+        direction="row"
+        spacing={2}
+        alignItems="center"
+        sx={{ cursor: 'pointer' }}
+        onClick={handleProfileClick}
+      >
         <Avatar src={user.avatarUrl ?? undefined}>
           {!user.avatarUrl &&
             `${user.firstName?.[0]?.toUpperCase() ?? ''}${user.lastName?.[0]?.toUpperCase() ?? ''}`}
