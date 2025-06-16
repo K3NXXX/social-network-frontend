@@ -74,11 +74,10 @@ export default function Header() {
                 color: theme === 'light' ? '#626166' : '#ffffff',
                 fontWeight: 500,
                 fontFamily: 'Ubuntu',
-                textTransform: 'capitalize',
                 fontSize: '17px',
               }}
             >
-              Public Profile
+              Public profile
             </Typography>
           ) : (
             pathnames.map((value, index) => {
