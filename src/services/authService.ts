@@ -129,7 +129,7 @@ export const authService = {
     }
   },
 
-  async getCurrentUser(): Promise<User | null> {
+  getCurrentUser(): User | null {
     const userStr = localStorage.getItem('user');
     if (userStr) {
       return JSON.parse(userStr);

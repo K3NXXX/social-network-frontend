@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -12,11 +12,12 @@ import {
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import { useAuth } from '../../services/AuthContext';
 import { postService } from '../../services/postService';
 import type { PostType } from '../../types/post';
 import { useTranslation } from 'react-i18next';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
+import type { User } from '../../types/auth';
+import { userService } from '../../services/userService';
 
 type Props = {
   onPostCreated: (post: PostType) => void;
@@ -24,10 +25,23 @@ type Props = {
 
 const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
   const { t } = useTranslation();
-  const { user } = useAuth();
   const [content, setContent] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const profileData = await userService.getUserProfile();
+        setUser(profileData);
+      } catch (err: any) {
+        console.error('Profile fetch error:', err);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;

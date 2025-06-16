@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const accessToken = authService.getAccessToken();
         const user = authService.getCurrentUser();
-        
+
         if (accessToken && user) {
           setAuth({
             user,
@@ -67,9 +67,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (credentials: LoginCredentials) => {
     try {
-      setAuth(prev => ({ ...prev, loading: true, error: null }));
+      setAuth((prev) => ({ ...prev, loading: true, error: null }));
       const response = await authService.login(credentials);
-      
+
       setAuth({
         user: response.user,
         accessToken: response.accessToken,
@@ -78,7 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         error: null,
       });
     } catch (error) {
-      setAuth(prev => ({
+      setAuth((prev) => ({
         ...prev,
         loading: false,
         error: error instanceof Error ? error.message : 'An error occurred during login',
@@ -89,9 +89,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (credentials: RegisterCredentials) => {
     try {
-      setAuth(prev => ({ ...prev, loading: true, error: null }));
+      setAuth((prev) => ({ ...prev, loading: true, error: null }));
       const response = await authService.register(credentials);
-      
+
       setAuth({
         user: response.user,
         accessToken: response.accessToken,
@@ -100,7 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         error: null,
       });
     } catch (error) {
-      setAuth(prev => ({
+      setAuth((prev) => ({
         ...prev,
         loading: false,
         error: error instanceof Error ? error.message : 'An error occurred during registration',
@@ -125,4 +125,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}; 
+};

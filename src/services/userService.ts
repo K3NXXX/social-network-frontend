@@ -2,6 +2,7 @@ import axiosInstance from './axiosConfig';
 
 const USER_ENDPOINTS = {
   SEARCH_USERS: '/api/user',
+  GET_USER_PROFILE: 'api/user/profile',
   GET_USER_PUBLIC_PROFILE: 'api/user/profile',
   FOLLOW_USER: 'api/follow',
   GET_USER_FOLLOWINGS: 'api/following',
@@ -19,6 +20,12 @@ export const userService = {
     });
     return data;
   },
+
+  async getUserProfile() {
+    const { data } = await axiosInstance.get(`${USER_ENDPOINTS.GET_USER_PROFILE}`);
+    return data;
+  },
+
   async getUserPublicProfile(id: string) {
     const { data } = await axiosInstance.get(`${USER_ENDPOINTS.GET_USER_PUBLIC_PROFILE}/${id}`);
     return data;
