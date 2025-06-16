@@ -1,4 +1,4 @@
-import { Box, Typography, Avatar, TextField, IconButton } from '@mui/material';
+import { Box, Typography, Avatar, TextField, IconButton, Button } from '@mui/material';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import sendIcon from '../../assets/paper-plane.svg';
 import type { ChatPreview, MessageData, UserPreview } from '../../types/chats';
@@ -37,20 +37,40 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
     messageInputRef.current = messageInput;
   }, [messageInput]);
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [shouldScroll, setShouldScroll] = useState<boolean>(false);
+  const scrollToBottom = () => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: 'smooth',
+    });
+  };
+
+  useEffect(() => {
+    if (!shouldScroll) return;
+
+    scrollToBottom();
+    setShouldScroll(false);
+  }, [messages, shouldScroll]);
+
+  const [hasNextPage, setHasNextPage] = useState<boolean>(true);
+  const loadMessages = async (cursor: string | null, scroll: boolean) => {
+    if (!otherUser) return;
+    try {
+      if (!hasNextPage) throw new Error(`Error: there's no more messages`);
+      const data = await chatsService.fetchMessages(currentUser.id, otherUser.id, cursor);
+
+      setMessages((msgs) => [...data.messages, ...(msgs || [])]);
+      setHasNextPage(data.hasNextPage);
+      if (scroll) setShouldScroll(true);
+    } catch (error) {
+      console.error('Error fetching messages for the chat:', error);
+    }
+  };
+
   useEffect(() => {
     if (selectedChat) {
-      const loadMessages = async () => {
-        if (!otherUser) return;
-        try {
-          const data = await chatsService.fetchMessages(otherUser.id);
-          // тут також повертається hasNextPage:boolean для пагінації
-          // щось поміняли на бек-енді і тепер повертаються лише повідомлення
-          setMessages(data);
-        } catch (error) {
-          console.error('Error fetching messages for the chat:', error);
-        }
-      };
-      loadMessages();
+      loadMessages(null, true);
     }
   }, [selectedChat]);
 
@@ -81,6 +101,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
             isRead: message.isRead,
           },
         ]);
+        setShouldScroll(true);
       }
     };
 
@@ -132,14 +153,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
-
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
 
   useEffect(() => {
     setMessages([]);
@@ -283,6 +296,11 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
               flex: 1,
             }}
           >
+            {otherUser && messages ? (
+              <Button variant="contained" onClick={() => loadMessages(messages[0].id, false)}>
+                Load More!
+              </Button>
+            ) : null}
             {messages?.map((msg, index) => (
               <Message
                 key={index}

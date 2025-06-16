@@ -37,9 +37,16 @@ export const chatsService = {
       throw error;
     }
   },
-  async fetchMessages(receiverId: string): Promise<MessageData[]> {
+  async fetchMessages(
+    userId: string,
+    receiverId: string,
+    cursor: string | null
+  ): Promise<{ messages: MessageData[]; hasNextPage: boolean }> {
     try {
-      const response = await axiosInstance.get(`${ENDPOINTS.MESSAGES}${receiverId}`);
+      if (cursor) console.log('CURSOR:', cursor);
+      const response = await axiosInstance.get(`${ENDPOINTS.MESSAGES}${receiverId}`, {
+        params: { userId, cursor: cursor ? cursor : undefined },
+      });
       console.log('data about messages:', response.data);
       return response.data;
     } catch (error) {
