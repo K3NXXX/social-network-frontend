@@ -1,39 +1,32 @@
-import { Close } from '@mui/icons-material';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import SearchIcon from '@mui/icons-material/Search';
-import { Box, Card, InputAdornment, TextField, Typography } from '@mui/material';
-import debounce from 'lodash/debounce';
-import { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Box, Breadcrumbs, Card, Link as MUILink, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
-import { userService } from '../../services/userService';
-import type { SearchUsers } from '../../types/user';
-import Logo from '../../ui/Logo';
-import SearchItem from '../../ui/SearchItem';
+import { useTheme } from '../../contexts/ThemeContext';
+import { authService } from '../../services/authService';
+import type { User } from '../../types/auth';
 
 export default function Header() {
-  const [searchValue, setSearchValue] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchUsers[] | []>([]);
-  const { t } = useTranslation();
-  const debounceSearch = useCallback(
-    debounce(async (value: string) => {
-      if (value.trim().length < 2) return setSearchResults([]);
-      try {
-        const data = await userService.searchUsers(value);
-        setSearchResults(data);
-      } catch {
-        setSearchResults([]);
-      }
-    }, 500),
-    []
-  );
+  const [user, setUser] = useState<User | null>(null);
+  const location = useLocation();
+  const { theme } = useTheme();
+
+  const pathnames = location.pathname.split('/').filter((x) => x);
 
   useEffect(() => {
-    debounceSearch(searchValue);
-  }, [searchValue, debounceSearch]);
+    const getCurrentUser = async () => {
+      try {
+        const result = await authService.getCurrentUser();
+        setUser(result);
+      } catch (error) {
+        console.log('Error getting current user: ', error);
+        setUser(null);
+      }
+    };
+    getCurrentUser();
+  }, []);
+
+  if (!user) return null;
 
   return (
     <Card
@@ -41,7 +34,7 @@ export default function Header() {
         borderBottom: '1px solid var(--border-color)',
         background: 'var(--background-color)',
         boxShadow: 'none',
-        padding: '15px 20px',
+        padding: '20px',
         position: 'sticky',
         top: '0',
         zIndex: 500,
@@ -49,153 +42,84 @@ export default function Header() {
       }}
     >
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Box justifySelf="start">
-          <Logo />
-        </Box>
-
-        <Box position="relative" display="flex" alignItems="center" gap="0 20px">
-          <Box justifySelf="end" display="flex" gap="0 30px">
-            <Box sx={{ cursor: 'pointer' }} position="relative">
-              <NotificationsNoneIcon sx={{ cursor: 'pointer', color: 'var(--text-color)' }} />
-              <Box
-                sx={{
-                  width: 20,
-                  height: 20,
-                  backgroundColor: 'var(--primary-color)',
-                  borderRadius: 50,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                top="-11px"
-                right="-14px"
-                position="absolute"
-              >
-                <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '13px' }}>
-                  3
-                </Typography>
-              </Box>
-            </Box>
-            <Box sx={{ cursor: 'pointer' }} position="relative" display="flex" alignItems="center">
-              <Link to={PAGES.CHATS} style={{ textDecoration: 'none' }}>
-                <ChatBubbleOutlineIcon sx={{ fontSize: '20px', color: 'var(--text-color)' }} />
-                <Box
-                  sx={{
-                    width: 20,
-                    height: 20,
-                    backgroundColor: 'var(--primary-color)',
-                    borderRadius: 50,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                  top="-11px"
-                  right="-18px"
-                  position="absolute"
-                >
-                  <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '13px' }}>
-                    1
-                  </Typography>
-                </Box>
-              </Link>
-            </Box>
-            <Box sx={{ cursor: 'pointer' }}>
-              <Link style={{ textDecoration: 'none' }} to={PAGES.PROFILE}>
-                <PersonOutlineIcon sx={{ cursor: 'pointer', color: 'var(--text-color)' }} />
-              </Link>
-            </Box>
-          </Box>
-          <TextField
-            autoComplete="off"
-            placeholder={t('searchPlaceholder')}
-            variant="outlined"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: '#888', marginLeft: '10px' }} />
-                </InputAdornment>
-              ),
-              endAdornment: searchValue.length > 0 && (
-                <InputAdornment position="end">
-                  <Close
-                    onClick={() => setSearchValue('')}
-                    sx={{ color: '#888', mx: '10px', cursor: 'pointer' }}
-                  />
-                </InputAdornment>
-              ),
-              sx: {
-                color: 'var(--text-color)',
-                opacity: 0.7,
-                borderRadius: '20px',
-                padding: 0,
-                width: '350px',
-                '& input': {
-                  padding: '1.5px 0px',
-                  color: 'var(--text-color)',
-                },
-                '&.Mui-focused': {
-                  color: 'var(--primary-color)',
-                  opacity: 1,
-                },
-                '&.MuiFormLabel-filled': {
-                  color: 'var(--primary-color)',
-                },
-              },
-            }}
+        <Breadcrumbs
+          aria-label="breadcrumb"
+          sx={{
+            paddingLeft: '10px',
+            fontSize: '17px',
+            color: theme === 'light' ? '#626166' : '#ffffff',
+          }}
+        >
+          <MUILink
+            component={Link}
+            to="/"
+            underline="hover"
             sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '20px',
-                borderColor: 'var(--border-color)',
-                padding: 0,
-                '& input': {
-                  paddingTop: 1.5,
-                  paddingBottom: 1.5,
-                },
-              },
-              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'var(--primary-color)',
-                borderWidth: '1px',
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'var(--border-color)',
-              },
-              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'var(--primary-color)',
-                borderWidth: '2px',
-              },
-              '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'var(--error-color)',
+              color: theme === 'light' ? '#626166' : '#ffffff',
+              fontWeight: 500,
+              fontFamily: 'Ubuntu',
+              '&:hover': {
+                textDecoration: 'underline',
               },
             }}
-          />
-          {searchResults.length > 0 && (
-            <Box
+          >
+            Vetra
+          </MUILink>
+
+          {pathnames.map((value, index) => {
+            const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+            const isLast = index === pathnames.length - 1;
+            const label = decodeURIComponent(value);
+
+            return isLast ? (
+              <Typography
+                key={to}
+                sx={{
+                  fontWeight: 500,
+                  fontFamily: 'Ubuntu',
+                  textTransform: 'capitalize',
+                  fontSize: '17px',
+                }}
+              >
+                {label}
+              </Typography>
+            ) : (
+              <MUILink
+                key={to}
+                component={Link}
+                to={to}
+                underline="hover"
+                sx={{
+                  color: '#2c2452',
+                  fontWeight: 500,
+                  fontFamily: 'Ubuntu',
+                  textTransform: 'capitalize',
+                  fontSize: '17px',
+                  '&:hover': {
+                    textDecoration: 'underline',
+                  },
+                }}
+              >
+                {label}
+              </MUILink>
+            );
+          })}
+        </Breadcrumbs>
+
+        <Box textAlign="right">
+          <Link to={PAGES.PROFILE} style={{ textDecoration: 'none' }}>
+            <Typography
               sx={{
-                position: 'absolute',
-                left: 150,
-                width: '70%',
-                top: '60px',
-                bgcolor: '#181424',
-                boxShadow: 3,
-                borderRadius: '10px',
-                zIndex: 1000,
-                padding: '10px',
-                maxHeight: '700px',
-                overflowY: 'auto',
+                fontSize: '18px',
+                fontWeight: 500,
+                letterSpacing: '0.5px',
+                color: theme === 'light' ? '#2c2452' : '#ffffff',
+                fontFamily: 'Ubuntu',
               }}
             >
-              {searchResults.map((result) => (
-                <SearchItem
-                  key={result.id}
-                  result={result}
-                  setSearchValue={setSearchValue}
-                  setSearchResults={setSearchResults}
-                />
-              ))}
-            </Box>
-          )}
+              Welcome back, {user.firstName}!
+            </Typography>
+          </Link>
         </Box>
       </Box>
     </Card>

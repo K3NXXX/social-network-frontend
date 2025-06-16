@@ -1,16 +1,16 @@
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
+import { useTheme } from '../../contexts/ThemeContext';
 import i18n from '../../internationalization/i18n';
 import { sidebarList } from '../../lists/sidebar.list';
 import { authService } from '../../services/authService';
-import { useTheme } from '../../contexts/ThemeContext';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
 import Logo from '../../ui/Logo';
-import { useTranslation } from 'react-i18next';
 import SidebarListItem from './SidebarListItem';
 
 interface SidebarProps {
@@ -156,7 +156,17 @@ const Sidebar: React.FC<SidebarProps> = ({ setSearchSidebarCollapsed, searchSide
               >
                 <item.icon sx={{ color: 'white', fontSize: '30px' }} />
                 {!isCollapsed && (
-                  <Typography sx={{ color: 'white', fontSize: '17px' }}>
+                  <Typography
+                    sx={{
+                      color: 'white',
+                      fontSize: '17px',
+                      opacity: isCollapsed ? 0 : 1,
+                      width: isCollapsed ? 0 : 'auto',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      transition: 'opacity 0.3s ease, width 0.3s ease',
+                    }}
+                  >
                     {t(item.labelKey)}
                   </Typography>
                 )}
@@ -188,7 +198,17 @@ const Sidebar: React.FC<SidebarProps> = ({ setSearchSidebarCollapsed, searchSide
           <LightModeIcon sx={{ color: 'white', fontSize: '30px' }} />
         )}
         {!isCollapsed && (
-          <Typography sx={{ color: 'white', fontSize: '17px' }}>
+          <Typography
+            sx={{
+              color: 'white',
+              fontSize: '17px',
+              opacity: isCollapsed ? 0 : 1,
+              width: isCollapsed ? 0 : 'auto',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              transition: 'opacity 0.3s ease, width 0.3s ease',
+            }}
+          >
             {theme === 'light' ? t('sidebar.themeSwitchLight') : t('sidebar.themeSwitchDark')}
           </Typography>
         )}
