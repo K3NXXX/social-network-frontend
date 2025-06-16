@@ -95,7 +95,7 @@ const FeedPage: React.FC = () => {
                 opacity: 0.7,
               }}
             >
-              Більше немає постів від тих, за ким ви стежите. Ось цікаві публікації для вас:
+              {t('posts.feedMessage')}
             </Typography>
             <PostsList posts={discoverPosts} loading={loadingDiscover} onDelete={handleDelete} />
           </>

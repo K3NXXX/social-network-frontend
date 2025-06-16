@@ -208,7 +208,7 @@ export default function ProfilePage({
                     size="small"
                     sx={{ backgroundColor: '#d9534f' }}
                   >
-                    Розблокувати
+                    {t('profile.unblock')}
                   </NoOutlineButton>
                 ) : (
                   <NoOutlineButton

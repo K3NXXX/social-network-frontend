@@ -6,6 +6,7 @@ import { userService } from '../services/userService';
 import type { User } from '../types/auth';
 import type { UserPublicProfile } from '../types/user';
 import ProfilePage from './ProfilePage';
+import { useTranslation } from 'react-i18next';
 
 export default function UserPublicProfile() {
   const { id } = useParams();
@@ -14,7 +15,7 @@ export default function UserPublicProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const isThisMe = currentUser?.id === userData?.id;
   const [blockedMessage, setBlockedMessage] = useState(false);
-  console.log('isFollowing', isFollowing);
+  const { t } = useTranslation();
 
   const toggleFollowUser = async (id: string) => {
     try {
@@ -69,9 +70,7 @@ export default function UserPublicProfile() {
   if (blockedMessage) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px' }}>
-        <p style={{ color: 'gray', fontSize: '18px' }}>
-          Цей користувач заблокував вас. Ви не можете переглядати його профіль.
-        </p>
+        <p style={{ color: 'gray', fontSize: '18px' }}>{t('profile.youAreBlocked')}</p>
       </div>
     );
   }
