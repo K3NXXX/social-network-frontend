@@ -349,7 +349,7 @@ export default function ProfilePage({
 
           {tab === 1 && (
             <UserPosts
-              isSavedPosts={isSavedPosts}
+              isSavedPosts={true}
               isPublicProfile={isPublicProfile}
               publicUserData={publicUserData}
             />

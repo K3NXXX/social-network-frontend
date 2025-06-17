@@ -19,16 +19,15 @@ type Props = {
 const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData, isSavedPosts }) => {
   const { t } = useTranslation();
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [savedPosts, setSavedPosts] = useState<PostType[]>([]);
 
   const postFetcher = isPublicProfile
     ? () => postService.fetchPublicUserPosts(publicUserData?.id)
     : () => postService.fetchUserPosts();
 
   const { posts, setPosts, loading, loaderRef, page, totalPages, fetchPosts } = usePosts(
-    isSavedPosts ? () => userService.getSavedPosts() : postFetcher,
+    isSavedPosts ? userService.getSavedPosts : postFetcher,
     5,
-    [publicUserData?.id]
+    isSavedPosts ? [] : [publicUserData?.id]
   );
 
   useIntersectionObserver(
@@ -44,7 +43,7 @@ const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData, isSavedPo
   };
 
   const handleUnsave = (postId: string) => {
-    setSavedPosts((prev) => prev.filter((p) => p.id !== postId));
+    setPosts((prev) => prev.filter((post) => post.id !== postId));
   };
 
   useEffect(() => {
