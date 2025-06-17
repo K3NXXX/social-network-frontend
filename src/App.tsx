@@ -19,6 +19,7 @@ import EditProfilePage from './pages/EditUserPage.tsx';
 import SearchSidebar from './components/Sidebar/SearchSidebar.tsx';
 import { useState } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext.tsx';
+import FullPostPage from './pages/FullPostPage';
 
 function App() {
   const { pathname } = useLocation();
@@ -52,6 +53,7 @@ function App() {
                 <Route path={PAGES.CHATS} element={<ChatsPage />} />
                 <Route path={PAGES.SEARCH} element={<SearchPage />} />
                 <Route path={PAGES.NOTIFICATIONS} element={<NotificationPage />} />
+                <Route path={`${PAGES.POST}/:postId`} element={<FullPostPage />} />
                 <Route path={`${PAGES.VIEW_PUBLIC_PROFILE}/:id`} element={<UserPublicProfile />} />
               </Route>
               <Route path="*" element={<Navigate to={PAGES.LOGIN} replace />} />

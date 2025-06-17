@@ -8,6 +8,7 @@ import type { User } from '../types/auth';
 import GlobalLoader from '../ui/GlobalLoader';
 import { formatCreatedAt } from '../utils/dateUtils';
 import { useNotificationStore } from '../zustand/stores/notificationStore';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const filterTypeMap: Record<string, string | null> = {
   Всі: null,
@@ -22,11 +23,14 @@ export default function NotificationPage() {
   const { notifications, fetchNotifications, markAllAsRead, initSocket } = useNotificationStore();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  const filteredNotifications = notifications?.filter((notification) => {
-    const type = filterTypeMap[activeFilter];
-    if (!type) return true;
-    return notification.type === type;
-  });
+  const filteredNotifications =
+    notifications?.filter((notification) => {
+      const type = filterTypeMap[activeFilter];
+      return !type || notification.type === type;
+    }) ?? [];
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const changeNotificationType = (type: string) => {
     if (type === 'COMMENT') return 'New comment';
@@ -74,6 +78,7 @@ export default function NotificationPage() {
         marginBottom: '50px',
       }}
     >
+      {/* Заголовок */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, padding: '0px 30px' }}>
         <Typography sx={{ fontSize: 24, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
           Сповіщення
@@ -93,6 +98,7 @@ export default function NotificationPage() {
         </Button>
       </Box>
 
+      {/* Фільтри */}
       <Box sx={{ display: 'flex', gap: 3, mb: 4, paddingBottom: '20px', padding: '0px 30px' }}>
         {Object.keys(filterTypeMap).map((label) => {
           const isActive = activeFilter === label;
@@ -111,10 +117,7 @@ export default function NotificationPage() {
                 fontFamily: 'Ubuntu, sans-serif',
                 borderBottom: isActive ? '2px solid #7362cc' : '2px solid transparent',
                 borderRadius: 0,
-                '&:hover': {
-                  color: '#7362cc',
-                  background: 'transparent',
-                },
+                '&:hover': { background: 'transparent' },
               }}
             >
               {label}
@@ -123,91 +126,106 @@ export default function NotificationPage() {
         })}
       </Box>
 
+      {/* Список сповіщень */}
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        {filteredNotifications?.map((notification) => (
-          <Box
-            key={notification.id}
-            sx={{ borderBottom: '1px solid #d4d4d4', padding: '20px 0', position: 'relative' }}
-          >
-            <Box sx={{ display: 'flex', gap: '0 20px', padding: '0px 30px' }}>
-              <Link to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}>
-                <Avatar
-                  sx={{ width: '60px', height: '60px' }}
-                  src={notification.sender.avatarUrl ?? undefined}
-                >
-                  {notification.sender.firstName[0]}
-                </Avatar>
-              </Link>
-              <Box
-                sx={{
-                  paddingTop: '10px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'start',
-                }}
-              >
-                <Link to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}>
-                  <Typography
-                    sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 500, color: 'black' }}
-                  >
-                    {notification.message}
-                  </Typography>
-                </Link>
-
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: '0 10px' }}>
-                  <Typography
-                    sx={{
-                      fontFamily: 'Ubuntu, sans-serif',
-                      fontWeight: 400,
-                      textAlign: 'start',
-                      color: 'gray',
-                    }}
-                  >
-                    {formatCreatedAt(notification.createdAt)}
-                  </Typography>
-                  <Box
-                    sx={{
-                      width: '4px',
-                      height: '4px',
-                      borderRadius: '50%',
-                      backgroundColor: 'gray',
-                    }}
-                  ></Box>
-                  <Typography
-                    sx={{
-                      fontFamily: 'Ubuntu, sans-serif',
-                      fontWeight: 400,
-                      textAlign: 'start',
-                      color: 'gray',
-                    }}
-                  >
-                    {changeNotificationType(notification.type)}
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
+        {filteredNotifications.map((notification) => {
+          const postId = notification.post?.id;
+          return (
             <Box
+              key={notification.id}
               sx={{
-                position: 'absolute',
-                top: '45px',
-                right: '50px',
+                borderBottom: '1px solid #d4d4d4',
+                padding: '20px 0',
+                position: 'relative',
+                cursor: postId ? 'pointer' : 'default',
+              }}
+              onClick={() => {
+                if (postId) {
+                  navigate(`${PAGES.POST}/${postId}`, {
+                    state: { backgroundLocation: location },
+                  });
+                }
               }}
             >
-              {!notification.isRead ? (
+              <Box sx={{ display: 'flex', gap: '0 20px', padding: '0px 30px' }}>
+                <Link to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}>
+                  <Avatar
+                    sx={{ width: '60px', height: '60px' }}
+                    src={notification.sender.avatarUrl ?? undefined}
+                  >
+                    {notification.sender.firstName[0]}
+                  </Avatar>
+                </Link>
                 <Box
                   sx={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    backgroundColor: '#7362cc',
+                    paddingTop: '10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'start',
                   }}
-                ></Box>
-              ) : (
-                <DoneAllIcon sx={{ color: '#7362cc' }} />
-              )}
+                >
+                  <Link to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}>
+                    <Typography
+                      sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 500, color: 'black' }}
+                    >
+                      {notification.message}
+                    </Typography>
+                  </Link>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: '0 10px' }}>
+                    <Typography
+                      sx={{
+                        fontFamily: 'Ubuntu, sans-serif',
+                        fontWeight: 400,
+                        textAlign: 'start',
+                        color: 'gray',
+                      }}
+                    >
+                      {formatCreatedAt(notification.createdAt)}
+                    </Typography>
+                    <Box
+                      sx={{
+                        width: '4px',
+                        height: '4px',
+                        borderRadius: '50%',
+                        backgroundColor: 'gray',
+                      }}
+                    />
+                    <Typography
+                      sx={{
+                        fontFamily: 'Ubuntu, sans-serif',
+                        fontWeight: 400,
+                        textAlign: 'start',
+                        color: 'gray',
+                      }}
+                    >
+                      {changeNotificationType(notification.type)}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '45px',
+                  right: '50px',
+                }}
+              >
+                {!notification.isRead ? (
+                  <Box
+                    sx={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: '#7362cc',
+                    }}
+                  />
+                ) : (
+                  <DoneAllIcon sx={{ color: '#7362cc' }} />
+                )}
+              </Box>
             </Box>
-          </Box>
-        ))}
+          );
+        })}
       </Box>
     </Card>
   );
