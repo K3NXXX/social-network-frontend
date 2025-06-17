@@ -99,10 +99,10 @@ const SecuritySection = ({ email, username, onEmailChange, onUsernameChange }: P
         >
           <Box>
             <Typography variant="subtitle2" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
-              Password
+              {t('profile.edit.password')}
             </Typography>
             <Typography variant="body2" sx={{ color: 'var(--text-color)' }}>
-              Змінити пароль
+              {t('profile.edit.changePassword')}
             </Typography>
           </Box>
           <IconButton

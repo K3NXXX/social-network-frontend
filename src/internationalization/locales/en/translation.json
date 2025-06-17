@@ -90,7 +90,26 @@
     "youAreBlocked": "This user has blocked you. You can't view their profile.",
     "edit": {
       "email": "Email",
-      "username": "Username"
+      "username": "Username",
+      "error": "Unable to save changes",
+      "success": "Profile successfully updated!",
+      "password": "Password",
+      "errorCode": "Error sending code",
+      "emailUpdated": "Email successfully updated!",
+      "invalidCode": "Invalid code",
+      "changePassword": "Change password",
+      "enterEmail": "Enter your new email address",
+      "checkEmail": "Check your email",
+      "sendCode": "Send code",
+      "sentTo": "Enter the code we sent to ",
+      "incorrectUsername": "Incorrect username. Only Latin letters, digits, '.', and '_' are allowed (1–20 characters).",
+      "usernameChanged": "Username successfully changed",
+      "enterNewUsername": "Enter new username",
+      "save": "Save",
+      "passwordChanged": "Password successfully changed!",
+      "passwordError": "Password change error",
+      "currentPassword": "Current password",
+      "newPassword": "New password"
     }
   },
   "chats": {
