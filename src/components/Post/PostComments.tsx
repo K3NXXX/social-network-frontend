@@ -158,8 +158,8 @@ const PostComments: React.FC<Props> = ({
               onClick={() => toggleReplies(comment)}
               sx={{ ml: 6, mt: 1, textTransform: 'none' }}
             >
-              {isVisible ?
-                t('posts.hideAnswers')
+              {isVisible
+                ? t('posts.hideAnswers')
                 : `${t('posts.hideAnswers')} (${comment._count.replies})`}
             </Button>
           )}

@@ -18,12 +18,7 @@ const Logo: React.FC<LogoProps> = ({ size = 'medium' }) => {
   };
 
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      mb={2}
-    >
+    <Box display="flex" alignItems="center" justifyContent="center" mb={2}>
       <Typography
         variant="h4"
         component="div"
@@ -40,4 +35,4 @@ const Logo: React.FC<LogoProps> = ({ size = 'medium' }) => {
   );
 };
 
-export default Logo; 
+export default Logo;

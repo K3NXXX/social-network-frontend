@@ -47,6 +47,10 @@ export default function NotificationPage() {
   }, []);
 
   useEffect(() => {
+    console.log('🔍 NotificationPage useEffect, currentUser:', currentUser);
+  }, [currentUser]);
+
+  useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
 

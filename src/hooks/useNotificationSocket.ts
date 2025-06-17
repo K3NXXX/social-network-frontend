@@ -8,7 +8,12 @@ export const useSocket = (userId: string | null) => {
     if (!userId) return;
 
     socketRef.current = io('https://vetra-8c5dfe3bdee7.herokuapp.com', {
+      path: '/socket.io',
       query: { userId },
+      withCredentials: true,
+      auth: {
+        token: localStorage.getItem('accessToken'),
+      },
       transports: ['websocket'],
     });
 
