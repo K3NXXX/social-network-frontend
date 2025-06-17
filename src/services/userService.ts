@@ -10,6 +10,8 @@ const USER_ENDPOINTS = {
   BLOCK_USER: 'api/block',
   UNBLOCK_USER: 'api/unblock',
   GET_BLOCKED_USERS: 'api/user/blocked-users',
+  GET_USER_NOTIFICATIONS: 'api/user/notifications',
+  MARK_ALL_AS_READ: 'api/user/notifications/readAll',
   GET_SAVED_POST: 'api/user/saved',
 };
 
@@ -58,6 +60,16 @@ export const userService = {
 
   async getBlockedUsers() {
     const { data } = await axiosInstance.get(USER_ENDPOINTS.GET_BLOCKED_USERS);
+    return data;
+  },
+
+  async getUserNotifications() {
+    const { data } = await axiosInstance.get(USER_ENDPOINTS.GET_USER_NOTIFICATIONS);
+    return data;
+  },
+
+  async markAllAsRead() {
+    const { data } = await axiosInstance.get(USER_ENDPOINTS.MARK_ALL_AS_READ);
     return data;
   },
 

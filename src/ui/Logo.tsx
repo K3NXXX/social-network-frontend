@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 interface LogoProps {
-  size: string;
+  size?: string;
 }
 export default function Logo({ size }: LogoProps) {
   return (

@@ -14,11 +14,11 @@ import Comment from './Comment';
 
 import { useTranslation } from 'react-i18next';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
-import { userService } from '../../services/userService';
 import { postService } from '../../services/postService';
+import { userService } from '../../services/userService';
+import type { User } from '../../types/auth';
 import type { CommentType } from '../../types/post';
 import ReplyLoader from './ReplyLoader';
-import type { User } from '../../types/auth';
 
 interface Props {
   comments: CommentType[];
