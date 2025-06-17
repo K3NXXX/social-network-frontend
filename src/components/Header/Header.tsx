@@ -1,5 +1,6 @@
 import { Box, Breadcrumbs, Card, Link as MUILink, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -10,10 +11,23 @@ export default function Header() {
   const [user, setUser] = useState<User | null>(null);
   const location = useLocation();
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   const pathnames = location.pathname.split('/').filter((x) => x);
-
   const isPublicProfile = location.pathname.startsWith('/user/profile/');
+
+  const translateSegment = (segment: string) => {
+    const mapping: Record<string, string> = {
+      '': t('breadcrumb.home'),
+      profile: t('breadcrumb.profile'),
+      user: t('breadcrumb.user'),
+      feed: t('breadcrumb.feed'),
+      chats: t('breadcrumb.chats'),
+      notifications: t('breadcrumb.notifications'),
+      edit: t('breadcrumb.edit'),
+    };
+    return mapping[segment.toLowerCase()] || decodeURIComponent(segment);
+  };
 
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -77,13 +91,13 @@ export default function Header() {
                 fontSize: '17px',
               }}
             >
-              Public profile
+              {t('breadcrumb.publicProfile')}
             </Typography>
           ) : (
             pathnames.map((value, index) => {
               const to = `/${pathnames.slice(0, index + 1).join('/')}`;
               const isLast = index === pathnames.length - 1;
-              const label = decodeURIComponent(value);
+              const label = translateSegment(value);
 
               return isLast ? (
                 <Typography
@@ -133,7 +147,7 @@ export default function Header() {
                 fontFamily: 'Ubuntu',
               }}
             >
-              Welcome back, {user.firstName}!
+              {t('welcome')} {user.firstName}!
             </Typography>
           </Link>
         </Box>

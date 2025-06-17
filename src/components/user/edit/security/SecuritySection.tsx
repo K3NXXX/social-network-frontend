@@ -4,6 +4,7 @@ import ChangeEmail from './ChangeEmail';
 import ChangeUsername from './ChangeUsername';
 import ChangePassword from './ChangePassword.tsx';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   email: string;
@@ -16,6 +17,7 @@ const SecuritySection = ({ email, username, onEmailChange, onUsernameChange }: P
   const [openEmailModal, setOpenEmailModal] = useState(false);
   const [openUsernameModal, setOpenUsernameModal] = useState(false);
   const [openPasswordModal, setOpenPasswordModal] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <Box height="calc(100vh - 94px)">
@@ -41,7 +43,7 @@ const SecuritySection = ({ email, username, onEmailChange, onUsernameChange }: P
         >
           <Box>
             <Typography variant="subtitle2" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
-              Email
+              {t('profile.edit.email')}
             </Typography>
             <Typography variant="body2" sx={{ color: 'var(--text-color)' }}>
               {email}
@@ -69,7 +71,7 @@ const SecuritySection = ({ email, username, onEmailChange, onUsernameChange }: P
         >
           <Box>
             <Typography variant="subtitle2" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
-              Username
+              {t('profile.edit.username')}
             </Typography>
             <Typography variant="body2" sx={{ color: 'var(--text-color)' }}>
               {username}
@@ -97,10 +99,10 @@ const SecuritySection = ({ email, username, onEmailChange, onUsernameChange }: P
         >
           <Box>
             <Typography variant="subtitle2" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
-              Password
+              {t('profile.edit.password')}
             </Typography>
             <Typography variant="body2" sx={{ color: 'var(--text-color)' }}>
-              Змінити пароль
+              {t('profile.edit.changePassword')}
             </Typography>
           </Box>
           <IconButton

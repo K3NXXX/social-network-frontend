@@ -83,7 +83,7 @@ export default function PublicUserOptionsMenu({
                     textAlign: 'center',
                   }}
                 >
-                  Розблокувати користувача
+                  {t('profile.unblockUser')}
                 </Typography>
               </Button>
             ) : (
@@ -106,7 +106,7 @@ export default function PublicUserOptionsMenu({
                     textAlign: 'center',
                   }}
                 >
-                  Заблокувати користувача
+                  {t('profile.block')}
                 </Typography>
               </Button>
             )}
@@ -129,7 +129,7 @@ export default function PublicUserOptionsMenu({
                   textAlign: 'center',
                 }}
               >
-                Поширити профіль
+                {t('profile.share')}
               </Typography>
             </Button>
           </Box>
@@ -165,7 +165,8 @@ export default function PublicUserOptionsMenu({
                   marginBottom: '10px',
                 }}
               >
-                Заблокувати користувача {publicUserData.firstName + ' ' + publicUserData.lastName}?
+                {t('profile.block')}
+                {publicUserData.firstName + ' ' + publicUserData.lastName}?
               </Typography>
               <Typography
                 sx={{
@@ -177,8 +178,7 @@ export default function PublicUserOptionsMenu({
                   textAlign: 'center',
                 }}
               >
-                Цей користувач не зможе знайти ваш профіль і дописи в Vetra. Vetra не повідомлятиме
-                йому про блокування.
+                {t('profile.blockMessage')}
               </Typography>
             </Box>
             <Button
@@ -201,7 +201,7 @@ export default function PublicUserOptionsMenu({
                   textAlign: 'center',
                 }}
               >
-                Заблокувати
+                {t('profile.block')}
               </Typography>
             </Button>
             <Button
@@ -222,7 +222,7 @@ export default function PublicUserOptionsMenu({
                   textAlign: 'center',
                 }}
               >
-                Скасувати
+                {t('profile.cancel')}
               </Typography>
             </Button>
           </Box>

@@ -34,7 +34,7 @@ const ProfileSection = ({
   handlePhotoDelete,
   handleSubmit,
 }: Profile) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <>
@@ -212,6 +212,7 @@ const ProfileSection = ({
       <Box display="flex" flexDirection="column">
         <TextField
           type="date"
+          lang={i18n.language}
           InputLabelProps={{ shrink: true }}
           value={profile.dateOfBirth}
           onChange={(e) => handleChange('dateOfBirth', e.target.value)}

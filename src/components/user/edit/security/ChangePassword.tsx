@@ -3,6 +3,7 @@ import { Box, Button, IconButton, Modal, Paper, TextField, Typography } from '@m
 import CloseIcon from '@mui/icons-material/Close';
 import axiosInstance from '../../../../services/axiosConfig';
 import { NoOutlineButton } from '../../../../ui/NoOutlineButton';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   open: boolean;
@@ -14,6 +15,7 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
   const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
+  const { t } = useTranslation();
 
   const handleSave = async () => {
     try {
@@ -21,13 +23,13 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
         currentPassword,
         newPassword,
       });
-      setMessage('Пароль успішно змінено!');
+      setMessage(t('profile.edit.passwordChanged'));
       setMessageType('success');
 
       setCurrentPassword('');
       setNewPassword('');
     } catch (err: any) {
-      setMessage(err.response?.data?.message || 'Помилка зміни паролю');
+      setMessage(err.response?.data?.message || t('profile.edit.passwordError'));
       setMessageType('error');
     }
   };
@@ -56,7 +58,7 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
       >
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography fontSize="20px" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
-            Змінити пароль
+            {t('profile.edit.changePassword')}
           </Typography>
           <IconButton
             sx={{
@@ -72,7 +74,7 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
         <TextField
           fullWidth
           type="password"
-          placeholder="Поточний пароль"
+          placeholder={t('profile.edit.currentPassword')}
           onChange={(e) => setCurrentPassword(e.target.value)}
           error={!!message && messageType === 'error'}
           sx={{
@@ -115,7 +117,7 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
         <TextField
           fullWidth
           type="password"
-          placeholder="Новий пароль"
+          placeholder={t('profile.edit.newPassword')}
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           error={!!message && messageType === 'error'}
@@ -170,7 +172,7 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
           onClick={handleSave}
           disabled={!currentPassword && !newPassword}
         >
-          Зберегти
+          {t('profile.edit.save')}
         </NoOutlineButton>
       </Paper>
     </Modal>

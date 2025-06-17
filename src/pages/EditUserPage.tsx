@@ -18,7 +18,6 @@ import SecuritySection from '../components/user/edit/security/SecuritySection.ts
 
 const sidebarItems = [
   { key: 'edit', label: 'Редагувати профіль' },
-  { key: 'privacy', label: 'Приватність акаунту' },
   { key: 'security', label: 'Безпека' },
 ];
 
@@ -55,10 +54,10 @@ const EditUserPage = () => {
 
       await axiosInstance.patch('/api/user/profile', updateProfile);
       await fetchProfile();
-      setMessage('Профіль успішно оновлено!');
+      setMessage(t('profile.edit.success'));
       setMessageType('success');
     } catch (error: any) {
-      const msg = error.response?.data?.message || 'Не вдалося зберегти зміни.';
+      const msg = error.response?.data?.message || t('profile.edit.error');
       setMessage(msg);
       setMessageType('error');
     } finally {
@@ -219,7 +218,6 @@ const EditUserPage = () => {
               onUsernameChange={setUsername}
             />
           )}
-          {activeSection === 'privacy' && <PrivacySection />}
         </Container>
       </Box>
     </Box>

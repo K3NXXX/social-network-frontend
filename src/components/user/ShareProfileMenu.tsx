@@ -10,6 +10,7 @@ import {
   WhatsappShareButton,
 } from 'react-share';
 import type { UserPublicProfile } from '../../types/user';
+import { useTranslation } from 'react-i18next';
 
 interface IShareProfileMenuProps {
   publicUserData: UserPublicProfile;
@@ -23,6 +24,7 @@ export default function ShareProfileMenu({
   onClose,
 }: IShareProfileMenuProps) {
   const profileUrl = `http://localhost:5173/user/profile/${publicUserData.id}`;
+  const { t } = useTranslation();
 
   return (
     <Dialog
@@ -48,7 +50,7 @@ export default function ShareProfileMenu({
           paddingTop: '20px',
         }}
       >
-        Поділитися профілем
+        {t('profile.shareProfile')}
       </Typography>
 
       <Box
@@ -146,7 +148,7 @@ export default function ShareProfileMenu({
             textAlign: 'center',
           }}
         >
-          Скасувати
+          {t('profile.cancel')}
         </Typography>
       </Button>
     </Dialog>

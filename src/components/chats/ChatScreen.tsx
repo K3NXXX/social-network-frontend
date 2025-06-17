@@ -327,7 +327,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
             >
               <TextField
                 variant="outlined"
-                placeholder="Напишіть своє повідомлення тут..."
+                placeholder={t('chats.writeYourMessage')}
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
                 InputProps={{

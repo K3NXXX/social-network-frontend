@@ -3,6 +3,7 @@ import { Box, Button, IconButton, Modal, Paper, TextField, Typography } from '@m
 import CloseIcon from '@mui/icons-material/Close';
 import axiosInstance from '../../../../services/axiosConfig';
 import { NoOutlineButton } from '../../../../ui/NoOutlineButton';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   open: boolean;
@@ -14,6 +15,7 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
   const [newUsername, setNewUsername] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
+  const { t } = useTranslation();
 
   const isValidInstagramUsername = (username: string) => {
     const regex = /^(?!.*\.\.)(?!.*\.$)[a-zA-Z0-9._]{1,20}$/;
@@ -26,14 +28,14 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
   const handleSave = async () => {
     console.log('checking:', newUsername);
     if (!isValidInstagramUsername(newUsername)) {
-      setMessage('Некоректний username. Лише латиниця, цифри, ".", "_" (1–20 символів)');
+      setMessage(t('profile.edit.incorrectUsername'));
       setMessageType('error');
       return;
     }
 
     try {
       await axiosInstance.patch('/api/user/account', { newUsername });
-      setMessage('Username успішно змінено!');
+      setMessage(t('profile.edit.usernameChanged'));
       setMessageType('success');
 
       onUsernameUpdated(newUsername);
@@ -68,7 +70,7 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
       >
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography fontSize="20px" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
-            Username
+            {t('profile.edit.username')}
           </Typography>
           <IconButton
             sx={{
@@ -82,12 +84,12 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
         </Box>
 
         <Typography fontSize="15px" mb={2} sx={{ color: 'var(--text-color)' }}>
-          Введіть новий username
+          {t('profile.edit.enterNewUsername')}
         </Typography>
 
         <TextField
           fullWidth
-          placeholder="Username"
+          placeholder={t('profile.edit.username')}
           value={newUsername}
           onChange={(e) => setNewUsername(e.target.value)}
           error={!!message && messageType === 'error'}
@@ -142,7 +144,7 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
           onClick={handleSave}
           disabled={!newUsername}
         >
-          Зберегти
+          {t('profile.edit.save')}
         </NoOutlineButton>
       </Paper>
     </Modal>

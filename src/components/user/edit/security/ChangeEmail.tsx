@@ -1,8 +1,9 @@
-import { type FC, useState } from 'react';
-import { Box, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { Box, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
+import { type FC, useState } from 'react';
 import axiosInstance from '../../../../services/axiosConfig';
 import { NoOutlineButton } from '../../../../ui/NoOutlineButton';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   open: boolean;
@@ -16,6 +17,7 @@ const ChangeEmail: FC<Props> = ({ open, onClose, onEmailUpdated }) => {
   const [step, setStep] = useState<'enter' | 'code'>('enter');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
+  const { t } = useTranslation();
 
   const handleSendCode = async () => {
     try {
@@ -23,7 +25,7 @@ const ChangeEmail: FC<Props> = ({ open, onClose, onEmailUpdated }) => {
       setMessage('');
       setStep('code');
     } catch (err: any) {
-      setMessage(err.response?.data?.message || 'Помилка при надсиланні коду');
+      setMessage(err.response?.data?.message || t('profile.edit.errorCode'));
       setMessageType('error');
     }
   };
@@ -31,7 +33,7 @@ const ChangeEmail: FC<Props> = ({ open, onClose, onEmailUpdated }) => {
   const handleVerifyCode = async () => {
     try {
       await axiosInstance.post('/api/user/account/email', { code });
-      setMessage('Пошта успішно оновлена!');
+      setMessage(t('profile.edit.emailUpdated'));
       setMessageType('success');
 
       onEmailUpdated(newEmail);
@@ -40,7 +42,7 @@ const ChangeEmail: FC<Props> = ({ open, onClose, onEmailUpdated }) => {
       setCode('');
       setStep('enter');
     } catch (err: any) {
-      setMessage(err.response?.data?.message || 'Невірний код');
+      setMessage(err.response?.data?.message || t('profile.edit.invalidCode'));
       setMessageType('error');
     }
   };
@@ -70,7 +72,7 @@ const ChangeEmail: FC<Props> = ({ open, onClose, onEmailUpdated }) => {
       >
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography fontSize="20px" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
-            Check your email
+            {t('profile.edit.checkEmail')}
           </Typography>
           <IconButton
             sx={{
@@ -86,11 +88,11 @@ const ChangeEmail: FC<Props> = ({ open, onClose, onEmailUpdated }) => {
         {step === 'enter' ? (
           <>
             <Typography fontSize="15px" mb={2} sx={{ color: 'var(--text-color)' }}>
-              Enter your new email address.
+              {t('profile.edit.enterEmail')}
             </Typography>
             <TextField
               fullWidth
-              placeholder="Email"
+              placeholder={t('profile.edit.email')}
               value={newEmail}
               onChange={(e) => setEmail(e.target.value)}
               error={!!message && messageType === 'error'}
@@ -133,13 +135,13 @@ const ChangeEmail: FC<Props> = ({ open, onClose, onEmailUpdated }) => {
               onClick={handleSendCode}
               disabled={!newEmail}
             >
-              Send Code
+              {t('profile.edit.sendCode')}
             </NoOutlineButton>
           </>
         ) : (
           <>
             <Typography fontSize="15px" mb={2}>
-              Enter the code we sent to {newEmail}
+              {t('profile.edit.sentTo')} {newEmail}
             </Typography>
             <TextField
               fullWidth
