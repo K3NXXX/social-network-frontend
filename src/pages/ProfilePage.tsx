@@ -21,7 +21,6 @@ import { useAuth } from '../services/AuthContext.tsx';
 import axiosInstance from '../services/axiosConfig.ts';
 import { userService } from '../services/userService.ts';
 import type { User } from '../types/auth.ts';
-import type { PostType } from '../types/post.ts';
 import type { UserPublicProfile } from '../types/user.ts';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
 
@@ -50,7 +49,6 @@ export default function ProfilePage({
   const [isPublicUserMenuOpened, setIsPublicUserMenuOpened] = useState(false);
   const [blockedUsers, setBlockedUsers] = useState<{ blocked: User }[] | null>(null);
   const [isBlocked, setIsBlocked] = useState(false);
-  const [savedPosts, setSavedPosts] = useState<PostType[] | null>(null);
   const [savedLoading, setSavedLoading] = useState(true);
   const [isSavedPosts, setIsSavedPosts] = useState(false);
   const { logout } = useAuth();
@@ -59,8 +57,8 @@ export default function ProfilePage({
 
   const displayedTabs =
     isPublicProfile && !isThisMe
-      ? [t('profile.tabs.posts'), t('profile.tabs.tagged')]
-      : [t('profile.tabs.posts'), t('profile.tabs.saved'), t('profile.tabs.tagged')];
+      ? [t('profile.tabs.posts')]
+      : [t('profile.tabs.posts'), t('profile.tabs.saved')];
 
   const navigate = useNavigate();
 
@@ -101,23 +99,6 @@ export default function ProfilePage({
 
     fetchProfile();
   }, [logout]);
-
-  useEffect(() => {
-    const getSavedPosts = async () => {
-      setSavedLoading(true);
-      try {
-        const { data } = await userService.getSavedPosts();
-        setSavedPosts(data);
-      } catch (error: any) {
-        console.error('Error getting saved posts: ', error);
-        setSavedPosts(null);
-      } finally {
-        setSavedLoading(false);
-      }
-    };
-
-    getSavedPosts();
-  }, []);
 
   useEffect(() => {
     const getBlockedUsers = async () => {
@@ -367,32 +348,21 @@ export default function ProfilePage({
           )}
 
           {tab === 1 && (
-            <>
-              {savedLoading ? (
-                <Box display="flex" justifyContent="center" mt={4}>
-                  <CircularProgress />
-                </Box>
-              ) : savedPosts && savedPosts.length > 0 ? (
-                <UserPosts
-                  setSavedPosts={setSavedPosts}
-                  savedPosts={savedPosts}
-                  isSavedPosts={isSavedPosts}
-                  isPublicProfile={isPublicProfile}
-                  publicUserData={publicUserData}
-                />
-              ) : (
-                <Typography align="center" color="#737373">
-                  {t('profile.noSavedPostsLabel')}
-                </Typography>
-              )}
-            </>
+            <UserPosts
+              isSavedPosts={isSavedPosts}
+              isPublicProfile={isPublicProfile}
+              publicUserData={publicUserData}
+            />
           )}
 
-          {tab === 2 && (
-            <Typography align="center" color="#737373">
-              {t('profile.noTaggedPostsLabel')}
-            </Typography>
-          )}
+          {/* {tab === 2 && (
+						<Typography
+							align='center'
+							color='#737373'
+						>
+							{t('profile.noTaggedPostsLabel')}
+						</Typography>
+					)} */}
         </Box>
       </Box>
       {isShowFollowersFormOpened && !isBlocked && (

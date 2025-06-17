@@ -10,9 +10,10 @@ import { useIntersectionObserver } from '../../hooks/useIntersectionObserver.tsx
 interface Props {
   post: PostType;
   onDelete?: (id: string) => void;
+  onUnsave?: (id: string) => void;
 }
 
-const UserPosts: React.FC<Props> = ({ post }) => {
+const UserPosts: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
   const [editOpen, setEditOpen] = useState(false);
   const [currentPost, setCurrentPost] = useState(post);
   const [liked, setLiked] = useState(post.liked);
@@ -24,6 +25,7 @@ const UserPosts: React.FC<Props> = ({ post }) => {
   const [lastPage, setLastPage] = useState(1);
   const take = 5;
   const loaderRef = useRef<HTMLDivElement | null>(null);
+  const [saved, setSaved] = useState(post.saved ?? false);
 
   const fetchComments = async (pageNumber = 1) => {
     try {
@@ -58,11 +60,25 @@ const UserPosts: React.FC<Props> = ({ post }) => {
 
   const handleToggleLike = async () => {
     try {
-      const { liked } = await postService.toggleLike(post.id);
+      const { liked } = await postService.togglePostLike(post.id);
       setLiked(liked);
       setLikesCount((prev) => (liked ? prev + 1 : prev - 1));
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleToggleSave = async () => {
+    try {
+      if (saved) {
+        await postService.unsavePost(post.id);
+        onUnsave?.(post.id);
+      } else {
+        await postService.savePost(post.id);
+      }
+      setSaved((prev) => !prev);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -88,15 +104,15 @@ const UserPosts: React.FC<Props> = ({ post }) => {
     setCommentsCount((prev) => prev + 1);
   };
 
-  // const handleDeletePost = async () => {
-  //   try {
-  //     const message = await postService.deletePost(post.id);
-  //     console.log(message);
-  //     onDelete(post.id);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
+  const handleDeletePost = async () => {
+    try {
+      const message = await postService.deletePost(post.id);
+      console.log(message);
+      onDelete?.(post.id);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleDeleteComment = (commentId: string) => {
     setComments((prevComments) =>
@@ -110,18 +126,12 @@ const UserPosts: React.FC<Props> = ({ post }) => {
     setCommentsCount((prev) => prev - 1);
   };
 
-  const handleAddReplies = (parentId: string, replies: CommentType[]) => {
-    setComments((prevComments) =>
-      prevComments.map((comment) => {
-        if (comment.id === parentId) {
-          return {
-            ...comment,
-            replies,
-          };
-        }
-        return comment;
-      })
-    );
+  const handleAddReplies = (replies: CommentType[]) => {
+    setComments((prevComments) => {
+      const existingIds = new Set(prevComments.map((c) => c.id));
+      const newReplies = replies.filter((r) => !existingIds.has(r.id));
+      return [...prevComments, ...newReplies];
+    });
   };
 
   const handleUpdateComment = (updatedComment: CommentType) => {
@@ -215,6 +225,8 @@ const UserPosts: React.FC<Props> = ({ post }) => {
             fetchComments();
             setShowComments(!showComments);
           }}
+          saved={saved}
+          onToggleSave={handleToggleSave}
         />
         {showComments && (
           <PostComments

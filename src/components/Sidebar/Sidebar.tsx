@@ -116,6 +116,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setSearchSidebarCollapsed, searchSide
             else
               return (
                 <SidebarListItem
+                  key={item.id}
                   item={item}
                   onClickCallback={() => {
                     setIsCollapsed(!isCollapsed);
