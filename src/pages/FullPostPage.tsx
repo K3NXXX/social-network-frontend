@@ -7,6 +7,7 @@ import GlobalLoader from '../ui/GlobalLoader';
 import Post from '../components/Post/Post';
 import { postService } from '../services/postService';
 import type { PostType } from '../types/post';
+import Box from '@mui/material/Box';
 
 export default function FullPostPage() {
   const { postId } = useParams<{ postId: string }>();
@@ -43,30 +44,73 @@ export default function FullPostPage() {
     <Dialog
       open
       onClose={handleClose}
-      fullWidth
-      maxWidth="sm"
+      fullWidth={false}
       PaperProps={{
         sx: {
-          m: 2,
+          width: '85vw',
+          maxWidth: 600,
+          height: '85vh',
+          maxHeight: 800,
           borderRadius: 2,
           boxShadow: 3,
-          maxHeight: 'none',
-          pb: 2,
-          overflow: 'visible',
+          p: 0,
+          overflow: 'hidden',
         },
-      }}
-      BackdropProps={{
-        sx: { backgroundColor: 'rgba(0,0,0,0.5)' },
       }}
     >
       <DialogContent
         sx={{
-          maxHeight: 'calc(100vh - 96px)',
-          overflowY: 'auto',
+          p: 0,
+          pt: 2,
+          pb: 2,
+          height: '100%',
+          overflow: 'hidden',
         }}
       >
-        {post ? (
-          <Post post={post} onDelete={handleDelete} />
+        {loading ? (
+          <Box
+            sx={{
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        ) : post ? (
+          <Box
+            sx={{
+              height: '100%',
+              overflowY: 'auto',
+              px: 2,
+              scrollbarWidth: 'thin', // Firefox
+              scrollbarColor: '#888 transparent', // Firefox
+              '&::-webkit-scrollbar': {
+                width: '8px',
+              },
+              '&::-webkit-scrollbar-track': {
+                background: 'transparent',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: '#888',
+                borderRadius: '4px',
+                '&:hover': {
+                  backgroundColor: '#555',
+                },
+              },
+            }}
+          >
+            <Box
+              sx={{
+                transform: 'scale(0.85)',
+                transformOrigin: 'top center',
+                width: `${100 / 0.85}%`,
+              }}
+            >
+              <Post post={post} onDelete={handleDelete} />
+            </Box>
+          </Box>
         ) : (
           <Typography sx={{ p: 4, textAlign: 'center' }}>Пост не знайдено</Typography>
         )}
