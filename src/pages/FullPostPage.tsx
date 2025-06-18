@@ -81,23 +81,21 @@ export default function FullPostPage() {
         ) : post ? (
           <Box
             sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+              width: '100%',
               height: '100%',
               overflowY: 'auto',
               px: 2,
-              scrollbarWidth: 'thin', // Firefox
-              scrollbarColor: '#888 transparent', // Firefox
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#888 transparent',
               '&::-webkit-scrollbar': {
                 width: '8px',
-              },
-              '&::-webkit-scrollbar-track': {
-                background: 'transparent',
               },
               '&::-webkit-scrollbar-thumb': {
                 backgroundColor: '#888',
                 borderRadius: '4px',
-                '&:hover': {
-                  backgroundColor: '#555',
-                },
               },
             }}
           >
@@ -105,7 +103,7 @@ export default function FullPostPage() {
               sx={{
                 transform: 'scale(0.85)',
                 transformOrigin: 'top center',
-                width: `${100 / 0.85}%`,
+                width: 'auto', // або maxWidth: 600
               }}
             >
               <Post post={post} onDelete={handleDelete} />

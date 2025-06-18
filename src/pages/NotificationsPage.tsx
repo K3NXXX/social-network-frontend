@@ -1,14 +1,11 @@
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import { Avatar, Box, Button, Card, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { PAGES } from '../constants/pages.constants';
-import { authService } from '../services/authService';
-import type { User } from '../types/auth';
 import GlobalLoader from '../ui/GlobalLoader';
 import { formatCreatedAt } from '../utils/dateUtils';
 import { useNotificationStore } from '../zustand/stores/notificationStore';
-import { useNavigate, useLocation } from 'react-router-dom';
 
 const filterTypeMap: Record<string, string | null> = {
   Всі: null,
@@ -19,68 +16,54 @@ const filterTypeMap: Record<string, string | null> = {
 
 export default function NotificationPage() {
   const [activeFilter, setActiveFilter] = useState('Всі');
-
-  const { notifications, fetchNotifications, markAllAsRead, initSocket } = useNotificationStore();
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-
-  const filteredNotifications =
-    notifications?.filter((notification) => {
-      const type = filterTypeMap[activeFilter];
-      return !type || notification.type === type;
-    }) ?? [];
-
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const changeNotificationType = (type: string) => {
-    if (type === 'COMMENT') return 'New comment';
-    if (type === 'NEW_FOLLOWER') return 'New follower';
-    if (type === 'LIKE') return 'New like';
-  };
-
-  useEffect(() => {
-    const getCurrentUser = async () => {
-      try {
-        const currentUser = await authService.getCurrentUser();
-        setCurrentUser(currentUser);
-      } catch (error) {
-        console.log('error getting current user: ', error);
-      }
-    };
-    getCurrentUser();
-  }, []);
-
-  useEffect(() => {
-    console.log('🔍 NotificationPage useEffect, currentUser:', currentUser);
-  }, [currentUser]);
+  const { notifications, fetchNotifications, markAllAsRead, markOneAsRead } =
+    useNotificationStore();
 
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
 
-  useEffect(() => {
-    fetchNotifications();
-    if (currentUser?.id) {
-      initSocket(currentUser.id);
-    }
-  }, [fetchNotifications, initSocket, currentUser?.id]);
+  const filteredNotifications = (notifications ?? [])
+    .filter((n) => {
+      const type = filterTypeMap[activeFilter];
+      return !type || n.type === type;
+    })
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-  if (notifications === null) return <GlobalLoader />;
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  if (notifications === null) {
+    return <GlobalLoader />;
+  }
 
   return (
     <Card
       sx={{
         maxWidth: '965px',
-        py: 4,
         mx: 'auto',
-        padding: '30px 0 0 0',
-        marginTop: '30px',
-        marginBottom: '50px',
+        mt: '30px',
+        mb: '50px',
+        py: 4,
       }}
     >
       {/* Заголовок */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, padding: '0px 30px' }}>
-        <Typography sx={{ fontSize: 24, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          px: 3,
+          mb: 3,
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: 24,
+            fontWeight: 600,
+            fontFamily: 'Ubuntu, sans-serif',
+          }}
+        >
           Сповіщення
         </Typography>
         <Button
@@ -99,7 +82,15 @@ export default function NotificationPage() {
       </Box>
 
       {/* Фільтри */}
-      <Box sx={{ display: 'flex', gap: 3, mb: 4, paddingBottom: '20px', padding: '0px 30px' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 3,
+          px: 3,
+          pb: 2,
+          mb: 4,
+        }}
+      >
         {Object.keys(filterTypeMap).map((label) => {
           const isActive = activeFilter === label;
           return (
@@ -135,48 +126,52 @@ export default function NotificationPage() {
               key={notification.id}
               sx={{
                 borderBottom: '1px solid #d4d4d4',
-                padding: '20px 0',
+                py: 2,
+                px: 3,
                 position: 'relative',
                 cursor: postId ? 'pointer' : 'default',
               }}
-              onClick={() => {
+              onClick={async () => {
                 if (postId) {
+                  await markOneAsRead(notification.id);
                   navigate(`${PAGES.POST}/${postId}`, {
                     state: { backgroundLocation: location },
                   });
                 }
               }}
             >
-              <Box sx={{ display: 'flex', gap: '0 20px', padding: '0px 30px' }}>
-                <Link to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Link
+                  to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}
+                  style={{ textDecoration: 'none' }}
+                >
                   <Avatar
-                    sx={{ width: '60px', height: '60px' }}
+                    sx={{ width: 60, height: 60 }}
                     src={notification.sender.avatarUrl ?? undefined}
                   >
-                    {notification.sender.firstName[0]}
+                    {notification.sender.firstName.charAt(0)}
                   </Avatar>
                 </Link>
-                <Box
-                  sx={{
-                    paddingTop: '10px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'start',
-                  }}
-                >
-                  <Link to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}>
+                <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column' }}>
+                  <Link
+                    to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}
+                    style={{ textDecoration: 'none' }}
+                  >
                     <Typography
-                      sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 500, color: 'black' }}
+                      sx={{
+                        fontFamily: 'Ubuntu, sans-serif',
+                        fontWeight: 500,
+                        color: 'black',
+                      }}
                     >
                       {notification.message}
                     </Typography>
                   </Link>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: '0 10px' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Typography
                       sx={{
                         fontFamily: 'Ubuntu, sans-serif',
                         fontWeight: 400,
-                        textAlign: 'start',
                         color: 'gray',
                       }}
                     >
@@ -184,8 +179,8 @@ export default function NotificationPage() {
                     </Typography>
                     <Box
                       sx={{
-                        width: '4px',
-                        height: '4px',
+                        width: 4,
+                        height: 4,
                         borderRadius: '50%',
                         backgroundColor: 'gray',
                       }}
@@ -194,11 +189,14 @@ export default function NotificationPage() {
                       sx={{
                         fontFamily: 'Ubuntu, sans-serif',
                         fontWeight: 400,
-                        textAlign: 'start',
                         color: 'gray',
                       }}
                     >
-                      {changeNotificationType(notification.type)}
+                      {{
+                        COMMENT: 'New comment',
+                        NEW_FOLLOWER: 'New follower',
+                        LIKE: 'New like',
+                      }[notification.type] || ''}
                     </Typography>
                   </Box>
                 </Box>
@@ -206,15 +204,15 @@ export default function NotificationPage() {
               <Box
                 sx={{
                   position: 'absolute',
-                  top: '45px',
-                  right: '50px',
+                  top: 32,
+                  right: 32,
                 }}
               >
                 {!notification.isRead ? (
                   <Box
                     sx={{
-                      width: '8px',
-                      height: '8px',
+                      width: 8,
+                      height: 8,
                       borderRadius: '50%',
                       backgroundColor: '#7362cc',
                     }}

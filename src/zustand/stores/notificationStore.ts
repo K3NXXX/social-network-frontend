@@ -11,6 +11,7 @@ interface NotificationState {
   unreadNotifications: Notification[];
   socket: Socket | null;
   initSocket: (userId: string) => void;
+  markOneAsRead: (id: string) => Promise<void>;
 }
 
 export const useNotificationStore = create<NotificationState>((set, get) => ({
@@ -35,6 +36,17 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       set({ notifications: updated });
     } catch (err) {
       console.error('error marking all as read', err);
+    }
+  },
+
+  markOneAsRead: async (id: string) => {
+    try {
+      await userService.markOneAsRead(id);
+      const current = get().notifications || [];
+      const updated = current.map((n) => (n.id === id ? { ...n, isRead: true } : n));
+      set({ notifications: updated });
+    } catch (err) {
+      console.error('error marking one as read', err);
     }
   },
 
