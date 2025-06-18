@@ -8,7 +8,8 @@
     "feed": "Feed",
     "chats": "Chats",
     "notifications": "Notifications",
-    "edit": "Edit"
+    "edit": "Edit",
+    "archive": "Archive"
   },
   "sidebar": {
     "home": "Home",

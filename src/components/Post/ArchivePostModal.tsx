@@ -14,14 +14,16 @@ interface ArchivePostModalProps {
   open: boolean;
   onClose: () => void;
   post: PostType;
+  onUpdate: (updatedPost: PostType) => void;
 }
 
-export default function ArchivePostModal({ open, onClose, post }: ArchivePostModalProps) {
+export default function ArchivePostModal({ open, onClose, onUpdate, post }: ArchivePostModalProps) {
   const { t } = useTranslation();
 
   const handleMakePublic = async () => {
     try {
-      await postService.updatePostPrivacy(post.id, 'PRIVATE');
+      const updatedPost = await postService.updatePostPrivacy(post.id, 'PRIVATE');
+      onUpdate(updatedPost);
       onClose();
     } catch (error) {
       console.log('error making post private: ', error);

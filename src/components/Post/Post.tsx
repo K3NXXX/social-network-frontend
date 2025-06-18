@@ -183,6 +183,7 @@ const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
         post={currentPost}
         open={archiveOpen}
         onClose={() => setArchiveOpen(false)}
+        onUpdate={handleUpdatePost}
       />
 
       <PostContent content={currentPost.content} photo={currentPost.photo} />

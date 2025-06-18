@@ -9,6 +9,7 @@ const POST_ENDPOINTS = {
   DISCOVER_POSTS: '/api/posts/discover',
   SINGLE_POST: (id: string) => `/api/posts/${id}`,
   UPDATE_PRIVACY: `/api/posts`,
+  GET_ARCHIVE_POSTS: '/api/posts/user/archive',
 
   CREATE_POST: '/api/posts',
   DELETE_POST: (id: string) => `/api/posts/${id}`,
@@ -310,6 +311,15 @@ export const postService = {
       return data;
     } catch (error) {
       console.log('Failed to update post privacy: ', error);
+    }
+  },
+
+  async getArchivePosts() {
+    try {
+      const { data } = await axiosInstance.get(POST_ENDPOINTS.GET_ARCHIVE_POSTS);
+      return data;
+    } catch (error) {
+      console.log('Failed to get archive posts: ', error);
     }
   },
 };
