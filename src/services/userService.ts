@@ -73,8 +73,10 @@ export const userService = {
     return data;
   },
 
-  async getSavedPosts() {
-    const { data } = await axiosInstance.get(USER_ENDPOINTS.GET_SAVED_POST);
+  async getSavedPosts(pageNumber = 1, take = 5) {
+    const { data } = await axiosInstance.get(USER_ENDPOINTS.GET_SAVED_POST, {
+      params: { page: pageNumber, take },
+    });
     return data;
   },
 };
