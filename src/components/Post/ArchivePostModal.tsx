@@ -7,14 +7,26 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { postService } from '../../services/postService';
+import type { PostType } from '../../types/post';
 
 interface ArchivePostModalProps {
   open: boolean;
   onClose: () => void;
+  post: PostType;
 }
 
-export default function ArchivePostModal({ open, onClose }: ArchivePostModalProps) {
+export default function ArchivePostModal({ open, onClose, post }: ArchivePostModalProps) {
   const { t } = useTranslation();
+
+  const handleMakePublic = async () => {
+    try {
+      await postService.updatePostPrivacy(post.id, 'PRIVATE');
+      onClose();
+    } catch (error) {
+      console.log('error making post private: ', error);
+    }
+  };
   return (
     <Dialog
       open={open}
@@ -51,6 +63,7 @@ export default function ArchivePostModal({ open, onClose }: ArchivePostModalProp
           {t('posts.commentCancel')}
         </Button>
         <Button
+          onClick={() => handleMakePublic()}
           variant="contained"
           sx={{
             backgroundColor: 'var(--primary-color)',

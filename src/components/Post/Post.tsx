@@ -1,17 +1,17 @@
-import React, { useRef, useState } from 'react';
 import { Card, Divider } from '@mui/material';
+import React, { useRef, useState } from 'react';
 
 import PostActions from './PostActions';
 import PostComments from './PostComments';
 import PostContent from './PostContent';
 import PostHeader from './PostHeader';
 
-import type { CommentType, PostType } from '../../types/post';
-import { useAuth } from '../../services/AuthContext';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { useAuth } from '../../services/AuthContext';
 import { postService } from '../../services/postService';
-import EditPostModal from './EditPostModal';
+import type { CommentType, PostType } from '../../types/post';
 import ArchivePostModal from './ArchivePostModal';
+import EditPostModal from './EditPostModal';
 
 interface Props {
   post: PostType;
@@ -179,7 +179,11 @@ const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
         onUpdate={handleUpdatePost}
       />
 
-      <ArchivePostModal open={archiveOpen} onClose={() => setArchiveOpen(false)} />
+      <ArchivePostModal
+        post={currentPost}
+        open={archiveOpen}
+        onClose={() => setArchiveOpen(false)}
+      />
 
       <PostContent content={currentPost.content} photo={currentPost.photo} />
 
