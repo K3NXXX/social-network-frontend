@@ -66,6 +66,7 @@ export default function NotificationPage() {
   return (
     <Card
       sx={{
+        backgroundColor: 'var(--secondary-color)',
         maxWidth: '965px',
         py: 4,
         mx: 'auto',
@@ -75,18 +76,27 @@ export default function NotificationPage() {
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, padding: '0px 30px' }}>
-        <Typography sx={{ fontSize: 24, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
+        <Typography
+          sx={{
+            fontSize: 24,
+            fontWeight: 600,
+            fontFamily: 'Ubuntu, sans-serif',
+            color: 'var(--text-color)',
+          }}
+        >
           Сповіщення
         </Typography>
         <Button
           onClick={markAllAsRead}
           sx={{
             textTransform: 'none',
-            color: 'gray',
+            color: 'var(--text-color)',
+            opacity: 0.7,
             fontSize: 15,
             fontWeight: 400,
             fontFamily: 'Ubuntu, sans-serif',
-            '&:hover': { color: '#7362cc', background: 'transparent' },
+            '&:hover': { color: 'var(--primary-color)', opacity: 1, background: 'transparent' },
+            '&:focus': { border: 'none', outline: 'none' },
           }}
         >
           Позначити все як прочитане
@@ -105,16 +115,17 @@ export default function NotificationPage() {
                 textTransform: 'none',
                 px: 0,
                 minWidth: 'auto',
-                color: isActive ? '#7362cc' : '#555',
+                color: isActive ? 'var(--primary-color)' : 'var(--text-color)',
                 fontWeight: isActive ? 600 : 400,
                 fontSize: 16,
                 fontFamily: 'Ubuntu, sans-serif',
-                borderBottom: isActive ? '2px solid #7362cc' : '2px solid transparent',
+                borderBottom: isActive ? '2px solid var(--primary-color)' : '2px solid transparent',
                 borderRadius: 0,
                 '&:hover': {
-                  color: '#7362cc',
+                  color: 'var(--primary-color)',
                   background: 'transparent',
                 },
+                '&:focus': { border: 'none', outline: 'none' },
               }}
             >
               {label}
@@ -127,7 +138,11 @@ export default function NotificationPage() {
         {filteredNotifications?.map((notification) => (
           <Box
             key={notification.id}
-            sx={{ borderBottom: '1px solid #d4d4d4', padding: '20px 0', position: 'relative' }}
+            sx={{
+              borderBottom: '1px solid var(--border-color)',
+              padding: '20px 0',
+              position: 'relative',
+            }}
           >
             <Box sx={{ display: 'flex', gap: '0 20px', padding: '0px 30px' }}>
               <Link to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}>
@@ -148,7 +163,11 @@ export default function NotificationPage() {
               >
                 <Link to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}>
                   <Typography
-                    sx={{ fontFamily: 'Ubuntu, sans-serif', fontWeight: 500, color: 'black' }}
+                    sx={{
+                      fontFamily: 'Ubuntu, sans-serif',
+                      fontWeight: 500,
+                      color: 'var(--text-color)',
+                    }}
                   >
                     {notification.message}
                   </Typography>
@@ -160,7 +179,8 @@ export default function NotificationPage() {
                       fontFamily: 'Ubuntu, sans-serif',
                       fontWeight: 400,
                       textAlign: 'start',
-                      color: 'gray',
+                      color: 'var(--text-color)',
+                      opacity: 0.6,
                     }}
                   >
                     {formatCreatedAt(notification.createdAt)}
@@ -170,7 +190,7 @@ export default function NotificationPage() {
                       width: '4px',
                       height: '4px',
                       borderRadius: '50%',
-                      backgroundColor: 'gray',
+                      backgroundColor: 'var(--secondary-color)',
                     }}
                   ></Box>
                   <Typography
@@ -178,7 +198,7 @@ export default function NotificationPage() {
                       fontFamily: 'Ubuntu, sans-serif',
                       fontWeight: 400,
                       textAlign: 'start',
-                      color: 'gray',
+                      color: 'var(--secondary-color)',
                     }}
                   >
                     {changeNotificationType(notification.type)}
@@ -199,11 +219,11 @@ export default function NotificationPage() {
                     width: '8px',
                     height: '8px',
                     borderRadius: '50%',
-                    backgroundColor: '#7362cc',
+                    backgroundColor: 'var(--primary-color)',
                   }}
                 ></Box>
               ) : (
-                <DoneAllIcon sx={{ color: '#7362cc' }} />
+                <DoneAllIcon sx={{ color: 'var(--primary-color)' }} />
               )}
             </Box>
           </Box>
