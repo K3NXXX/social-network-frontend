@@ -11,6 +11,7 @@ import { useAuth } from '../../services/AuthContext';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 import { postService } from '../../services/postService';
 import EditPostModal from './EditPostModal';
+import ArchivePostModal from './ArchivePostModal';
 
 interface Props {
   post: PostType;
@@ -30,6 +31,7 @@ const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
   const take = 5;
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
   const [currentPost, setCurrentPost] = useState(post);
   const [saved, setSaved] = useState(post.saved ?? false);
 
@@ -167,6 +169,7 @@ const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
         isOwner={post.user.id === user?.id}
         onDelete={handleDeletePost}
         onEdit={() => setEditOpen(true)}
+        onArchive={() => setArchiveOpen(true)}
       />
 
       <EditPostModal
@@ -175,6 +178,8 @@ const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
         post={currentPost}
         onUpdate={handleUpdatePost}
       />
+
+      <ArchivePostModal open={archiveOpen} onClose={() => setArchiveOpen(false)} />
 
       <PostContent content={currentPost.content} photo={currentPost.photo} />
 
