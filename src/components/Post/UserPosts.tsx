@@ -21,8 +21,9 @@ const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData, isSavedPo
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   const postFetcher = isPublicProfile
-    ? () => postService.fetchPublicUserPosts(publicUserData?.id)
-    : () => postService.fetchUserPosts();
+    ? (page: number, take: number) =>
+        postService.fetchPublicUserPosts(publicUserData?.id, page, take)
+    : (page: number, take: number) => postService.fetchUserPosts(page, take);
 
   const { posts, setPosts, loading, loaderRef, page, totalPages, fetchPosts } = usePosts(
     isSavedPosts ? userService.getSavedPosts : postFetcher,
