@@ -12,6 +12,7 @@ interface NotificationState {
   socket: Socket | null;
   initSocket: (userId: string) => void;
   markOneAsRead: (id: string) => Promise<void>;
+  disconnectSocket: () => void;
 }
 
 export const useNotificationStore = create<NotificationState>((set, get) => ({
@@ -97,5 +98,13 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       console.error('❗ Socket error:', err);
     });
     set({ socket });
+  },
+  disconnectSocket: () => {
+    const sock = get().socket;
+    if (sock) {
+      sock.disconnect();
+      console.log('🚪 disconnectSocket() called');
+      set({ socket: null });
+    }
   },
 }));

@@ -20,6 +20,7 @@ import SearchSidebar from './components/Sidebar/SearchSidebar.tsx';
 import { useState } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext.tsx';
 import FullPostPage from './pages/FullPostPage';
+import NotificationProvider from './utils/NotificationProvider.tsx';
 
 function App() {
   const { pathname } = useLocation();
@@ -29,6 +30,7 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <NotificationProvider />
         <Box display="flex" sx={{ width: '100%', minHeight: '100vh' }}>
           {!hideLayout && (
             <Box display={'flex'}>

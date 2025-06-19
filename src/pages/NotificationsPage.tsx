@@ -19,19 +19,21 @@ export default function NotificationPage() {
   const { notifications, fetchNotifications, markAllAsRead, markOneAsRead } =
     useNotificationStore();
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Підтягуємо існуючі сповіщення
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
 
+  // Фільтрація + сортування за датою
   const filteredNotifications = (notifications ?? [])
     .filter((n) => {
       const type = filterTypeMap[activeFilter];
       return !type || n.type === type;
     })
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-  const navigate = useNavigate();
-  const location = useLocation();
 
   if (notifications === null) {
     return <GlobalLoader />;
@@ -40,10 +42,10 @@ export default function NotificationPage() {
   return (
     <Card
       sx={{
-        maxWidth: '965px',
+        maxWidth: 965,
         mx: 'auto',
-        mt: '30px',
-        mb: '50px',
+        mt: 4,
+        mb: 6,
         py: 4,
       }}
     >

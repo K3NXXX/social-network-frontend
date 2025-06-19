@@ -1,8 +1,9 @@
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import { Box, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
@@ -12,45 +13,57 @@ import { sidebarList } from '../../lists/sidebar.list';
 import { authService } from '../../services/authService';
 import Logo from '../../ui/Logo';
 import SidebarListItem from './SidebarListItem';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import { useNotificationStore } from '../../zustand/stores/notificationStore';
-import { useEffect } from 'react';
+
 interface SidebarProps {
   searchSidebarCollapsed: boolean;
   setSearchSidebarCollapsed: (value: boolean) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ setSearchSidebarCollapsed, searchSidebarCollapsed }) => {
+const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSidebarCollapsed }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-
   const { t } = useTranslation();
 
-  console.log(i18n.language);
+  const { notifications, fetchNotifications, initSocket, disconnectSocket } =
+    useNotificationStore();
+
+  const unreadCount = (notifications ?? []).filter((n) => !n.isRead).length;
+
+  // Монтуємо WS та підтягуємо нотифікації одразу після логіну
+  useEffect(() => {
+    const user = authService.getCurrentUser();
+    if (user?.id) {
+      fetchNotifications();
+      initSocket(user.id);
+    }
+    return () => {
+      disconnectSocket();
+    };
+  }, [fetchNotifications, initSocket, disconnectSocket]);
+
+  const toggleCollapse = () => setIsCollapsed((prev) => !prev);
+
+  const logout = () => {
+    disconnectSocket();
+    authService.logout();
+    navigate(PAGES.LOGIN, { replace: true });
+  };
 
   const toggleLanguage = () => {
     const nextLang = i18n.language === 'uk' ? 'en' : 'uk';
     i18n.changeLanguage(nextLang);
   };
 
-  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
-
-  const logout = () => {
-    authService.logout();
-    navigate(PAGES.LOGIN, { replace: true });
-  };
-  const { notifications, fetchNotifications, initSocket } = useNotificationStore();
-
-  const unreadNotifications = (notifications ?? []).filter((n) => !n.isRead);
   return (
     <Box
       sx={{
         position: 'sticky',
         top: 0,
         height: '100vh',
-        width: isCollapsed ? '80px' : '300px',
+        width: isCollapsed ? 80 : 300,
         background: '#181424',
         p: 2,
         display: 'flex',
@@ -70,6 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setSearchSidebarCollapsed, searchSide
       >
         {!isCollapsed && <Logo />}
         <Box
+          onClick={toggleCollapse}
           sx={{
             cursor: 'pointer',
             p: 1.5,
@@ -79,7 +93,6 @@ const Sidebar: React.FC<SidebarProps> = ({ setSearchSidebarCollapsed, searchSide
             display: 'flex',
             justifyContent: 'center',
           }}
-          onClick={toggleCollapse}
         >
           <ArrowForwardIosIcon
             sx={{
@@ -92,7 +105,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setSearchSidebarCollapsed, searchSide
         </Box>
       </Box>
 
-      {/* Меню без стандартного Notifications */}
+      {/* Основне меню (без стандартного Notifications) */}
       <Box sx={{ flexGrow: 1 }}>
         {sidebarList
           .filter(
@@ -119,14 +132,14 @@ const Sidebar: React.FC<SidebarProps> = ({ setSearchSidebarCollapsed, searchSide
                 </Link>
               );
             }
-            // item.id === 5 — пошук
+            // пошук
             return (
               <SidebarListItem
                 key={item.id}
                 item={item}
                 onClickCallback={() => {
-                  setIsCollapsed(!isCollapsed);
                   setSearchSidebarCollapsed(!searchSidebarCollapsed);
+                  setIsCollapsed(false);
                 }}
                 backgroundColor={searchSidebarCollapsed ? '' : '#2a2340'}
                 isCollapsed={isCollapsed}
@@ -143,38 +156,42 @@ const Sidebar: React.FC<SidebarProps> = ({ setSearchSidebarCollapsed, searchSide
               gap: isCollapsed ? 0 : 2.5,
               p: 1,
               borderRadius: 1,
-              position: 'relative',
               mb: 1,
               cursor: 'pointer',
               '&:hover': { backgroundColor: '#2a2340' },
               justifyContent: isCollapsed ? 'center' : 'flex-start',
             }}
           >
-            <NotificationsNoneIcon sx={{ color: 'white', fontSize: 30 }} />
+            {/* обгортка тільки для іконки */}
+            <Box sx={{ position: 'relative' }}>
+              <NotificationsNoneIcon sx={{ color: 'white', fontSize: 30 }} />
+
+              {unreadCount > 0 && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: -8, // рухаємо трохи вгору
+                    right: -8, // рухаємо трохи вправо
+                    width: 18, // за потреби можна зменшити
+                    height: 18,
+                    bgcolor: '#9885f4',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography sx={{ color: 'white', fontSize: 11, fontWeight: 700 }}>
+                    {unreadCount}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+
             {!isCollapsed && (
               <Typography sx={{ color: 'white', fontSize: 17 }}>
                 {t('sidebar.notifications')}
               </Typography>
-            )}
-            {unreadNotifications.length > 0 && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 8,
-                  right: 8,
-                  width: 20,
-                  height: 20,
-                  bgcolor: '#9885f4',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Typography sx={{ color: 'white', fontSize: 13, fontWeight: 700 }}>
-                  {unreadNotifications.length}
-                </Typography>
-              </Box>
             )}
           </Box>
         </Link>
