@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import EnhancedEncryptionIcon from '@mui/icons-material/EnhancedEncryption';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import ShareIcon from '@mui/icons-material/Share';
 import {
   Avatar,
   Box,
@@ -10,16 +14,13 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ShareIcon from '@mui/icons-material/Share';
-import EditIcon from '@mui/icons-material/Edit';
-import type { User } from '../../types/post';
-import { formatCreatedAt } from '../../utils/dateUtils';
-import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
+import type { User } from '../../types/post';
+import { formatCreatedAt } from '../../utils/dateUtils';
 
 interface Props {
   user: User;
@@ -27,9 +28,19 @@ interface Props {
   isOwner: boolean;
   onDelete: () => void;
   onEdit?: () => void;
+  onArchive?: () => void;
+  isArchivePage?: boolean;
 }
 
-const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdit }) => {
+const PostHeader: React.FC<Props> = ({
+  user,
+  createdAt,
+  isOwner,
+  onDelete,
+  onEdit,
+  onArchive,
+  isArchivePage,
+}) => {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [, setCurrentTime] = useState(Date.now());
@@ -57,6 +68,13 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
     handleMenuClose();
     if (onEdit) {
       onEdit();
+    }
+  };
+
+  const handleArchiveClick = () => {
+    handleMenuClose();
+    if (onArchive) {
+      onArchive();
     }
   };
 
@@ -156,6 +174,18 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
               <EditIcon fontSize="small" sx={{ color: 'var(--text-color)' }} />
             </ListItemIcon>
             {t('posts.editLabel')}
+          </MenuItem>,
+          <MenuItem
+            key="changePrivacy"
+            onClick={handleArchiveClick}
+            sx={{
+              color: 'var(--text-color)',
+            }}
+          >
+            <ListItemIcon>
+              <EnhancedEncryptionIcon fontSize="small" sx={{ color: 'var(--text-color)' }} />
+            </ListItemIcon>
+            {isArchivePage ? t('posts.makePublic') : t('posts.makePrivate')}
           </MenuItem>,
           <Divider key="divider" />,
           <MenuItem key="delete" onClick={handleDeleteClick} sx={{ color: 'error.main' }}>

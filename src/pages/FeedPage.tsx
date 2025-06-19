@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Divider, Typography } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Fab, Zoom } from '@mui/material';
+import { Box, Divider, Fab, Typography, Zoom } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import CreatePostCard from '../components/Post/CreatePostCard';
 import PostsList from '../components/Post/PostList';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
-import { postService } from '../services/postService';
-import CreatePostCard from '../components/Post/CreatePostCard';
 import { usePosts } from '../hooks/usePosts';
-import { useTranslation } from 'react-i18next';
+import { postService } from '../services/postService';
 
 const FeedPage: React.FC = () => {
   const [showDiscover, setShowDiscover] = useState(false);
@@ -108,7 +107,14 @@ const FeedPage: React.FC = () => {
       <CreatePostCard onPostCreated={(newPost) => setFeedPosts((prev) => [newPost, ...prev])} />
 
       <Box sx={{ width: '100%', maxWidth: '1000px', mx: 'auto' }}>
-        <PostsList posts={feedPosts} loading={loadingFeed} onDelete={handleDelete} />
+        <PostsList
+          onPostPrivacyChange={(updatedPost) => {
+            setFeedPosts((prev) => prev.filter((p) => p.id !== updatedPost.id));
+          }}
+          posts={feedPosts}
+          loading={loadingFeed}
+          onDelete={handleDelete}
+        />
 
         {showDiscover && (
           <>
@@ -124,7 +130,14 @@ const FeedPage: React.FC = () => {
             >
               {t('posts.feedEndDiscoverLabel')}
             </Typography>
-            <PostsList posts={discoverPosts} loading={loadingDiscover} onDelete={handleDelete} />
+            <PostsList
+              onPostPrivacyChange={(updatedPost) => {
+                setDiscoverPosts((prev) => prev.filter((p) => p.id !== updatedPost.id));
+              }}
+              posts={discoverPosts}
+              loading={loadingDiscover}
+              onDelete={handleDelete}
+            />
           </>
         )}
       </Box>

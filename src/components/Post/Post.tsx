@@ -1,24 +1,33 @@
-import React, { useRef, useState } from 'react';
 import { Card, Divider } from '@mui/material';
+import React, { useRef, useState } from 'react';
 
 import PostActions from './PostActions';
 import PostComments from './PostComments';
 import PostContent from './PostContent';
 import PostHeader from './PostHeader';
 
-import type { CommentType, PostType } from '../../types/post';
-import { useAuth } from '../../services/AuthContext';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { useAuth } from '../../services/AuthContext';
 import { postService } from '../../services/postService';
+import type { CommentType, PostType } from '../../types/post';
+import ArchivePostModal from './ArchivePostModal';
 import EditPostModal from './EditPostModal';
 
 interface Props {
   post: PostType;
   onDelete: (id: string) => void;
-  onUnsave?: (id: string) => void; // ← новий пропс
+  onUnsave?: (id: string) => void;
+  isArchivePage?: boolean;
+  onPostPrivacyChange?: (updatedPost: PostType) => void;
 }
 
-const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
+const Post: React.FC<Props> = ({
+  post,
+  onDelete,
+  onUnsave,
+  isArchivePage,
+  onPostPrivacyChange,
+}) => {
   const { user } = useAuth();
   const [liked, setLiked] = useState(post.liked);
   const [likesCount, setLikesCount] = useState(post._count.likes);
@@ -30,6 +39,7 @@ const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
   const take = 5;
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
   const [currentPost, setCurrentPost] = useState(post);
   const [saved, setSaved] = useState(post.saved ?? false);
 
@@ -134,6 +144,14 @@ const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
 
   const handleUpdatePost = (updatedPost: PostType) => {
     setCurrentPost(updatedPost);
+
+    if (isArchivePage && updatedPost.privacy === 'PUBLIC') {
+      onPostPrivacyChange?.(updatedPost);
+    }
+
+    if (!isArchivePage && updatedPost.privacy === 'PRIVATE') {
+      onPostPrivacyChange?.(updatedPost);
+    }
   };
 
   const handleToggleSave = async () => {
@@ -167,6 +185,8 @@ const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
         isOwner={post.user.id === user?.id}
         onDelete={handleDeletePost}
         onEdit={() => setEditOpen(true)}
+        onArchive={() => setArchiveOpen(true)}
+        isArchivePage={isArchivePage}
       />
 
       <EditPostModal
@@ -174,6 +194,14 @@ const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
         onClose={() => setEditOpen(false)}
         post={currentPost}
         onUpdate={handleUpdatePost}
+      />
+
+      <ArchivePostModal
+        post={currentPost}
+        open={archiveOpen}
+        onClose={() => setArchiveOpen(false)}
+        onUpdate={handleUpdatePost}
+        isArchivePage={isArchivePage}
       />
 
       <PostContent content={currentPost.content} photo={currentPost.photo} />

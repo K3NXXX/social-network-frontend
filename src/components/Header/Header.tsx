@@ -25,6 +25,7 @@ export default function Header() {
       chats: t('breadcrumb.chats'),
       notifications: t('breadcrumb.notifications'),
       edit: t('breadcrumb.edit'),
+      archive: t('breadcrumb.archive'),
     };
     return mapping[segment.toLowerCase()] || decodeURIComponent(segment);
   };

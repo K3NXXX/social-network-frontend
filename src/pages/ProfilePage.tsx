@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import UserPosts from '../components/Post/UserPosts.tsx';
 import PublicUserOptionsMenu from '../components/user/PublicUserOptionsMenu.tsx';
 import ShowFollowersForm from '../components/user/ShowFollowersForm.tsx';
@@ -221,13 +221,15 @@ export default function ProfilePage({
                   {t('profile.messageLabel')}
                 </NoOutlineButton>
               ) : (
-                <NoOutlineButton
-                  variant="contained"
-                  size="small"
-                  sx={{ backgroundColor: 'var(--primary-color)' }}
-                >
-                  {t('profile.viewArchiveLabel')}
-                </NoOutlineButton>
+                <Link to={PAGES.ARCHIVE}>
+                  <NoOutlineButton
+                    variant="contained"
+                    size="small"
+                    sx={{ backgroundColor: 'var(--primary-color)' }}
+                  >
+                    {t('profile.viewArchiveLabel')}
+                  </NoOutlineButton>
+                </Link>
               )}
               {isPublicProfile && !isThisMe && (
                 <Box

@@ -9,4 +9,5 @@ export const PAGES = {
   PROFILE: '/profile',
   VIEW_PUBLIC_PROFILE: '/user/profile',
   EDIT_PROFILE: '/profile/edit',
+  ARCHIVE: '/archive',
 };

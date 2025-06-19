@@ -8,7 +8,8 @@
     "feed": "Feed",
     "chats": "Chats",
     "notifications": "Notifications",
-    "edit": "Edit"
+    "edit": "Edit",
+    "archive": "Archive"
   },
   "sidebar": {
     "home": "Home",
@@ -30,6 +31,13 @@
     "editLabel": "Edit",
     "saveLabel": "Save",
     "deleteLabel": "Delete",
+    "makePrivate": "Make private",
+    "addToArchive": "Add to archive",
+    "addToArchiveInfo": "You can add the post to the archive and make it private. Other users will not be able to see it.",
+    "noArchivePosts": "No archived posts",
+    "title": "Private Posts Archive",
+    "makePublic": "Make public",
+    "makePublicInfo": "You can make this post public, and all users will be able to see it.",
     "hideAnswers": "Hide answers",
     "showAnswers": "Show answers",
     "commentReply": "Reply to comment",

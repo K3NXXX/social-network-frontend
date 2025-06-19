@@ -1,14 +1,14 @@
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Box, CircularProgress, Fab, Zoom } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useIntersectionObserver } from '../../hooks/useIntersectionObserver.tsx';
 import { usePosts } from '../../hooks/usePosts.tsx';
 import { postService } from '../../services/postService.ts';
+import { userService } from '../../services/userService.ts';
 import type { PostType } from '../../types/post.ts';
 import type { UserPublicProfile } from '../../types/user.ts';
 import Post from './Post.tsx';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { useIntersectionObserver } from '../../hooks/useIntersectionObserver.tsx';
-import { userService } from '../../services/userService.ts';
 
 type Props = {
   isPublicProfile: boolean;
@@ -88,6 +88,9 @@ const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData, isSavedPo
       {posts.map((post: PostType, index: number) => (
         <Box key={post.id + index}>
           <Post
+            onPostPrivacyChange={(updatedPost) => {
+              setPosts((prev) => prev.filter((p) => p.id !== updatedPost.id));
+            }}
             onUnsave={isSavedPosts ? handleUnsave : undefined}
             post={post}
             onDelete={handleDelete}
