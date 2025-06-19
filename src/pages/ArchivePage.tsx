@@ -9,6 +9,10 @@ export default function ArchivePage() {
   const [posts, setPosts] = useState<PostType[] | null>(null);
   const { t } = useTranslation();
 
+  const handleDelete = (id: string) => {
+    setPosts((prev) => (prev ? prev.filter((post) => post.id !== id) : null));
+  };
+
   useEffect(() => {
     const getArchivePosts = async () => {
       try {
@@ -48,6 +52,7 @@ export default function ArchivePage() {
                 }}
                 isArchivePage={true}
                 post={post}
+                onDelete={handleDelete}
               />
             </Box>
           ))
