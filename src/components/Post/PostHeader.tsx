@@ -29,9 +29,18 @@ interface Props {
   onDelete: () => void;
   onEdit?: () => void;
   onArchive?: () => void;
+  isArchivePage?: boolean;
 }
 
-const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdit, onArchive }) => {
+const PostHeader: React.FC<Props> = ({
+  user,
+  createdAt,
+  isOwner,
+  onDelete,
+  onEdit,
+  onArchive,
+  isArchivePage,
+}) => {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [, setCurrentTime] = useState(Date.now());
@@ -167,7 +176,7 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
             {t('posts.editLabel')}
           </MenuItem>,
           <MenuItem
-            key="edit"
+            key="changePrivacy"
             onClick={handleArchiveClick}
             sx={{
               color: 'var(--text-color)',
@@ -176,7 +185,7 @@ const PostHeader: React.FC<Props> = ({ user, createdAt, isOwner, onDelete, onEdi
             <ListItemIcon>
               <EnhancedEncryptionIcon fontSize="small" sx={{ color: 'var(--text-color)' }} />
             </ListItemIcon>
-            {t('posts.makePrivate')}
+            {isArchivePage ? t('posts.makePublic') : t('posts.makePrivate')}
           </MenuItem>,
           <Divider key="divider" />,
           <MenuItem key="delete" onClick={handleDeleteClick} sx={{ color: 'error.main' }}>

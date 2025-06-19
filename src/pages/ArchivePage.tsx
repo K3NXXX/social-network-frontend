@@ -1,12 +1,13 @@
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Post from '../components/Post/Post';
 import { postService } from '../services/postService';
 import type { PostType } from '../types/post';
 
 export default function ArchivePage() {
   const [posts, setPosts] = useState<PostType[] | null>(null);
-  console.log('posts', posts);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const getArchivePosts = async () => {
@@ -35,14 +36,24 @@ export default function ArchivePage() {
       <Typography
         sx={{ textAlign: 'left', fontSize: '20px', fontWeight: '500', marginBottom: '50px' }}
       >
-        Архів приватних публікацій
+        {t('posts.title')}
       </Typography>
       <Box>
-        {posts?.map((post) => (
-          <Box key={post.id}>
-            <Post post={post}></Post>
-          </Box>
-        ))}
+        {posts.length > 0 ? (
+          posts?.map((post) => (
+            <Box key={post.id}>
+              <Post
+                onPostPrivacyChange={(updatedPost) => {
+                  setPosts((prev) => (prev ? prev.filter((p) => p.id !== updatedPost.id) : null));
+                }}
+                isArchivePage={true}
+                post={post}
+              />
+            </Box>
+          ))
+        ) : (
+          <Typography>{t('posts.noArchivePosts')}</Typography>
+        )}
       </Box>
     </Box>
   );

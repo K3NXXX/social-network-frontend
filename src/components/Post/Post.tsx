@@ -16,10 +16,18 @@ import EditPostModal from './EditPostModal';
 interface Props {
   post: PostType;
   onDelete: (id: string) => void;
-  onUnsave?: (id: string) => void; // ← новий пропс
+  onUnsave?: (id: string) => void;
+  isArchivePage?: boolean;
+  onPostPrivacyChange?: (updatedPost: PostType) => void;
 }
 
-const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
+const Post: React.FC<Props> = ({
+  post,
+  onDelete,
+  onUnsave,
+  isArchivePage,
+  onPostPrivacyChange,
+}) => {
   const { user } = useAuth();
   const [liked, setLiked] = useState(post.liked);
   const [likesCount, setLikesCount] = useState(post._count.likes);
@@ -136,6 +144,14 @@ const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
 
   const handleUpdatePost = (updatedPost: PostType) => {
     setCurrentPost(updatedPost);
+
+    if (isArchivePage && updatedPost.privacy === 'PUBLIC') {
+      onPostPrivacyChange?.(updatedPost);
+    }
+
+    if (!isArchivePage && updatedPost.privacy === 'PRIVATE') {
+      onPostPrivacyChange?.(updatedPost);
+    }
   };
 
   const handleToggleSave = async () => {
@@ -170,6 +186,7 @@ const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
         onDelete={handleDeletePost}
         onEdit={() => setEditOpen(true)}
         onArchive={() => setArchiveOpen(true)}
+        isArchivePage={isArchivePage}
       />
 
       <EditPostModal
@@ -184,6 +201,7 @@ const Post: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
         open={archiveOpen}
         onClose={() => setArchiveOpen(false)}
         onUpdate={handleUpdatePost}
+        isArchivePage={isArchivePage}
       />
 
       <PostContent content={currentPost.content} photo={currentPost.photo} />

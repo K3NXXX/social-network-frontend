@@ -15,14 +15,21 @@ interface ArchivePostModalProps {
   onClose: () => void;
   post: PostType;
   onUpdate: (updatedPost: PostType) => void;
+  isArchivePage?: boolean;
 }
 
-export default function ArchivePostModal({ open, onClose, onUpdate, post }: ArchivePostModalProps) {
+export default function ArchivePostModal({
+  open,
+  onClose,
+  onUpdate,
+  post,
+  isArchivePage,
+}: ArchivePostModalProps) {
   const { t } = useTranslation();
 
-  const handleMakePublic = async () => {
+  const handleChangePrivacy = async (privacy: 'PRIVATE' | 'PUBLIC') => {
     try {
-      const updatedPost = await postService.updatePostPrivacy(post.id, 'PRIVATE');
+      const updatedPost = await postService.updatePostPrivacy(post.id, privacy);
       onUpdate(updatedPost);
       onClose();
     } catch (error) {
@@ -43,9 +50,11 @@ export default function ArchivePostModal({ open, onClose, onUpdate, post }: Arch
         },
       }}
     >
-      <DialogTitle>{t('posts.addToArchive')}</DialogTitle>
+      <DialogTitle>{isArchivePage ? t('posts.makePublic') : t('posts.addToArchive')}</DialogTitle>
       <DialogContent>
-        <Typography>{t('posts.addToArchiveInfo')}</Typography>
+        <Typography>
+          {isArchivePage ? t('posts.makePublicInfo') : t('posts.addToArchiveInfo')}
+        </Typography>
       </DialogContent>
       <DialogActions>
         <Button
@@ -64,23 +73,43 @@ export default function ArchivePostModal({ open, onClose, onUpdate, post }: Arch
         >
           {t('posts.commentCancel')}
         </Button>
-        <Button
-          onClick={() => handleMakePublic()}
-          variant="contained"
-          sx={{
-            backgroundColor: 'var(--primary-color)',
-            '&:focus': {
-              outline: 'none',
-              boxShadow: 'none',
-            },
-            '&:focus-visible': {
-              outline: 'none',
-              boxShadow: 'none',
-            },
-          }}
-        >
-          {t('posts.makePrivate')}
-        </Button>
+        {isArchivePage ? (
+          <Button
+            onClick={() => handleChangePrivacy('PUBLIC')}
+            variant="contained"
+            sx={{
+              backgroundColor: 'var(--primary-color)',
+              '&:focus': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+              '&:focus-visible': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+            }}
+          >
+            {t('posts.makePublic')}
+          </Button>
+        ) : (
+          <Button
+            onClick={() => handleChangePrivacy('PRIVATE')}
+            variant="contained"
+            sx={{
+              backgroundColor: 'var(--primary-color)',
+              '&:focus': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+              '&:focus-visible': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+            }}
+          >
+            {t('posts.makePrivate')}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );
