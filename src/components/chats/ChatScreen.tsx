@@ -24,6 +24,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
   //щоб передавати оновлені значення до useEffect
   const selectedChatRef = useRef<ChatPreview | null>(selectedChat);
   useEffect(() => {
+    setHasNextPage(true);
     selectedChatRef.current = selectedChat;
   }, [selectedChat]);
 
@@ -54,13 +55,15 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
   }, [messages, shouldScroll]);
 
   const [hasNextPage, setHasNextPage] = useState<boolean>(true);
+  //cursor = null лише тоді, коли заходимо в новий чат і хочемо взяти останні 30 повідомлень
   const loadMessages = async (cursor: string | null, scroll: boolean) => {
     if (!otherUser) return;
     try {
-      if (!hasNextPage) throw new Error(`Error: there's no more messages`);
+      if (!hasNextPage && cursor) throw new Error(`Error: there's no more messages`);
       const data = await chatsService.fetchMessages(currentUser.id, otherUser.id, cursor);
 
-      setMessages((msgs) => [...data.messages, ...(msgs || [])]);
+      if (!cursor) setMessages(data.messages);
+      else setMessages((msgs) => [...data.messages, ...(msgs || [])]);
       setHasNextPage(data.hasNextPage);
       if (scroll) setShouldScroll(true);
     } catch (error) {

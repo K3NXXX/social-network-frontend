@@ -1,4 +1,4 @@
-import { Box, Typography, TextField, InputAdornment, Alert } from '@mui/material';
+import { Box, Typography, TextField, InputAdornment } from '@mui/material';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ChatBar from '../components/chats/ChatBar';
 import ChatScreen from '../components/chats/ChatScreen';
