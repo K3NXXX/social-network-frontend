@@ -9,6 +9,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { postService } from '../../services/postService';
 import type { PostType } from '../../types/post';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface ArchivePostModalProps {
   open: boolean;
@@ -26,6 +27,7 @@ export default function ArchivePostModal({
   isArchivePage,
 }: ArchivePostModalProps) {
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   const handleChangePrivacy = async (privacy: 'PRIVATE' | 'PUBLIC') => {
     try {
@@ -52,7 +54,7 @@ export default function ArchivePostModal({
     >
       <DialogTitle>{isArchivePage ? t('posts.makePublic') : t('posts.addToArchive')}</DialogTitle>
       <DialogContent>
-        <Typography>
+        <Typography sx={{ color: theme === 'dark' ? 'white' : 'black' }}>
           {isArchivePage ? t('posts.makePublicInfo') : t('posts.addToArchiveInfo')}
         </Typography>
       </DialogContent>
