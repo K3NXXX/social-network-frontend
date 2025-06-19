@@ -1,7 +1,7 @@
 import DoneAllIcon from '@mui/icons-material/DoneAll';
-import { Avatar, Box, Button, Card, Typography, Divider } from '@mui/material';
+import { Avatar, Box, Button, Card, Divider, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PAGES } from '../constants/pages.constants';
 import GlobalLoader from '../ui/GlobalLoader';
 import { formatCreatedAt } from '../utils/dateUtils';
@@ -150,7 +150,7 @@ export default function NotificationPage() {
             </Link>
 
             {/* Текст */}
-            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               <Link
                 to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}
                 onClick={(e) => e.stopPropagation()}
@@ -192,12 +192,21 @@ export default function NotificationPage() {
               </Box>
             </Box>
 
-            {/* Іконка прочитаної */}
             <Box sx={{ position: 'absolute', top: 24, right: 24 }}>
               {notification.isRead ? (
                 <DoneAllIcon sx={{ color: '#7362cc' }} />
               ) : (
-                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#7362cc' }} />
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    bgcolor: '#7362cc',
+                    position: 'absolute',
+                    top: '15px',
+                    left: '-16px',
+                  }}
+                />
               )}
             </Box>
           </Box>
