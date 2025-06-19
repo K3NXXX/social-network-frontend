@@ -75,7 +75,8 @@
     "onLine": " Online",
     "offline": " Offline",
     "read": "read",
-    "sent": "sent"
+    "sent": "sent",
+    "authError": "Error: {{message}}. Please log in again."
   },
   "auth": {
     "createProfileLabel": "Create an account",

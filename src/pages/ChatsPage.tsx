@@ -1,4 +1,4 @@
-import { Box, Typography, TextField, InputAdornment } from '@mui/material';
+import { Box, Typography, TextField, InputAdornment, Alert } from '@mui/material';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ChatBar from '../components/chats/ChatBar';
 import ChatScreen from '../components/chats/ChatScreen';
@@ -11,9 +11,10 @@ import { Close } from '@mui/icons-material';
 import debounce from 'lodash/debounce';
 import { userService } from '../services/userService';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ChatsPage: React.FC = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const userData: UserPreview = location.state?.userData;
 
@@ -88,8 +89,16 @@ const ChatsPage: React.FC = () => {
       console.log('Socket disconnected');
     });
 
+    const handleError = (payload: any) => {
+      console.error('Error: ', payload.message);
+      alert(t('chats.authError', { message: payload.message }));
+      navigate('/login');
+    };
+
+    socketRef.current.on('error', handleError);
+
     return () => {
-      //вихід зі сторінки чатів
+      socketRef.current?.off('error', handleError);
       socketRef.current?.disconnect();
       if (lastChatIdRef.current) {
         socketRef.current?.emit('leave_chat', lastChatIdRef.current);
