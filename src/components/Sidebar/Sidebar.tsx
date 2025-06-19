@@ -32,7 +32,6 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
 
   const unreadCount = (notifications ?? []).filter((n) => !n.isRead).length;
 
-  // Монтуємо WS та підтягуємо нотифікації одразу після логіну
   useEffect(() => {
     const user = authService.getCurrentUser();
     if (user?.id) {
@@ -73,7 +72,6 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
         overflow: 'hidden',
       }}
     >
-      {/* Logo + Collapse */}
       <Box
         mb={3}
         display="flex"
@@ -83,7 +81,10 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
       >
         {!isCollapsed && <Logo />}
         <Box
-          onClick={toggleCollapse}
+          onClick={() => {
+            toggleCollapse();
+            setSearchSidebarCollapsed(true);
+          }}
           sx={{
             cursor: 'pointer',
             p: 1.5,
@@ -105,15 +106,9 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
         </Box>
       </Box>
 
-      {/* Основне меню (без стандартного Notifications) */}
       <Box sx={{ flexGrow: 1 }}>
         {sidebarList
-          .filter(
-            (item) =>
-              item.id !== 7 && // мова
-              item.id !== 8 && // logout
-              item.url !== PAGES.NOTIFICATIONS
-          )
+          .filter((item) => item.id !== 7 && item.id !== 8 && item.url !== PAGES.NOTIFICATIONS)
           .map((item) => {
             const isActive = pathname === item.url;
             if (item.id !== 5) {
@@ -132,7 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
                 </Link>
               );
             }
-            // пошук
+
             return (
               <SidebarListItem
                 key={item.id}
@@ -147,7 +142,6 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
             );
           })}
 
-        {/* Кастомний пункт Notifications з бейджем */}
         <Link to={PAGES.NOTIFICATIONS} style={{ textDecoration: 'none', width: '100%' }}>
           <Box
             sx={{
@@ -162,17 +156,15 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
               justifyContent: isCollapsed ? 'center' : 'flex-start',
             }}
           >
-            {/* обгортка тільки для іконки */}
             <Box sx={{ position: 'relative' }}>
               <NotificationsNoneIcon sx={{ color: 'white', fontSize: 30 }} />
-
               {unreadCount > 0 && (
                 <Box
                   sx={{
                     position: 'absolute',
-                    top: -8, // рухаємо трохи вгору
-                    right: -8, // рухаємо трохи вправо
-                    width: 18, // за потреби можна зменшити
+                    top: -8,
+                    right: -8,
+                    width: 18,
                     height: 18,
                     bgcolor: '#9885f4',
                     borderRadius: '50%',
@@ -187,7 +179,6 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
                 </Box>
               )}
             </Box>
-
             {!isCollapsed && (
               <Typography sx={{ color: 'white', fontSize: 17 }}>
                 {t('sidebar.notifications')}
@@ -195,9 +186,32 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
             )}
           </Box>
         </Link>
+        {sidebarList
+          .filter((item) => item.id === 7)
+          .map((item) => (
+            <Box
+              key={item.id}
+              onClick={toggleLanguage}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: isCollapsed ? 0 : 2.5,
+                p: 1,
+                borderRadius: 1,
+                mb: 1,
+                cursor: 'pointer',
+                '&:hover': { backgroundColor: '#2a2340' },
+                justifyContent: isCollapsed ? 'center' : 'flex-start',
+              }}
+            >
+              <item.icon sx={{ color: 'white', fontSize: 30 }} />
+              {!isCollapsed && (
+                <Typography sx={{ color: 'white', fontSize: 17 }}>{t(item.labelKey)}</Typography>
+              )}
+            </Box>
+          ))}
       </Box>
 
-      {/* Перемикач теми */}
       <Box
         onClick={toggleTheme}
         sx={{
@@ -224,7 +238,6 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
         )}
       </Box>
 
-      {/* Logout */}
       {sidebarList
         .filter((item) => item.id === 8)
         .map((item) => (

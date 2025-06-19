@@ -1,5 +1,5 @@
 import DoneAllIcon from '@mui/icons-material/DoneAll';
-import { Avatar, Box, Button, Card, Typography } from '@mui/material';
+import { Avatar, Box, Button, Card, Typography, Divider } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { PAGES } from '../constants/pages.constants';
@@ -22,12 +22,27 @@ export default function NotificationPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Підтягуємо існуючі сповіщення
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
 
-  // Фільтрація + сортування за датою
+  const changeNotificationType = (type: string) => {
+    if (type === 'COMMENT') return 'New comment';
+    if (type === 'NEW_FOLLOWER') return 'New follower';
+    if (type === 'LIKE') return 'New like';
+  };
+
+  const handleRowClick = async (n: (typeof notifications)[0]) => {
+    await markOneAsRead(n.id);
+    if (n.type === 'NEW_FOLLOWER') {
+      navigate(`${PAGES.VIEW_PUBLIC_PROFILE}/${n.sender.id}`);
+    } else if (n.post?.id) {
+      navigate(`${PAGES.POST}/${n.post.id}`, {
+        state: { backgroundLocation: location },
+      });
+    }
+  };
+
   const filteredNotifications = (notifications ?? [])
     .filter((n) => {
       const type = filterTypeMap[activeFilter];
@@ -40,32 +55,18 @@ export default function NotificationPage() {
   }
 
   return (
-    <Card
-      sx={{
-        maxWidth: 965,
-        mx: 'auto',
-        mt: 4,
-        mb: 6,
-        py: 4,
-      }}
-    >
+    <Card sx={{ maxWidth: 965, mx: 'auto', mt: 4, mb: 6, py: 4 }}>
       {/* Заголовок */}
       <Box
         sx={{
+          px: 3,
+          py: 2,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          px: 3,
-          mb: 3,
         }}
       >
-        <Typography
-          sx={{
-            fontSize: 24,
-            fontWeight: 600,
-            fontFamily: 'Ubuntu, sans-serif',
-          }}
-        >
+        <Typography sx={{ fontSize: 24, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
           Сповіщення
         </Typography>
         <Button
@@ -75,7 +76,6 @@ export default function NotificationPage() {
             color: 'gray',
             fontSize: 15,
             fontWeight: 400,
-            fontFamily: 'Ubuntu, sans-serif',
             '&:hover': { color: '#7362cc', background: 'transparent' },
           }}
         >
@@ -83,31 +83,23 @@ export default function NotificationPage() {
         </Button>
       </Box>
 
-      {/* Фільтри */}
-      <Box
-        sx={{
-          display: 'flex',
-          gap: 3,
-          px: 3,
-          pb: 2,
-          mb: 4,
-        }}
-      >
+      {/* Таби */}
+      <Box sx={{ px: 3, display: 'flex', gap: 3, mb: 1 }}>
         {Object.keys(filterTypeMap).map((label) => {
-          const isActive = activeFilter === label;
+          const isActive = label === activeFilter;
           return (
             <Button
               key={label}
-              onClick={() => setActiveFilter(label)}
               disableRipple
+              onClick={() => setActiveFilter(label)}
               sx={{
                 textTransform: 'none',
                 px: 0,
                 minWidth: 'auto',
-                color: isActive ? '#7362cc' : '#555',
-                fontWeight: isActive ? 600 : 400,
                 fontSize: 16,
                 fontFamily: 'Ubuntu, sans-serif',
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? '#7362cc' : '#555',
                 borderBottom: isActive ? '2px solid #7362cc' : '2px solid transparent',
                 borderRadius: 0,
                 '&:hover': { background: 'transparent' },
@@ -118,114 +110,98 @@ export default function NotificationPage() {
           );
         })}
       </Box>
+      <Divider />
 
-      {/* Список сповіщень */}
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        {filteredNotifications.map((notification) => {
-          const postId = notification.post?.id;
-          return (
-            <Box
-              key={notification.id}
-              sx={{
-                borderBottom: '1px solid #d4d4d4',
-                py: 2,
-                px: 3,
-                position: 'relative',
-                cursor: postId ? 'pointer' : 'default',
-              }}
-              onClick={async () => {
-                if (postId) {
-                  await markOneAsRead(notification.id);
-                  navigate(`${PAGES.POST}/${postId}`, {
-                    state: { backgroundLocation: location },
-                  });
-                }
-              }}
+      {/* Список */}
+      <Box>
+        {filteredNotifications.map((notification) => (
+          <Box
+            key={notification.id}
+            onClick={() => handleRowClick(notification)}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              px: 3,
+              py: 2,
+              borderBottom: '1px solid #e0e0e0',
+              cursor:
+                notification.type === 'NEW_FOLLOWER' || notification.post?.id
+                  ? 'pointer'
+                  : 'default',
+              position: 'relative',
+              '&:hover':
+                notification.type === 'NEW_FOLLOWER' || notification.post?.id
+                  ? { backgroundColor: '#fafafa' }
+                  : {},
+            }}
+          >
+            {/* Аватар */}
+            <Link
+              to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}
+              onClick={(e) => e.stopPropagation()}
+              style={{ textDecoration: 'none', marginRight: 16 }}
             >
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Link
-                  to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}
-                  style={{ textDecoration: 'none' }}
-                >
-                  <Avatar
-                    sx={{ width: 60, height: 60 }}
-                    src={notification.sender.avatarUrl ?? undefined}
-                  >
-                    {notification.sender.firstName.charAt(0)}
-                  </Avatar>
-                </Link>
-                <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column' }}>
-                  <Link
-                    to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}
-                    style={{ textDecoration: 'none' }}
-                  >
-                    <Typography
-                      sx={{
-                        fontFamily: 'Ubuntu, sans-serif',
-                        fontWeight: 500,
-                        color: 'black',
-                      }}
-                    >
-                      {notification.message}
-                    </Typography>
-                  </Link>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography
-                      sx={{
-                        fontFamily: 'Ubuntu, sans-serif',
-                        fontWeight: 400,
-                        color: 'gray',
-                      }}
-                    >
-                      {formatCreatedAt(notification.createdAt)}
-                    </Typography>
-                    <Box
-                      sx={{
-                        width: 4,
-                        height: 4,
-                        borderRadius: '50%',
-                        backgroundColor: 'gray',
-                      }}
-                    />
-                    <Typography
-                      sx={{
-                        fontFamily: 'Ubuntu, sans-serif',
-                        fontWeight: 400,
-                        color: 'gray',
-                      }}
-                    >
-                      {{
-                        COMMENT: 'New comment',
-                        NEW_FOLLOWER: 'New follower',
-                        LIKE: 'New like',
-                      }[notification.type] || ''}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 32,
-                  right: 32,
-                }}
+              <Avatar
+                sx={{ width: 60, height: 60 }}
+                src={notification.sender.avatarUrl ?? undefined}
               >
-                {!notification.isRead ? (
-                  <Box
-                    sx={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      backgroundColor: '#7362cc',
-                    }}
-                  />
-                ) : (
-                  <DoneAllIcon sx={{ color: '#7362cc' }} />
-                )}
+                {notification.sender.firstName.charAt(0)}
+              </Avatar>
+            </Link>
+
+            {/* Текст */}
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <Link
+                to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}
+                onClick={(e) => e.stopPropagation()}
+                style={{ textDecoration: 'none' }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: 'Ubuntu, sans-serif',
+                    fontWeight: 500,
+                    color: 'black',
+                    textAlign: 'left',
+                  }}
+                >
+                  {notification.message}
+                </Typography>
+              </Link>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                <Typography
+                  sx={{
+                    fontFamily: 'Ubuntu, sans-serif',
+                    fontWeight: 400,
+                    color: 'gray',
+                    fontSize: 14,
+                  }}
+                >
+                  {formatCreatedAt(notification.createdAt)}
+                </Typography>
+                <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: 'gray' }} />
+                <Typography
+                  sx={{
+                    fontFamily: 'Ubuntu, sans-serif',
+                    fontWeight: 400,
+                    color: 'gray',
+                    fontSize: 14,
+                  }}
+                >
+                  {changeNotificationType(notification.type)}
+                </Typography>
               </Box>
             </Box>
-          );
-        })}
+
+            {/* Іконка прочитаної */}
+            <Box sx={{ position: 'absolute', top: 24, right: 24 }}>
+              {notification.isRead ? (
+                <DoneAllIcon sx={{ color: '#7362cc' }} />
+              ) : (
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#7362cc' }} />
+              )}
+            </Box>
+          </Box>
+        ))}
       </Box>
     </Card>
   );

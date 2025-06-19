@@ -5,7 +5,7 @@ import type { Notification } from '../../types/notifications';
 import { authService } from '../../services/authService';
 
 interface NotificationState {
-  notifications: Notification[] | null;
+  notifications: Notification[];
   fetchNotifications: () => Promise<void>;
   markAllAsRead: () => Promise<void>;
   unreadNotifications: Notification[];
@@ -16,7 +16,7 @@ interface NotificationState {
 }
 
 export const useNotificationStore = create<NotificationState>((set, get) => ({
-  notifications: null,
+  notifications: [],
   socket: null,
 
   fetchNotifications: async () => {
