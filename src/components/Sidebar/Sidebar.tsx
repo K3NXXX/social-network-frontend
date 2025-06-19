@@ -14,6 +14,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import SidebarListItem from './SidebarListItem';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 interface SidebarProps {
   searchSidebarCollapsed: boolean;
@@ -24,6 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { pathname } = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const isSmallScreen = useMediaQuery('(max-width:768px)');
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -43,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
     };
   }, [fetchNotifications, initSocket, disconnectSocket]);
 
-  const toggleCollapse = () => setIsCollapsed((prev) => !prev);
+  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
 
   const logout = () => {
     disconnectSocket();
@@ -56,13 +58,14 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
     i18n.changeLanguage(nextLang);
   };
 
+
   return (
     <Box
       sx={{
         position: 'sticky',
         top: 0,
         height: '100vh',
-        width: isCollapsed ? 80 : 300,
+        width: isSmallScreen ? (isCollapsed ? '80px' : '100vw') : isCollapsed ? '80px' : '300px',
         background: '#181424',
         p: 2,
         display: 'flex',

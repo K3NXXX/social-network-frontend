@@ -37,7 +37,10 @@ function App() {
                 searchSidebarCollapsed={searchSidebarCollapsed}
                 setSearchSidebarCollapsed={setSearchSidebarCollapsed}
               />
-              <SearchSidebar isCollapsed={searchSidebarCollapsed} />
+              <SearchSidebar
+                isCollapsed={searchSidebarCollapsed}
+                setSearchSidebarCollapsed={setSearchSidebarCollapsed}
+              />
             </Box>
           )}
           <Box sx={{ width: '100%' }}>
