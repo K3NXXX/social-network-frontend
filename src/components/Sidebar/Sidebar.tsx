@@ -3,7 +3,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import { Box, Typography } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
@@ -12,8 +12,8 @@ import i18n from '../../internationalization/i18n';
 import { sidebarList } from '../../lists/sidebar.list';
 import { authService } from '../../services/authService';
 import Logo from '../../ui/Logo';
-import SidebarListItem from './SidebarListItem';
 import { useNotificationStore } from '../../zustand/stores/notificationStore';
+import SidebarListItem from './SidebarListItem';
 
 interface SidebarProps {
   searchSidebarCollapsed: boolean;
@@ -173,7 +173,16 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
                     justifyContent: 'center',
                   }}
                 >
-                  <Typography sx={{ color: 'white', fontSize: 11, fontWeight: 700 }}>
+                  <Typography
+                    sx={{
+                      color: 'white',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      position: 'relative',
+                      top: 1.3,
+                      left: 0.3,
+                    }}
+                  >
                     {unreadCount}
                   </Typography>
                 </Box>

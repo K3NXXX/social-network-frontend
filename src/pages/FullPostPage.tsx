@@ -2,7 +2,6 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
 import GlobalLoader from '../ui/GlobalLoader';
 import Post from '../components/Post/Post';
 import { postService } from '../services/postService';
@@ -56,8 +55,8 @@ export default function FullPostPage() {
       PaperProps={{
         sx: {
           width: '85vw',
-          maxWidth: 600,
-          maxHeight: '90vh', // ограничиваем только максимальную высоту
+          maxWidth: 900,
+          maxHeight: '80vh',
           borderRadius: 2,
           boxShadow: 3,
           p: 0,
@@ -70,7 +69,7 @@ export default function FullPostPage() {
           p: 0,
           pt: 2,
           pb: 2,
-          // убираем фиксированную высоту, даём авто-рост
+
           overflowY: 'auto',
         }}
       >
@@ -78,7 +77,7 @@ export default function FullPostPage() {
           <Box
             sx={{
               width: '100%',
-              maxWidth: 560,
+              maxWidth: 900,
               mx: 'auto',
               display: 'flex',
               flexDirection: 'column',

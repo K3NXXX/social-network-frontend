@@ -34,6 +34,7 @@ export default function NotificationPage() {
 
   const handleRowClick = async (n: (typeof notifications)[0]) => {
     await markOneAsRead(n.id);
+
     if (n.type === 'NEW_FOLLOWER') {
       navigate(`${PAGES.VIEW_PUBLIC_PROFILE}/${n.sender.id}`);
     } else if (n.post?.id) {
@@ -56,7 +57,6 @@ export default function NotificationPage() {
 
   return (
     <Card sx={{ maxWidth: 965, mx: 'auto', mt: 4, mb: 6, py: 4 }}>
-      {/* Заголовок */}
       <Box
         sx={{
           px: 3,
@@ -83,7 +83,6 @@ export default function NotificationPage() {
         </Button>
       </Box>
 
-      {/* Таби */}
       <Box sx={{ px: 3, display: 'flex', gap: 3, mb: 1 }}>
         {Object.keys(filterTypeMap).map((label) => {
           const isActive = label === activeFilter;
@@ -112,7 +111,6 @@ export default function NotificationPage() {
       </Box>
       <Divider />
 
-      {/* Список */}
       <Box>
         {filteredNotifications.map((notification) => (
           <Box
@@ -135,7 +133,6 @@ export default function NotificationPage() {
                   : {},
             }}
           >
-            {/* Аватар */}
             <Link
               to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}
               onClick={(e) => e.stopPropagation()}
@@ -149,7 +146,6 @@ export default function NotificationPage() {
               </Avatar>
             </Link>
 
-            {/* Текст */}
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               <Link
                 to={`${PAGES.VIEW_PUBLIC_PROFILE}/${notification.sender.id}`}
