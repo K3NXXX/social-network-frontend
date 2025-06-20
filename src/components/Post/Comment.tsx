@@ -48,7 +48,14 @@ const Comment: React.FC<CommentProps> = ({
   };
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, width: '100%' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 2,
+        width: '100%',
+      }}
+    >
       <Avatar src={comment.user?.avatarUrl ?? undefined}>
         {!comment.user?.avatarUrl &&
           `${comment.user?.firstName?.[0]?.toUpperCase() ?? ''}${comment.user?.lastName?.[0]?.toUpperCase() ?? ''}`}
@@ -126,7 +133,12 @@ const Comment: React.FC<CommentProps> = ({
             ) : (
               <Typography
                 variant="body2"
-                sx={{ textAlign: 'left', display: 'block', color: 'var(--text-color)' }}
+                sx={{
+                  textAlign: 'left',
+                  display: 'block',
+                  color: 'var(--text-color)',
+                  wordBreak: 'break-word',
+                }}
               >
                 {comment.content}
               </Typography>

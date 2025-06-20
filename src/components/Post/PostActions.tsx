@@ -32,15 +32,16 @@ const PostActions: React.FC<Props> = ({
   const [isSharingMenuOpened, setIsSharingMenuOpened] = useState(false);
   return (
     <CardActions sx={{ justifyContent: 'space-between', pt: 0 }}>
-      <Stack direction="row" spacing={2}>
+      <Stack direction="row" spacing={1}>
         <Button
           startIcon={
             liked ? <FavoriteIcon sx={{ color: 'var(--primary-color)' }} /> : <FavoriteBorderIcon />
           }
           sx={{
+            p: 0,
             fontWeight: 'bold',
             textTransform: 'none',
-            color: liked ? 'var(--primary-color)' : '#757575',
+            color: 'var(--primary-color)',
             '&:focus': {
               outline: 'none',
               boxShadow: 'none',

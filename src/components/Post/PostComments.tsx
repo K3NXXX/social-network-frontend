@@ -284,20 +284,44 @@ const PostComments: React.FC<Props> = ({
             borderRadius: 2,
             backgroundColor: 'var(--background-color)',
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             justifyContent: 'space-between',
-            gap: 8,
-            flexWrap: 'wrap',
+            gap: 2,
           }}
         >
-          <Box sx={{ textAlign: 'left' }}>
-            <Typography variant="subtitle2" sx={{ mb: 0.5, color: 'var(--text-color)' }}>
+          <Box
+            sx={{
+              textAlign: 'left',
+              maxWidth: { xs: '25vh', sm: '50vh' },
+              wordBreak: 'break-word',
+            }}
+          >
+            <Typography
+              variant="subtitle2"
+              sx={{
+                mb: 0.5,
+                color: 'var(--text-color)',
+              }}
+            >
               {t('posts.commentReply')}
             </Typography>
-            <Typography variant="body2" sx={{ color: 'var(--text-color)' }}>
-              <strong>{`${replyingTo.user.firstName} ${replyingTo.user.lastName}`}</strong>: "
-              {replyingTo.content}"
-            </Typography>
+            <Box
+              sx={{
+                backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                borderRadius: 2,
+                p: 1,
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'var(--text-color)',
+                }}
+              >
+                <strong>{`${replyingTo.user.firstName} ${replyingTo.user.lastName}`}</strong>: "
+                {replyingTo.content}"
+              </Typography>
+            </Box>
           </Box>
           <Button
             size="small"

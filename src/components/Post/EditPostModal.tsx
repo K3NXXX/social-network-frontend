@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { postService } from '../../services/postService';
 import type { PostType } from '../../types/post';
+import { t } from 'i18next';
 
 interface Props {
   open: boolean;
@@ -23,17 +24,6 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-
-      return () => URL.revokeObjectURL(url);
-    } else {
-      setPreviewUrl(null);
-    }
-  }, [file]);
 
   useEffect(() => {
     if (file) {
@@ -75,11 +65,11 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
           backgroundColor: 'var(--secondary-color)',
         },
         '& .MuiDialogTitle-root': {
-          color: 'var(--text-color)', // Колір тексту заголовка
+          color: 'var(--text-color)',
         },
       }}
     >
-      <DialogTitle>Редагування поста</DialogTitle>
+      <DialogTitle>{t('posts.editPost')}</DialogTitle>
       <DialogContent>
         <TextField
           multiline
@@ -146,7 +136,7 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
           fullWidth
           sx={{ backgroundColor: 'var(--primary-color)' }}
         >
-          Завантажити нове фото
+          {t('posts.addNewPhoto')}
           <input
             hidden
             type="file"
@@ -171,7 +161,7 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
             },
           }}
         >
-          Скасувати
+          {t('posts.commentCancel')}
         </Button>
         <Button
           onClick={handleUpdate}
@@ -189,7 +179,7 @@ const EditPostModal: React.FC<Props> = ({ open, onClose, post, onUpdate }) => {
             },
           }}
         >
-          Оновити
+          {t('posts.saveLabel')}
         </Button>
       </DialogActions>
     </Dialog>

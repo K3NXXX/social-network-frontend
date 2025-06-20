@@ -1,5 +1,5 @@
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Box, CircularProgress, Fab, Zoom } from '@mui/material';
+import { Box, CircularProgress, Fab, Typography, Zoom } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver.tsx';
@@ -23,7 +23,7 @@ const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData, isSavedPo
 
   const postFetcher = isPublicProfile
     ? (page: number, take: number) =>
-        postService.fetchPublicUserPosts(publicUserData?.id ?? '', page, take)
+      postService.fetchPublicUserPosts(publicUserData?.id ?? '', page, take)
     : (page: number, take: number) => postService.fetchUserPosts(page, take);
 
   const { posts, setPosts, loading, loaderRef, page, totalPages, fetchPosts } = usePosts(
@@ -82,7 +82,13 @@ const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData, isSavedPo
   if (!posts?.length && !loading) {
     return (
       <Box textAlign="center" mt={4}>
-        <p>{t('posts.emptyPostsLabel')}</p>
+        <Typography
+          variant="body1"
+          color="text.secondary"
+          sx={{ fontStyle: 'italic', opacity: 0.8 }}
+        >
+          {t('posts.emptyPostsLabel')}
+        </Typography>
       </Box>
     );
   }
