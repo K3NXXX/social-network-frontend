@@ -1,21 +1,17 @@
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import { Avatar, Box, Button, Card, Divider, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PAGES } from '../constants/pages.constants';
+import { useTheme } from '../contexts/ThemeContext';
+import type { Notification } from '../types/notifications';
 import GlobalLoader from '../ui/GlobalLoader';
 import { formatCreatedAt } from '../utils/dateUtils';
 import { useNotificationStore } from '../zustand/stores/notificationStore';
-import { useTheme } from '../contexts/ThemeContext';
-
-const filterTypeMap: Record<string, string | null> = {
-  Всі: null,
-  Вподобання: 'LIKE',
-  Коментарі: 'COMMENT',
-  Підписки: 'NEW_FOLLOWER',
-};
 
 export default function NotificationPage() {
+  const { t, i18n } = useTranslation();
   const [activeFilter, setActiveFilter] = useState('Всі');
   const { theme } = useTheme();
   const { notifications, fetchNotifications, markAllAsRead, markOneAsRead } =
@@ -24,14 +20,23 @@ export default function NotificationPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const filterTypeMap: Record<string, string | null> = {
+    [t('notification.filters.all')]: null,
+    [t('notification.filters.likes')]: 'LIKE',
+    [t('notification.filters.comments')]: 'COMMENT',
+    [t('notification.filters.followers')]: 'NEW_FOLLOWER',
+  };
+
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
 
   const changeNotificationType = (type: string) => {
-    if (type === 'COMMENT') return 'New comment';
-    if (type === 'NEW_FOLLOWER') return 'New follower';
-    if (type === 'LIKE') return 'New like';
+    return t(`notification.types.${type}`);
+  };
+
+  const getNotificationMessage = (n: Notification) => {
+    return t(`notification.messages.${n.type}`, { name: n.sender.firstName });
   };
 
   const handleRowClick = async (n: (typeof notifications)[0]) => {
@@ -66,6 +71,7 @@ export default function NotificationPage() {
         mb: 6,
         py: 4,
         backgroundColor: 'var(--secondary-color)',
+        borderRadius: '12px',
       }}
     >
       <Box
@@ -85,7 +91,7 @@ export default function NotificationPage() {
             color: 'var(--text-color)',
           }}
         >
-          Сповіщення
+          {t('notification.title')}
         </Typography>
         <Button
           onClick={markAllAsRead}
@@ -98,7 +104,7 @@ export default function NotificationPage() {
             '&:focus': { border: 'none', outline: 'none' },
           }}
         >
-          Позначити все як прочитане
+          {t('notification.markAllAsRead')}
         </Button>
       </Box>
 
@@ -183,7 +189,7 @@ export default function NotificationPage() {
                     textAlign: 'left',
                   }}
                 >
-                  {notification.message}
+                  {getNotificationMessage(notification)}
                 </Typography>
               </Link>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
@@ -195,7 +201,7 @@ export default function NotificationPage() {
                     fontSize: 14,
                   }}
                 >
-                  {formatCreatedAt(notification.createdAt)}
+                  {formatCreatedAt(notification.createdAt, i18n.language as 'uk' | 'en')}
                 </Typography>
                 <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: 'gray' }} />
                 <Typography

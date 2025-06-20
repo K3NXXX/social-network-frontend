@@ -171,5 +171,25 @@
       "resendCode": "Resend code",
       "availableIn": "Available in {{seconds}}s"
     }
+  },
+  "notification": {
+    "title": "Notifications",
+    "markAllAsRead": "Mark all as read",
+    "filters": {
+      "all": "All",
+      "likes": "Likes",
+      "comments": "Comments",
+      "followers": "Followers"
+    },
+    "types": {
+      "LIKE": "New like",
+      "COMMENT": "New comment",
+      "NEW_FOLLOWER": "New follower"
+    },
+    "messages": {
+      "COMMENT": "{{name}} commented on your post",
+      "NEW_FOLLOWER": "{{name}} followed you",
+      "LIKE": "{{name}} liked your post"
+    }
   }
 }

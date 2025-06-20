@@ -88,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
           sx={{
             cursor: 'pointer',
             p: 1.5,
-            borderRadius: 1,
+            borderRadius: '16px',
             transition: 'background-color 0.3s ease',
             '&:hover': { backgroundColor: '#2a2340' },
             display: 'flex',
@@ -149,7 +149,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
               alignItems: 'center',
               gap: isCollapsed ? 0 : 2.5,
               p: 1,
-              borderRadius: 1,
+              borderRadius: '16px',
               mb: 1,
               cursor: 'pointer',
               '&:hover': { backgroundColor: '#2a2340' },
@@ -204,18 +204,33 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: isCollapsed ? 0 : 2.5,
-                p: 1,
-                borderRadius: 1,
-                mb: 1,
+                gap: isCollapsed ? 0 : '20px',
+                padding: '10px 8px',
+                borderRadius: 4,
+                width: '100%',
+                marginBottom: '10px',
                 cursor: 'pointer',
-                '&:hover': { backgroundColor: '#2a2340' },
+                '&:hover': {
+                  backgroundColor: '#2a2340',
+                },
                 justifyContent: isCollapsed ? 'center' : 'flex-start',
               }}
             >
               <item.icon sx={{ color: 'white', fontSize: 30 }} />
               {!isCollapsed && (
-                <Typography sx={{ color: 'white', fontSize: 17 }}>{t(item.labelKey)}</Typography>
+                <Typography
+                  sx={{
+                    color: 'white',
+                    fontSize: '17px',
+                    opacity: isCollapsed ? 0 : 1,
+                    width: isCollapsed ? 0 : 'auto',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    transition: 'opacity 0.3s ease, width 0.3s ease',
+                  }}
+                >
+                  {t(item.labelKey)}
+                </Typography>
               )}
             </Box>
           ))}
@@ -226,22 +241,35 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
         sx={{
           display: 'flex',
           alignItems: 'center',
-          gap: isCollapsed ? 0 : 2.5,
-          p: 1,
-          borderRadius: 1,
-          mb: 1,
+          gap: isCollapsed ? 0 : '20px',
+          padding: '10px 8px',
+          borderRadius: 4,
+          width: '100%',
+          marginBottom: '10px',
           cursor: 'pointer',
-          '&:hover': { backgroundColor: '#2a2340' },
+          '&:hover': {
+            backgroundColor: '#2a2340',
+          },
           justifyContent: isCollapsed ? 'center' : 'flex-start',
         }}
       >
         {theme === 'light' ? (
-          <DarkModeIcon sx={{ color: 'white', fontSize: 30 }} />
+          <DarkModeIcon sx={{ color: 'white', fontSize: '30px' }} />
         ) : (
-          <LightModeIcon sx={{ color: 'white', fontSize: 30 }} />
+          <LightModeIcon sx={{ color: 'white', fontSize: '30px' }} />
         )}
         {!isCollapsed && (
-          <Typography sx={{ color: 'white', fontSize: 17 }}>
+          <Typography
+            sx={{
+              color: 'white',
+              fontSize: '17px',
+              opacity: isCollapsed ? 0 : 1,
+              width: isCollapsed ? 0 : 'auto',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              transition: 'opacity 0.3s ease, width 0.3s ease',
+            }}
+          >
             {theme === 'light' ? t('sidebar.themeSwitchLight') : t('sidebar.themeSwitchDark')}
           </Typography>
         )}
