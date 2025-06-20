@@ -22,6 +22,7 @@ import { authService } from '../../services/authService';
 import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
 import Logo from '../../ui/Logo';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
+import { PAGES } from '../../constants/pages.constants';
 
 interface RegisterFormData {
   firstName: string;
@@ -560,7 +561,7 @@ const Register: React.FC = () => {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2, backgroundColor: 'var(--primary-color)' }}
+                  sx={{ mt: 3, mb: 2, backgroundColor: 'var(--primary-color)', padding: '10px' }}
                   disabled={loading}
                 >
                   {loading ? (
@@ -572,7 +573,7 @@ const Register: React.FC = () => {
                 <Box sx={{ textAlign: 'center' }}>
                   <Link
                     component={RouterLink}
-                    to="/login"
+                    to={PAGES.LOGIN}
                     variant="body2"
                     sx={{ color: 'var(--primary-color)' }}
                   >

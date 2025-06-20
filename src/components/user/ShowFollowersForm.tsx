@@ -12,6 +12,7 @@ import type { User } from '../../types/auth';
 import type { UserFollowers } from '../../types/user';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
 import { customScrollBar } from '../../ui/customScrollBar';
+import FollowersListSkeleton from '../../ui/skeletons/FollowersListSkeleton';
 
 interface IShowFollowersFormProps {
   isOpened: boolean;
@@ -31,6 +32,7 @@ export default function ShowFollowersForm({
   const [searchValue, setSearchValue] = useState('');
   const [userFollowers, setUserFollowers] = useState<UserFollowers[] | []>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
   const isUserBlocked = (userIdToCheck: string) => {
@@ -55,6 +57,7 @@ export default function ShowFollowersForm({
   useEffect(() => {
     const getUserFollowers = async () => {
       try {
+        setIsLoading(true);
         const data = await userService.getUsersFollowers(userId);
         const userData = await authService.getCurrentUser();
         setUserFollowers(data);
@@ -62,6 +65,8 @@ export default function ShowFollowersForm({
       } catch (error) {
         console.log(error);
         setUserFollowers([]);
+      } finally {
+        setIsLoading(false);
       }
     };
     getUserFollowers();
@@ -186,7 +191,9 @@ export default function ShowFollowersForm({
               ...customScrollBar,
             }}
           >
-            {userFollowers.length > 0 ? (
+            {isLoading ? (
+              [...Array(5)].map((_, index) => <FollowersListSkeleton key={index} />)
+            ) : userFollowers.length > 0 ? (
               userFollowers.map((item) => (
                 <Box
                   display="flex"
@@ -201,7 +208,7 @@ export default function ShowFollowersForm({
                     onClick={() => onClose(false)}
                   >
                     <Box display="flex" gap="0 20px" alignItems="center">
-                      <Avatar src={item.avatarUrl ? item?.avatarUrl : ''} />
+                      <Avatar src={item.avatarUrl ? item.avatarUrl : ''} />
                       <Box display="flex" flexDirection="column" gap="2px 0">
                         {item.username && (
                           <Typography

@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   CircularProgress,
@@ -9,12 +8,12 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import { useAuth } from '../services/AuthContext.tsx';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import axiosInstance from '../services/axiosConfig.ts';
 import ProfileSection from '../components/user/edit/ProfileSection.tsx';
-import PrivacySection from '../components/user/edit/PrivacySection.tsx';
 import SecuritySection from '../components/user/edit/security/SecuritySection.tsx';
+import { useAuth } from '../services/AuthContext.tsx';
+import axiosInstance from '../services/axiosConfig.ts';
 
 const sidebarItems = [
   { key: 'edit', label: 'Редагувати профіль' },
@@ -26,7 +25,6 @@ const EditUserPage = () => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [username, setUsername] = useState<string>('');
-
   const [activeSection, setActiveSection] = useState('edit');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,7 +77,7 @@ const EditUserPage = () => {
       await axiosInstance.patch('/api/user/update/avatar', formData);
       await fetchProfile();
     } catch {
-      setMessage('Помилка при завантаженні фото');
+      setMessage(t('profile.edit.errorUploadingAvatar'));
       setMessageType('error');
     }
   };
@@ -89,7 +87,7 @@ const EditUserPage = () => {
       await axiosInstance.delete('/api/user/delete/avatar');
       await fetchProfile();
     } catch {
-      setMessage('Помилка при видаленні фото');
+      setMessage(t('profile.edit.errorDeletingAvatar'));
       setMessageType('error');
     }
   };
@@ -108,10 +106,10 @@ const EditUserPage = () => {
       setError(null);
     } catch (err: any) {
       if (err.response?.status === 401) {
-        setError('Сесія завершена. Увійдіть знову.');
+        setError(t('profile.edit.sessionExpired'));
         logout?.();
       } else {
-        setError('Не вдалося завантажити профіль.');
+        setError(t('profile.edit.loadingProfileError'));
       }
     } finally {
       setLoading(false);

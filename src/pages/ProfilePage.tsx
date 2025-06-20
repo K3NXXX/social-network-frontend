@@ -23,6 +23,7 @@ import { userService } from '../services/userService.ts';
 import type { User } from '../types/auth.ts';
 import type { UserPublicProfile } from '../types/user.ts';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
+import ProfileSkeleton from '../ui/skeletons/ProfileSkeleton.tsx';
 
 interface IProfilePageProps {
   isPublicProfile: boolean;
@@ -49,8 +50,6 @@ export default function ProfilePage({
   const [isPublicUserMenuOpened, setIsPublicUserMenuOpened] = useState(false);
   const [blockedUsers, setBlockedUsers] = useState<{ blocked: User }[] | null>(null);
   const [isBlocked, setIsBlocked] = useState(false);
-  const [savedLoading, setSavedLoading] = useState(true);
-  const [isSavedPosts, setIsSavedPosts] = useState(false);
   const { logout } = useAuth();
   const [tab, setTab] = useState(0);
   const { t } = useTranslation();
@@ -75,7 +74,7 @@ export default function ProfilePage({
       const isBlockedNow = updated.some((user: any) => user.blocked?.id === publicUserData.id);
       setIsBlocked(isBlockedNow);
     } catch (error) {
-      console.log('Помилка при розблокуванні користувача:', error);
+      console.log('Error unblocking user: ', error);
     }
   };
 
@@ -124,16 +123,8 @@ export default function ProfilePage({
     getBlockedUsers();
   }, [publicUserData, profile]);
 
-  useEffect(() => {
-    if (tab === 1) {
-      setIsSavedPosts(true);
-    } else {
-      setIsSavedPosts(false);
-    }
-  }, [tab]);
-
   if (loading) {
-    return <CircularProgress />;
+    return <ProfileSkeleton />;
   }
 
   if (error) {

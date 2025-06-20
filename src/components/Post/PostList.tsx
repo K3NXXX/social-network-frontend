@@ -1,7 +1,8 @@
-import { Box, CircularProgress } from '@mui/material';
+import { Box } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { PostType } from '../../types/post';
+import PostSkeleton from '../../ui/skeletons/PostSkeleton';
 import Post from './Post';
 
 type Props = {
@@ -14,11 +15,13 @@ type Props = {
 const PostsList: React.FC<Props> = ({ posts, loading, onDelete, onPostPrivacyChange }) => {
   const { t } = useTranslation();
 
-  if (!posts.length && loading) {
+  if (!posts.length) {
     return (
-      <Box display="flex" justifyContent="center" mt={4}>
-        <CircularProgress sx={{ color: 'var(--primary-color)' }} />
-      </Box>
+      <>
+        {[...Array(3)].map((_, index) => (
+          <PostSkeleton key={index} />
+        ))}
+      </>
     );
   }
 

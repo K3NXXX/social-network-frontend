@@ -8,6 +8,10 @@ export const NoOutlineButton = ({ sx, ...props }: NoOutlineButtonProps) => (
   <Button
     {...props}
     sx={{
+      textTransform: 'none',
+      borderRadius: '10px',
+      padding: '4px 14px',
+      fontSize: '14px',
       outline: 'none',
       boxShadow: 'none',
       '&:focus': {

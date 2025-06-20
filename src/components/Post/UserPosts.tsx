@@ -8,6 +8,7 @@ import { postService } from '../../services/postService.ts';
 import { userService } from '../../services/userService.ts';
 import type { PostType } from '../../types/post.ts';
 import type { UserPublicProfile } from '../../types/user.ts';
+import PostSkeleton from '../../ui/skeletons/PostSkeleton.tsx';
 import Post from './Post.tsx';
 
 type Props = {
@@ -70,9 +71,11 @@ const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData, isSavedPo
 
   if (!posts?.length && loading) {
     return (
-      <Box display="flex" justifyContent="center" mt={4}>
-        <CircularProgress sx={{ color: 'var(--primary-color)' }} />
-      </Box>
+      <>
+        {[...Array(3)].map((_, index) => (
+          <PostSkeleton key={index} />
+        ))}
+      </>
     );
   }
 

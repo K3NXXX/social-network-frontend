@@ -117,7 +117,11 @@
       "passwordChanged": "Password successfully changed!",
       "passwordError": "Password change error",
       "currentPassword": "Current password",
-      "newPassword": "New password"
+      "newPassword": "New password",
+      "errorUploadingAvatar": "Error uploading avatar",
+      "errorDeletingAvatar": "Error deleting avatar",
+      "sessionExpired": "Session expired. Please log in again",
+      "loadingProfileError": "Error during loading profile"
     }
   },
   "chats": {

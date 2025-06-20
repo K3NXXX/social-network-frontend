@@ -71,7 +71,7 @@ const ProfileSection = ({
           </Box>
         </Box>
         <Box display="flex" gap={1}>
-          <Button
+          <NoOutlineButton
             component="label"
             variant="outlined"
             size="small"
@@ -81,8 +81,8 @@ const ProfileSection = ({
             }}
           >
             {t('profile.deletePhoto')}
-          </Button>
-          <Button
+          </NoOutlineButton>
+          <NoOutlineButton
             component="label"
             variant="contained"
             size="small"
@@ -90,7 +90,7 @@ const ProfileSection = ({
           >
             {t('profile.changePhoto')}
             <input type="file" hidden accept="image/*" onChange={handlePhotoUpload} />
-          </Button>
+          </NoOutlineButton>
         </Box>
       </Box>
 

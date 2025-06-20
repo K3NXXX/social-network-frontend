@@ -178,6 +178,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           disabled={isLoading || code.length !== 6}
           sx={{
             backgroundColor: 'var(--primary-color)',
+            padding: '10px',
             '&.Mui-disabled': {
               color: 'var(--text-color)',
               opacity: 0.5,

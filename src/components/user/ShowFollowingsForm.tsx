@@ -12,6 +12,7 @@ import type { User } from '../../types/auth';
 import type { UserFollowings } from '../../types/user';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
 import { customScrollBar } from '../../ui/customScrollBar';
+import FollowersListSkeleton from '../../ui/skeletons/FollowersListSkeleton';
 
 interface IShowFollowingsFormProps {
   isOpened: boolean;
@@ -31,6 +32,7 @@ export default function ShowFollowingsForm({
   const [searchValue, setSearchValue] = useState('');
   const [userFollowings, setUserFollowings] = useState<UserFollowings[] | []>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
   const isUserBlocked = (userIdToCheck: string) => {
@@ -55,6 +57,7 @@ export default function ShowFollowingsForm({
   useEffect(() => {
     const getUserFollowings = async () => {
       try {
+        setIsLoading(true);
         const data = await userService.getUsersFollowing(userId);
         const userData = await authService.getCurrentUser();
         setUserFollowings(data);
@@ -62,6 +65,8 @@ export default function ShowFollowingsForm({
       } catch (error) {
         console.log(error);
         setUserFollowings([]);
+      } finally {
+        setIsLoading(false);
       }
     };
     getUserFollowings();
@@ -186,7 +191,9 @@ export default function ShowFollowingsForm({
               ...customScrollBar,
             }}
           >
-            {userFollowings.length > 0 ? (
+            {isLoading ? (
+              [...Array(5)].map((_, index) => <FollowersListSkeleton key={index} />)
+            ) : userFollowings.length > 0 ? (
               userFollowings.map((item) => (
                 <Box
                   display="flex"

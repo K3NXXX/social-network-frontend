@@ -1,3 +1,5 @@
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import {
   Alert,
   Box,
@@ -14,12 +16,10 @@ import type { SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../services/AuthContext';
 import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
 import Logo from '../../ui/Logo';
-import { useTheme } from '../../contexts/ThemeContext';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
 
 interface LoginFormInputs {
@@ -272,7 +272,7 @@ const Login: React.FC = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2, backgroundColor: 'var(--primary-color)' }}
+              sx={{ mt: 3, mb: 2, backgroundColor: 'var(--primary-color)', padding: '10px' }}
               disabled={loading}
             >
               {loading ? (

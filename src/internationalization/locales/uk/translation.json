@@ -117,7 +117,11 @@
       "passwordChanged": "Пароль успішно змінено!",
       "passwordError": "Помилка зміни паролю",
       "currentPassword": "Поточний пароль",
-      "newPassword": "Новий пароль"
+      "newPassword": "Новий пароль",
+      "errorUploadingAvatar": "Помилка при завантаженні фото",
+      "errorDeletingAvatar": "Помилка при видаленні фото",
+      "sessionExpired": "Сесія завершена. Увійдіть знову.",
+      "loadingProfileError": "Не вдалося завантажити профіль."
     }
   },
   "chats": {

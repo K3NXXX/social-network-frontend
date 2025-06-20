@@ -1,9 +1,10 @@
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Post from '../components/Post/Post';
 import { postService } from '../services/postService';
 import type { PostType } from '../types/post';
+import PostSkeleton from '../ui/skeletons/PostSkeleton';
 
 export default function ArchivePage() {
   const [posts, setPosts] = useState<PostType[] | null>(null);
@@ -25,7 +26,6 @@ export default function ArchivePage() {
     getArchivePosts();
   }, []);
 
-  if (!posts) return <CircularProgress />;
   return (
     <Box
       sx={{
@@ -43,7 +43,13 @@ export default function ArchivePage() {
         {t('posts.title')}
       </Typography>
       <Box>
-        {posts.length > 0 ? (
+        {!posts ? (
+          <Box sx={{ maxWidth: 1000, margin: '0 auto' }}>
+            {[...Array(2)].map((_, index) => (
+              <PostSkeleton key={index} />
+            ))}
+          </Box>
+        ) : posts.length > 0 ? (
           posts?.map((post) => (
             <Box key={post.id}>
               <Post
