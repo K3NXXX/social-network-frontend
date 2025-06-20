@@ -1,11 +1,10 @@
 import { Box, Typography, TextField, InputAdornment } from '@mui/material';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { io, Socket } from 'socket.io-client';
 import ChatBar from '../components/chats/ChatBar';
 import ChatScreen from '../components/chats/ChatScreen';
 import { chatsService } from '../services/chatsService';
 import type { ChatPreview, ChatPreview_ChatCreated, UserPreview } from '../types/chats';
-import { io, Socket } from 'socket.io-client';
-
 import SearchBlock from '../components/chats/SearchBlock';
 import SearchIcon from '@mui/icons-material/Search';
 import { Close } from '@mui/icons-material';
@@ -15,25 +14,22 @@ import { useTranslation } from 'react-i18next';
 
 const ChatsPage: React.FC = () => {
   const { t } = useTranslation();
-
   const [selectedChat, setSelectedChat] = useState<ChatPreview | null>(null);
   const [chats, setChats] = useState<ChatPreview[]>([]);
-
-  const socketRef = useRef<Socket | null>(null);
-  const lastChatIdRef = useRef<string | null>(null); // для leave_chat івента
-
-  //якщо з користувачем раніше чата не було-
   const [newChatUser, setNewChatUser] = useState<UserPreview | undefined>(undefined);
   const newChatUserRef = useRef<UserPreview | undefined>(undefined);
-
-  //висота Header для обчислення висоти цього екрана
-  const [headerHeight, setHeaderHeight] = useState<number>(0);
+  const lastChatIdRef = useRef<string | null>(null);
+  const socketRef = useRef<Socket | null>(null);
 
   const [searchValue, setSearchValue] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<UserPreview[] | []>([]);
+  const [searchResults, setSearchResults] = useState<UserPreview[]>([]);
+
   const debounceSearch = useCallback(
     debounce(async (value: string) => {
-      if (value.trim().length < 2) return setSearchResults([]);
+      if (value.trim().length < 2) {
+        setSearchResults([]);
+        return;
+      }
       try {
         const data = await userService.searchUsers(value);
         setSearchResults(data);
@@ -47,27 +43,23 @@ const ChatsPage: React.FC = () => {
   useEffect(() => {
     debounceSearch(searchValue);
   }, [searchValue, debounceSearch]);
+
   useEffect(() => {
     newChatUserRef.current = newChatUser;
   }, [newChatUser]);
 
+  // --- Ініціалізація WS та завантаження чатів
   useEffect(() => {
-    const headerEl = document.querySelector('.MuiCard-root');
-    if (headerEl) setHeaderHeight(Number.parseInt(getComputedStyle(headerEl).height));
-
-    //завантажуємо дані про чати при відкритті сторінки
     const loadChats = async () => {
       try {
         const data = await chatsService.fetchChats();
         setChats(data);
-      } catch (error) {
-        console.error('Error fetching chats:', error);
+      } catch (e) {
+        console.error('Error fetching chats:', e);
       }
     };
-
     loadChats();
 
-    //події з веб-сокетами
     socketRef.current = io('https://vetra-8c5dfe3bdee7.herokuapp.com', {
       path: '/socket.io',
       withCredentials: true,
@@ -80,13 +72,11 @@ const ChatsPage: React.FC = () => {
     socketRef.current.on('connect', () => {
       console.log('Socket connected:', socketRef.current?.id);
     });
-
     socketRef.current.on('disconnect', () => {
       console.log('Socket disconnected');
     });
 
     return () => {
-      //вихід зі сторінки чатів
       socketRef.current?.disconnect();
       if (lastChatIdRef.current) {
         socketRef.current?.emit('leave_chat', lastChatIdRef.current);
@@ -94,111 +84,69 @@ const ChatsPage: React.FC = () => {
     };
   }, []);
 
-  //івенти join_chat / leave_chat коли користувач відкриває і міняє чати
+  // --- Перехід між чатами: leave/join
   useEffect(() => {
     if (!selectedChat) return;
 
     if (lastChatIdRef.current && lastChatIdRef.current !== selectedChat.chatId) {
       socketRef.current?.emit('leave_chat', lastChatIdRef.current);
     }
-
     lastChatIdRef.current = selectedChat.chatId;
     socketRef.current?.emit('join_chat', selectedChat.chatId);
   }, [selectedChat]);
 
-  const handleSelectUser = async (userData: UserPreview) => {
-    console.log('handling select user:', userData);
-
-    setSearchValue('');
-    setSearchResults([]);
-    const chat = await findChat(userData.id);
-    if (chat) {
-      setSelectedChat(chat);
-      lastChatIdRef.current = chat.chatId;
-    } else {
-      setSelectedChat(null);
-      setNewChatUser(userData);
-    }
-  };
-
-  //івент chat_created
+  // --- Обробник створення нового групового чату
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket) return;
-    if (!socket.connected) socket.connect();
 
-    const handleChatCreated = async (newChat: ChatPreview_ChatCreated) => {
-      const chatData: ChatPreview = {
+    const onChatCreated = (newChat: ChatPreview_ChatCreated) => {
+      const preview: ChatPreview = {
         chatId: newChat.id,
         isGroup: newChat.isGroup,
         name: newChat.name,
-        lastMessage: newChat.messages[newChat.messages.length - 1],
-        participants: [newChat.participants[0].user, newChat.participants[1].user],
+        lastMessage: newChat.messages.at(-1) ?? null,
+        participants: newChat.participants.map((p) => p.user),
       };
-      setChats((chats) => [chatData, ...chats]);
-      setSelectedChat(chatData);
-      setNewChatUser(undefined);
-      lastChatIdRef.current = chatData.chatId;
+      setChats((prev) => [preview, ...prev]);
+      setSelectedChat(preview);
+      newChatUserRef.current = undefined;
+      lastChatIdRef.current = preview.chatId;
     };
 
-    socket.on('chat_created', handleChatCreated);
-
+    socket.on('chat_created', onChatCreated);
     return () => {
-      socket.off('chat_created', handleChatCreated);
-      // socket.off('message', handleGetMessage);
+      socket.off('chat_created', onChatCreated);
     };
-  }, [socketRef.current]);
+  }, []);
 
-  const findChat = async (friendId: string) => {
-    //знаходить чат з другом за його id.
-    //дописати з пагінацією, (якщо чат не загрузився на фронті, але на сервері знайшовся)
-    const foundChat =
-      chats.find((chat) => chat.participants.find((user) => user.id === friendId)) || null;
-    if (!foundChat) {
-      try {
-        const data = await chatsService.fetchChat(friendId);
-        if (data) {
-          //the data should be a ChatDetails chat
-          console.log('found the chat on the backend:', data);
-          const fetchedChat: ChatPreview = {
-            chatId: data.id,
-            name: null,
-            isGroup: data.isGroup,
-            lastMessage: null,
-            participants: data.participants.map((p) => ({
-              ...p,
-              isOnline: false,
-            })),
-          };
-          setChats((chats) => [fetchedChat, ...chats]);
-          return fetchedChat;
-        } else return null;
-      } catch (error) {
-        console.error(`Error fetching chat with ${friendId}:`, error);
-      }
-    } else return foundChat;
+  const handleSelectUser = async (userData: UserPreview) => {
+    setSearchValue('');
+    setSearchResults([]);
+    // знаходимо існуючий чат
+    const existing = chats.find((c) => c.participants.some((p) => p.id === userData.id));
+    if (existing) {
+      setSelectedChat(existing);
+    } else {
+      setNewChatUser(userData);
+      setSelectedChat(null);
+    }
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        height: `calc(${window.innerHeight}px - ${headerHeight}px)`,
-      }}
-    >
-      {/* бічна панель */}
+    <Box sx={{ display: 'flex', height: '100vh' }}>
+      {/* Сайдбар з пошуком */}
       <Box
         sx={{
-          width: '340px',
+          width: 340,
           flexShrink: 0,
           bgcolor: 'var(--background-color)',
-          display: 'flex',
-          flexDirection: 'column',
           borderRight: '1px solid var(--border-color)',
+          p: 2,
         }}
       >
         <TextField
-          autoComplete="off"
+          fullWidth
           placeholder={t('chats.chooseToWrite')}
           variant="outlined"
           value={searchValue}
@@ -206,112 +154,55 @@ const ChatsPage: React.FC = () => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ color: '#888', marginLeft: '10px' }} />
+                <SearchIcon />
               </InputAdornment>
             ),
-            endAdornment: searchValue.length > 0 && (
+            endAdornment: searchValue && (
               <InputAdornment position="end">
-                <Close
-                  onClick={() => setSearchValue('')}
-                  sx={{ color: '#888', mx: '10px', cursor: 'pointer' }}
-                />
+                <Close onClick={() => setSearchValue('')} />
               </InputAdornment>
             ),
-            sx: {
-              color: 'var(--text-color)',
-              opacity: 0.7,
-              borderRadius: '20px',
-              padding: 0,
-              '& input': {
-                padding: '1.5px 0px',
-                color: 'var(--text-color)',
-              },
-              '&.Mui-focused': {
-                color: 'var(--primary-color)',
-                opacity: 1,
-              },
-              '&.MuiFormLabel-filled': {
-                color: 'var(--primary-color)',
-              },
-            },
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              borderRadius: '20px',
-              borderColor: 'var(--border-color)',
-              margin: '10px 5px 0 5px',
-              padding: 0,
-              '& input': {
-                paddingTop: 1.5,
-                paddingBottom: 1.5,
-              },
-              '&:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'var(--primary-color)',
-              },
-              '& fieldset': {
-                borderColor: 'var(--border-color)',
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'var(--border-color)',
-              },
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'var(--primary-color)',
-                borderWidth: '2px',
-              },
-            },
           }}
         />
         {searchResults.length > 0 && (
           <Box
             sx={{
-              alignSelf: 'center',
               position: 'absolute',
-              width: '300px',
-              marginTop: '60px',
+              width: 300,
+              mt: 6,
               bgcolor: '#181424',
               boxShadow: 3,
-              borderRadius: '10px',
+              borderRadius: 1,
               zIndex: 1000,
-              padding: '10px',
-              maxHeight: '700px',
+              maxHeight: 400,
               overflowY: 'auto',
-              // border: '1px solid red',
             }}
           >
-            {searchResults.map((result) => (
-              <SearchBlock key={result.id} data={result} onSelect={handleSelectUser} />
+            {searchResults.map((u) => (
+              <SearchBlock key={u.id} data={u} onSelect={handleSelectUser} />
             ))}
           </Box>
         )}
-        <Typography
-          variant="body1"
-          sx={{
-            fontSize: 25,
-            fontWeight: 'bold',
-            margin: '10% 0 2% 0',
-            color: 'var(--text-color)',
-          }}
-        >
+
+        <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>
           {t('chats.chatsLabel')}
         </Typography>
-        <Box>
-          {chats.map((chat) => (
-            <ChatBar
-              key={chat.chatId}
-              data={chat}
-              onSelect={() => {
-                setNewChatUser(undefined);
-                setSelectedChat(chat);
-                lastChatIdRef.current = chat.chatId;
-              }}
-              sx={
-                selectedChat?.chatId === chat.chatId ? { bgcolor: 'var(--background-color)' } : null
-              }
-              socketRef={socketRef}
-            />
-          ))}
-        </Box>
+        {chats.map((chat) => (
+          <ChatBar
+            key={chat.chatId}
+            data={chat}
+            onSelect={() => setSelectedChat(chat)}
+            sx={
+              selectedChat?.chatId === chat.chatId
+                ? { bgcolor: 'var(--background-color)' }
+                : undefined
+            }
+            socketRef={socketRef}
+          />
+        ))}
       </Box>
+
+      {/* Основний екран чату */}
       <ChatScreen selectedChat={selectedChat} socketRef={socketRef} newChatUser={newChatUser} />
     </Box>
   );

@@ -19,6 +19,8 @@ import ProfilePage from './pages/ProfilePage';
 import SearchPage from './pages/SearchPage';
 import UserPublicProfile from './pages/UserPublicProfile';
 import { AuthProvider } from './services/AuthContext';
+import FullPostPage from './pages/FullPostPage';
+import NotificationProvider from './utils/NotificationProvider.tsx';
 import ArchivePage from './pages/ArchivePage.tsx';
 
 function App() {
@@ -29,6 +31,7 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <NotificationProvider />
         <Box display="flex" sx={{ width: '100%', minHeight: '100vh' }}>
           {!hideLayout && (
             <Box display={'flex'}>
@@ -54,6 +57,7 @@ function App() {
                 <Route path={PAGES.CHATS} element={<ChatsPage />} />
                 <Route path={PAGES.SEARCH} element={<SearchPage />} />
                 <Route path={PAGES.NOTIFICATIONS} element={<NotificationPage />} />
+                <Route path={`${PAGES.POST}/:postId`} element={<FullPostPage />} />
                 <Route path={`${PAGES.VIEW_PUBLIC_PROFILE}/:id`} element={<UserPublicProfile />} />
               </Route>
               <Route path="*" element={<Navigate to={PAGES.LOGIN} replace />} />

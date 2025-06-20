@@ -11,7 +11,8 @@ const USER_ENDPOINTS = {
   UNBLOCK_USER: 'api/unblock',
   GET_BLOCKED_USERS: 'api/user/blocked-users',
   GET_USER_NOTIFICATIONS: 'api/user/notifications',
-  MARK_ALL_AS_READ: 'api/user/notifications/readAll',
+  MARK_ALL_AS_READ: 'api/user/notifications/read',
+  MARK_ONE_AS_READ: 'api/user/notification/:id/read',
   GET_SAVED_POST: 'api/user/saved',
 };
 
@@ -70,6 +71,13 @@ export const userService = {
 
   async markAllAsRead() {
     const { data } = await axiosInstance.get(USER_ENDPOINTS.MARK_ALL_AS_READ);
+    return data;
+  },
+
+  async markOneAsRead(notificationId: string) {
+    const { data } = await axiosInstance.get(
+      USER_ENDPOINTS.MARK_ONE_AS_READ.replace(':id', notificationId)
+    );
     return data;
   },
 

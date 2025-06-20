@@ -5,16 +5,18 @@ import type { Notification } from '../../types/notifications';
 import { authService } from '../../services/authService';
 
 interface NotificationState {
-  notifications: Notification[] | null;
+  notifications: Notification[];
   fetchNotifications: () => Promise<void>;
   markAllAsRead: () => Promise<void>;
   unreadNotifications: Notification[];
   socket: Socket | null;
   initSocket: (userId: string) => void;
+  markOneAsRead: (id: string) => Promise<void>;
+  disconnectSocket: () => void;
 }
 
 export const useNotificationStore = create<NotificationState>((set, get) => ({
-  notifications: null,
+  notifications: [],
   socket: null,
 
   fetchNotifications: async () => {
@@ -35,6 +37,17 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       set({ notifications: updated });
     } catch (err) {
       console.error('error marking all as read', err);
+    }
+  },
+
+  markOneAsRead: async (id: string) => {
+    try {
+      await userService.markOneAsRead(id);
+      const current = get().notifications || [];
+      const updated = current.map((n) => (n.id === id ? { ...n, isRead: true } : n));
+      set({ notifications: updated });
+    } catch (err) {
+      console.error('error marking one as read', err);
     }
   },
 
@@ -85,5 +98,13 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       console.error('❗ Socket error:', err);
     });
     set({ socket });
+  },
+  disconnectSocket: () => {
+    const sock = get().socket;
+    if (sock) {
+      sock.disconnect();
+      console.log('🚪 disconnectSocket() called');
+      set({ socket: null });
+    }
   },
 }));
