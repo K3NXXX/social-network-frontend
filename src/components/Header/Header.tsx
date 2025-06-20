@@ -26,6 +26,7 @@ export default function Header() {
       notifications: t('breadcrumb.notifications'),
       edit: t('breadcrumb.edit'),
       archive: t('breadcrumb.archive'),
+      post: t('breadcrumb.post'),
     };
     return mapping[segment.toLowerCase()] || decodeURIComponent(segment);
   };

@@ -6,6 +6,7 @@ import { PAGES } from '../constants/pages.constants';
 import GlobalLoader from '../ui/GlobalLoader';
 import { formatCreatedAt } from '../utils/dateUtils';
 import { useNotificationStore } from '../zustand/stores/notificationStore';
+import { useTheme } from '../contexts/ThemeContext';
 
 const filterTypeMap: Record<string, string | null> = {
   Всі: null,
@@ -16,6 +17,7 @@ const filterTypeMap: Record<string, string | null> = {
 
 export default function NotificationPage() {
   const [activeFilter, setActiveFilter] = useState('Всі');
+  const { theme } = useTheme();
   const { notifications, fetchNotifications, markAllAsRead, markOneAsRead } =
     useNotificationStore();
 
@@ -56,7 +58,16 @@ export default function NotificationPage() {
   }
 
   return (
-    <Card sx={{ maxWidth: 965, mx: 'auto', mt: 4, mb: 6, py: 4 }}>
+    <Card
+      sx={{
+        maxWidth: 965,
+        mx: 'auto',
+        mt: 4,
+        mb: 6,
+        py: 4,
+        backgroundColor: 'var(--secondary-color)',
+      }}
+    >
       <Box
         sx={{
           px: 3,
@@ -66,17 +77,25 @@ export default function NotificationPage() {
           alignItems: 'center',
         }}
       >
-        <Typography sx={{ fontSize: 24, fontWeight: 600, fontFamily: 'Ubuntu, sans-serif' }}>
+        <Typography
+          sx={{
+            fontSize: 24,
+            fontWeight: 600,
+            fontFamily: 'Ubuntu, sans-serif',
+            color: 'var(--text-color)',
+          }}
+        >
           Сповіщення
         </Typography>
         <Button
           onClick={markAllAsRead}
           sx={{
             textTransform: 'none',
-            color: 'gray',
+            color: 'var(--text-color)',
             fontSize: 15,
             fontWeight: 400,
-            '&:hover': { color: '#7362cc', background: 'transparent' },
+            '&:hover': { color: 'var(--primary-color)', opacity: 1, background: 'transparent' },
+            '&:focus': { border: 'none', outline: 'none' },
           }}
         >
           Позначити все як прочитане
@@ -94,14 +113,18 @@ export default function NotificationPage() {
               sx={{
                 textTransform: 'none',
                 px: 0,
+                color: isActive ? 'var(--primary-color)' : 'var(--text-color)',
                 minWidth: 'auto',
                 fontSize: 16,
                 fontFamily: 'Ubuntu, sans-serif',
                 fontWeight: isActive ? 600 : 400,
-                color: isActive ? '#7362cc' : '#555',
-                borderBottom: isActive ? '2px solid #7362cc' : '2px solid transparent',
+                borderBottom: isActive ? '2px solid var(--primary-color)' : '2px solid transparent',
                 borderRadius: 0,
-                '&:hover': { background: 'transparent' },
+                '&:hover': {
+                  color: 'var(--primary-color)',
+                  background: 'transparent',
+                },
+                '&:focus': { border: 'none', outline: 'none' },
               }}
             >
               {label}
@@ -121,7 +144,7 @@ export default function NotificationPage() {
               alignItems: 'center',
               px: 3,
               py: 2,
-              borderBottom: '1px solid #e0e0e0',
+              borderBottom: '1px solid var(--border-color)',
               cursor:
                 notification.type === 'NEW_FOLLOWER' || notification.post?.id
                   ? 'pointer'
@@ -129,7 +152,7 @@ export default function NotificationPage() {
               position: 'relative',
               '&:hover':
                 notification.type === 'NEW_FOLLOWER' || notification.post?.id
-                  ? { backgroundColor: '#fafafa' }
+                  ? { backgroundColor: theme === 'dark' ? '#3b3b3b' : '#fafafa' }
                   : {},
             }}
           >
@@ -156,7 +179,7 @@ export default function NotificationPage() {
                   sx={{
                     fontFamily: 'Ubuntu, sans-serif',
                     fontWeight: 500,
-                    color: 'black',
+                    color: 'var(--text-color)',
                     textAlign: 'left',
                   }}
                 >
@@ -188,7 +211,7 @@ export default function NotificationPage() {
               </Box>
             </Box>
 
-            <Box sx={{ position: 'absolute', top: 24, right: 24 }}>
+            <Box sx={{ position: 'absolute', top: 30, right: 30 }}>
               {notification.isRead ? (
                 <DoneAllIcon sx={{ color: '#7362cc' }} />
               ) : (
@@ -197,7 +220,7 @@ export default function NotificationPage() {
                     width: 8,
                     height: 8,
                     borderRadius: '50%',
-                    bgcolor: '#7362cc',
+                    backgroundColor: 'var(--primary-color)',
                     position: 'absolute',
                     top: '15px',
                     left: '-16px',

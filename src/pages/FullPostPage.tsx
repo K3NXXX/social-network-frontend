@@ -8,6 +8,7 @@ import { postService } from '../services/postService';
 import type { PostType } from '../types/post';
 import Box from '@mui/material/Box';
 import { PAGES } from '../constants/pages.constants';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function FullPostPage() {
   const { postId } = useParams<{ postId: string }>();
@@ -16,6 +17,7 @@ export default function FullPostPage() {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const background = (location.state as any)?.backgroundLocation as Location | undefined;
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!postId) return;
@@ -61,15 +63,13 @@ export default function FullPostPage() {
           boxShadow: 3,
           p: 0,
           overflow: 'hidden',
+          backgroundColor: theme === 'light' ? 'white' : '#2c2c2c',
         },
       }}
     >
       <DialogContent
         sx={{
-          p: 0,
-          pt: 2,
-          pb: 2,
-
+          pt: 5.5,
           overflowY: 'auto',
         }}
       >
