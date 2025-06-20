@@ -7,6 +7,7 @@ import type { User } from '../types/auth';
 import type { UserPublicProfile } from '../types/user';
 import ProfilePage from './ProfilePage';
 import { useTranslation } from 'react-i18next';
+import ProfileSkeleton from '../ui/skeletons/ProfileSkeleton';
 
 export default function UserPublicProfile() {
   const { id } = useParams();
@@ -64,7 +65,7 @@ export default function UserPublicProfile() {
   }, [userData]);
 
   if (!userData && !blockedMessage) {
-    return <CircularProgress sx={{ color: 'var(--primary-color)' }} />;
+    return <ProfileSkeleton />;
   }
 
   if (blockedMessage) {

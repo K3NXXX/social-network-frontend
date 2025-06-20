@@ -187,6 +187,7 @@ const Post: React.FC<Props> = ({
         onEdit={() => setEditOpen(true)}
         onArchive={() => setArchiveOpen(true)}
         isArchivePage={isArchivePage}
+        post={post}
       />
 
       <EditPostModal
@@ -218,6 +219,7 @@ const Post: React.FC<Props> = ({
         }}
         saved={saved}
         onToggleSave={handleToggleSave}
+        post={post}
       />
       {showComments && (
         <PostComments

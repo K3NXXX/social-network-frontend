@@ -19,8 +19,9 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
-import type { User } from '../../types/post';
+import type { PostType, User } from '../../types/post';
 import { formatCreatedAt } from '../../utils/dateUtils';
+import SharingMenu from '../user/SharingMenu';
 
 interface Props {
   user: User;
@@ -30,6 +31,7 @@ interface Props {
   onEdit?: () => void;
   onArchive?: () => void;
   isArchivePage?: boolean;
+  post: PostType;
 }
 
 const PostHeader: React.FC<Props> = ({
@@ -40,6 +42,7 @@ const PostHeader: React.FC<Props> = ({
   onEdit,
   onArchive,
   isArchivePage,
+  post,
 }) => {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -47,6 +50,7 @@ const PostHeader: React.FC<Props> = ({
   const locale = i18n.language;
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+  const [isSharingMenuOpened, setIsSharingMenuOpened] = useState(false);
 
   const handleProfileClick = () => {
     navigate(`${PAGES.VIEW_PUBLIC_PROFILE}/${user.id}`);
@@ -76,6 +80,11 @@ const PostHeader: React.FC<Props> = ({
     if (onArchive) {
       onArchive();
     }
+  };
+
+  const handleShareClick = () => {
+    setIsSharingMenuOpened(true);
+    handleMenuClose();
   };
 
   useEffect(() => {
@@ -152,6 +161,7 @@ const PostHeader: React.FC<Props> = ({
         }}
       >
         <MenuItem
+          onClick={handleShareClick}
           sx={{
             color: 'var(--text-color)',
           }}
@@ -196,6 +206,12 @@ const PostHeader: React.FC<Props> = ({
           </MenuItem>,
         ]}
       </Menu>
+      <SharingMenu
+        post={post}
+        isPost={true}
+        open={isSharingMenuOpened}
+        onClose={() => setIsSharingMenuOpened(false)}
+      />
     </Box>
   );
 };

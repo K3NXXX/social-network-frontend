@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { userService } from '../../services/userService';
 import type { UserPublicProfile } from '../../types/user';
-import ShareProfileMenu from './ShareProfileMenu';
+import SharingMenu from './SharingMenu';
 
 interface IPublicUserOptionsMenuProps {
   isOpened: boolean;
@@ -230,11 +230,7 @@ export default function PublicUserOptionsMenu({
       )}
 
       {isShareMenuOpened && (
-        <ShareProfileMenu
-          publicUserData={publicUserData}
-          open={isShareMenuOpened}
-          onClose={() => setIsShareMenuOpened(false)}
-        />
+        <SharingMenu open={isShareMenuOpened} onClose={() => setIsShareMenuOpened(false)} />
       )}
     </>
   );
