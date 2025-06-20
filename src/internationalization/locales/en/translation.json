@@ -45,7 +45,8 @@
     "commentCancel": "Cancel",
     "emptyPostsLabel": "No posts here yet.",
     "feedEndDiscoverLabel": "That’s all from people you follow — here’s something else you might like:",
-    "feedMessage": "No more posts from people you follow. Here are some interesting posts for you:"
+    "feedMessage": "No more posts from people you follow. Here are some interesting posts for you:",
+    "sharePost": "Share post"
   },
   "profile": {
     "postsLabel": "posts",

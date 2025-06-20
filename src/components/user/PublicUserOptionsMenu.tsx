@@ -100,10 +100,11 @@ export default function PublicUserOptionsMenu({
                   sx={{
                     color: '#fc4f4f',
                     fontFamily: 'Ubuntu, sans-serif',
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: 500,
                     userSelect: 'none',
                     textAlign: 'center',
+                    textTransform: 'none',
                   }}
                 >
                   {t('profile.block')}
@@ -123,10 +124,11 @@ export default function PublicUserOptionsMenu({
                 sx={{
                   color: '#fff',
                   fontFamily: 'Ubuntu, sans-serif',
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: 500,
                   userSelect: 'none',
                   textAlign: 'center',
+                  textTransform: 'none',
                 }}
               >
                 {t('profile.share')}

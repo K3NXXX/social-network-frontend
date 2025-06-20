@@ -48,7 +48,7 @@ export default function SharingMenu({ open, onClose, isPost, post }: ISharingMen
           paddingTop: '20px',
         }}
       >
-        {t('profile.shareProfile')}
+        {isPost ? t('posts.sharePost') : t('profile.shareProfile')}
       </Typography>
 
       <Box
