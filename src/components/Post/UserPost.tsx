@@ -1,11 +1,11 @@
-import { Avatar, Box, Typography } from '@mui/material';
 import React, { useRef, useState } from 'react';
-import type { CommentType, PostType } from '../../types/post.ts';
 import EditPostModal from './EditPostModal.tsx';
 import PostActions from './PostActions.tsx';
 import PostComments from './PostComments.tsx';
-import { postService } from '../../services/postService.ts';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver.tsx';
+import { postService } from '../../services/postService.ts';
+import { Avatar, Box, Typography } from '@mui/material';
+import type { CommentType, PostType } from '../../types/post.ts';
 
 interface Props {
   post: PostType;
@@ -13,7 +13,7 @@ interface Props {
   onUnsave?: (id: string) => void;
 }
 
-const UserPosts: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
+const UserPosts: React.FC<Props> = ({ post, onUnsave }) => {
   const [editOpen, setEditOpen] = useState(false);
   const [currentPost, setCurrentPost] = useState(post);
   const [liked, setLiked] = useState(post.liked);
@@ -102,16 +102,6 @@ const UserPosts: React.FC<Props> = ({ post, onDelete, onUnsave }) => {
       }
     });
     setCommentsCount((prev) => prev + 1);
-  };
-
-  const handleDeletePost = async () => {
-    try {
-      const message = await postService.deletePost(post.id);
-      console.log(message);
-      onDelete?.(post.id);
-    } catch (err) {
-      console.error(err);
-    }
   };
 
   const handleDeleteComment = (commentId: string) => {

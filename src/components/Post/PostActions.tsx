@@ -16,7 +16,7 @@ interface Props {
   onToggleComments: () => void;
   saved: boolean;
   onToggleSave: () => void;
-  post: PostType;
+  post?: PostType;
 }
 
 const PostActions: React.FC<Props> = ({
