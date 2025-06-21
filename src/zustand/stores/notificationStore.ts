@@ -2,7 +2,6 @@ import { io, Socket } from 'socket.io-client';
 import { create } from 'zustand';
 import { userService } from '../../services/userService';
 import type { Notification } from '../../types/notifications';
-import { authService } from '../../services/authService';
 
 interface NotificationState {
   notifications: Notification[];
