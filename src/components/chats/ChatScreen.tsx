@@ -6,6 +6,7 @@ import { chatsService } from '../../services/chatsService';
 import type { Socket } from 'socket.io-client';
 import { useTranslation } from 'react-i18next';
 import SendIcon from '@mui/icons-material/Send';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export interface ChatScreenProps {
   selectedChat: ChatPreview | null;
@@ -19,6 +20,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
   const [messages, setMessages] = useState<MessageData[]>();
   const [messageInput, setMessageInput] = useState<string>('');
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   const otherUser = selectedChat?.participants.find((user) => user.id !== currentUser.id);
   //щоб передавати оновлені значення до useEffect
@@ -183,7 +185,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
             bgcolor: 'var(--background-color)',
           }}
         >
-          <Typography variant="h6" sx={{ color: 'var(--secondary-color)' }}>
+          <Typography variant="h6" sx={{ color: theme === 'light' ? 'gray' : 'white' }}>
             {t('chats.chooseChat')}
           </Typography>
         </Box>

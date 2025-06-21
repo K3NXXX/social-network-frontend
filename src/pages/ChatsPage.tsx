@@ -1,16 +1,17 @@
-import { Box, Typography, TextField, InputAdornment } from '@mui/material';
+import { Close } from '@mui/icons-material';
+import SearchIcon from '@mui/icons-material/Search';
+import { Box, InputAdornment, TextField, Typography } from '@mui/material';
+import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { io, Socket } from 'socket.io-client';
 import ChatBar from '../components/chats/ChatBar';
 import ChatScreen from '../components/chats/ChatScreen';
-import { chatsService } from '../services/chatsService';
-import type { ChatPreview, ChatPreview_ChatCreated, UserPreview } from '../types/chats';
 import SearchBlock from '../components/chats/SearchBlock';
-import SearchIcon from '@mui/icons-material/Search';
-import { Close } from '@mui/icons-material';
-import debounce from 'lodash/debounce';
+import { useTheme } from '../contexts/ThemeContext';
+import { chatsService } from '../services/chatsService';
 import { userService } from '../services/userService';
-import { useTranslation } from 'react-i18next';
+import type { ChatPreview, ChatPreview_ChatCreated, UserPreview } from '../types/chats';
 
 const ChatsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -20,6 +21,7 @@ const ChatsPage: React.FC = () => {
   const newChatUserRef = useRef<UserPreview | undefined>(undefined);
   const lastChatIdRef = useRef<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
+  const { theme } = useTheme();
 
   const [searchValue, setSearchValue] = useState<string>('');
   const [searchResults, setSearchResults] = useState<UserPreview[]>([]);
@@ -151,15 +153,36 @@ const ChatsPage: React.FC = () => {
           variant="outlined"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
+          sx={{
+            backgroundColor: theme === 'dark' ? '#1e1e1e' : '#fff',
+            '& .MuiOutlinedInput-root': {
+              color: theme === 'dark' ? '#fff' : '#000',
+              '& fieldset': {
+                borderColor: theme === 'dark' ? '#555' : '#ccc',
+              },
+              '&:hover fieldset': {
+                borderColor: theme === 'dark' ? '#888' : '#888',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#9885f4',
+              },
+            },
+            input: {
+              color: theme === 'dark' ? '#fff' : '#000',
+            },
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon />
+                <SearchIcon sx={{ color: theme === 'light' ? '#949494' : 'white' }} />
               </InputAdornment>
             ),
             endAdornment: searchValue && (
               <InputAdornment position="end">
-                <Close onClick={() => setSearchValue('')} />
+                <Close
+                  sx={{ color: theme === 'light' ? '#949494' : 'white' }}
+                  onClick={() => setSearchValue('')}
+                />
               </InputAdornment>
             ),
           }}
