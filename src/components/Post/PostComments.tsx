@@ -74,6 +74,10 @@ const PostComments: React.FC<Props> = ({
         replyingTo?.id ?? null
       );
 
+      if (replyingTo) {
+        fetchReplies(replyingTo.id);
+      }
+
       if (user) {
         createdComment.user = {
           id: user.id,
@@ -156,8 +160,11 @@ const PostComments: React.FC<Props> = ({
     onLoadMore();
   });
 
-  const renderComments = (comments: CommentType[], level: number = 0) => {
+  const renderComments = (comments: CommentType[], level: number = 0, renderedIds: Set<string>) => {
     return comments.map((comment) => {
+      if (renderedIds.has(comment.id)) return null;
+      renderedIds.add(comment.id);
+
       const isEditing = editingComment?.id === comment.id;
       const isVisible = visibleReplies.has(comment.id);
 
@@ -203,10 +210,10 @@ const PostComments: React.FC<Props> = ({
           {isVisible && (
             <>
               {comment.replies?.length > 0 && (
-                <Box sx={{ mt: 1 }}>{renderComments(comment.replies, level + 1)}</Box>
+                <Box sx={{ mt: 1 }}>{renderComments(comment.replies, level + 1, renderedIds)}</Box>
               )}
 
-              {comment.replies?.length < comment._count.replies && (
+              {comment.replies?.length < comment._count?.replies && (
                 <ReplyLoader
                   commentId={comment.id}
                   fetchReplies={fetchReplies}
@@ -229,14 +236,17 @@ const PostComments: React.FC<Props> = ({
     comments.forEach((comment) => {
       if (!seenIds.has(comment.id)) {
         seenIds.add(comment.id);
-        map.set(comment.id, { ...comment, replies: comment.replies ?? [] });
+        map.set(comment.id, { ...comment, replies: [] });
       }
     });
 
     map.forEach((comment) => {
       const parentId = comment.parentId;
       if (parentId && map.has(parentId)) {
-        map.get(parentId)!.replies.push(comment);
+        const parent = map.get(parentId)!;
+        if (!parent.replies.some((r) => r.id === comment.id)) {
+          parent.replies.push(comment);
+        }
       } else if (!parentId) {
         roots.push(comment);
       }
@@ -257,7 +267,10 @@ const PostComments: React.FC<Props> = ({
           pr: 1,
         }}
       >
-        {renderComments(commentTree)}
+        {(() => {
+          const renderedIds = new Set<string>();
+          return renderComments(commentTree, 0, renderedIds);
+        })()}
 
         {hasMore && <div ref={loaderRef} style={{ height: '1px' }} />}
       </Box>
