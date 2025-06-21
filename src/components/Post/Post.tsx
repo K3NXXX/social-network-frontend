@@ -103,7 +103,7 @@ const Post: React.FC<Props> = ({
     }
   };
 
-  const handleDeleteComment = (commentId: string) => {
+  const handleDeleteComment = async (commentId: string) => {
     setComments((prevComments) =>
       prevComments
         .filter((comment) => comment.id !== commentId)
@@ -112,7 +112,8 @@ const Post: React.FC<Props> = ({
           replies: comment.replies?.filter((reply) => reply.id !== commentId) || [],
         }))
     );
-    setCommentsCount((prev) => prev - 1);
+    const updatedPost = await postService.fetchSinglePost(post.id);
+    setCommentsCount(updatedPost._count.comments);
   };
 
   const handleAddReplies = (replies: CommentType[]) => {
