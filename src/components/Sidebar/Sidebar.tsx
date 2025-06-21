@@ -1,18 +1,18 @@
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import i18n from '../../internationalization/i18n';
+import { Box, Typography } from '@mui/material';
+import Logo from '../../ui/Logo';
+import { PAGES } from '../../constants/pages.constants';
+import { useTheme } from '../../contexts/ThemeContext';
+import { sidebarList } from '../../lists/sidebar.list';
+import { authService } from '../../services/authService';
+import { useNotificationStore } from '../../zustand/stores/notificationStore';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import { Box, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { PAGES } from '../../constants/pages.constants';
-import { useTheme } from '../../contexts/ThemeContext';
-import i18n from '../../internationalization/i18n';
-import { sidebarList } from '../../lists/sidebar.list';
-import { authService } from '../../services/authService';
-import Logo from '../../ui/Logo';
-import { useNotificationStore } from '../../zustand/stores/notificationStore';
 import SidebarListItem from './SidebarListItem';
 
 interface SidebarProps {
@@ -23,9 +23,9 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSidebarCollapsed }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const { notifications, fetchNotifications, initSocket, disconnectSocket } =
     useNotificationStore();

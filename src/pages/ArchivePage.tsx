@@ -1,10 +1,10 @@
-import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import Post from '../components/Post/Post';
-import { postService } from '../services/postService';
-import type { PostType } from '../types/post';
 import PostSkeleton from '../ui/skeletons/PostSkeleton';
+import { postService } from '../services/postService';
+import { useTranslation } from 'react-i18next';
+import { Box, Typography } from '@mui/material';
+import type { PostType } from '../types/post';
 
 export default function ArchivePage() {
   const [posts, setPosts] = useState<PostType[] | null>(null);

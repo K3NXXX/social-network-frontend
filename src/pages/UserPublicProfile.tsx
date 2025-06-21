@@ -1,13 +1,12 @@
-import { CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { authService } from '../services/authService';
-import { userService } from '../services/userService';
-import type { User } from '../types/auth';
-import type { UserPublicProfile } from '../types/user';
 import ProfilePage from './ProfilePage';
 import { useTranslation } from 'react-i18next';
+import { authService } from '../services/authService';
+import { userService } from '../services/userService';
 import ProfileSkeleton from '../ui/skeletons/ProfileSkeleton';
+import type { User } from '../types/auth';
+import type { UserPublicProfile } from '../types/user';
 
 export default function UserPublicProfile() {
   const { id } = useParams();

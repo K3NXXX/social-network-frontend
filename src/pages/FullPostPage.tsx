@@ -1,14 +1,14 @@
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Dialog, DialogContent } from '@mui/material';
-import Typography from '@mui/material/Typography';
-import GlobalLoader from '../ui/GlobalLoader';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Post from '../components/Post/Post';
-import { postService } from '../services/postService';
-import type { PostType } from '../types/post';
-import Box from '@mui/material/Box';
+import GlobalLoader from '../ui/GlobalLoader';
 import { PAGES } from '../constants/pages.constants';
+import { postService } from '../services/postService';
 import { useTheme } from '../contexts/ThemeContext';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { Dialog, DialogContent } from '@mui/material';
+import type { PostType } from '../types/post';
 
 export default function FullPostPage() {
   const { postId } = useParams<{ postId: string }>();

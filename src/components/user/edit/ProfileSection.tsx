@@ -1,13 +1,4 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  FormControl,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Avatar, Box, FormControl, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { NoOutlineButton } from '../../../ui/NoOutlineButton';
 

@@ -1,10 +1,10 @@
-import { Box, IconButton, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Box, IconButton, Paper, Typography } from '@mui/material';
+import ChangePassword from './ChangePassword.tsx';
 import ChangeEmail from './ChangeEmail';
 import ChangeUsername from './ChangeUsername';
-import ChangePassword from './ChangePassword.tsx';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { useTranslation } from 'react-i18next';
 
 interface Props {
   email: string;

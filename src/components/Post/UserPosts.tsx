@@ -12,8 +12,8 @@ import PostSkeleton from '../../ui/skeletons/PostSkeleton.tsx';
 import Post from './Post.tsx';
 
 type Props = {
-  isPublicProfile: boolean;
-  publicUserData: UserPublicProfile;
+  isPublicProfile: boolean | undefined;
+  publicUserData: UserPublicProfile | undefined | null;
   isSavedPosts?: boolean;
 };
 
@@ -23,7 +23,7 @@ const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData, isSavedPo
 
   const postFetcher = isPublicProfile
     ? (page: number, take: number) =>
-        postService.fetchPublicUserPosts(publicUserData?.id, page, take)
+        postService.fetchPublicUserPosts(publicUserData?.id ?? '', page, take)
     : (page: number, take: number) => postService.fetchUserPosts(page, take);
 
   const { posts, setPosts, loading, loaderRef, page, totalPages, fetchPosts } = usePosts(

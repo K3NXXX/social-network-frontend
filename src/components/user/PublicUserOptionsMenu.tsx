@@ -8,11 +8,11 @@ import SharingMenu from './SharingMenu';
 interface IPublicUserOptionsMenuProps {
   isOpened: boolean;
   onClose: (isPublicUserMenuOpened: boolean) => void;
-  publicUserData: UserPublicProfile;
-  setPublicUserData?: React.Dispatch<React.SetStateAction<UserPublicProfile>>;
+  publicUserData: UserPublicProfile | undefined | null;
+  setPublicUserData?: React.Dispatch<React.SetStateAction<UserPublicProfile | null>>;
   onBlocked?: () => void;
-  toggleFollowUser: (id: string) => void;
-  isFollowing: boolean;
+  toggleFollowUser: ((id: string) => void) | undefined;
+  isFollowing: boolean | undefined;
   isBlocked: boolean;
   handleUnblock: () => void;
 }
@@ -28,13 +28,13 @@ export default function PublicUserOptionsMenu({
   isBlocked,
   handleUnblock,
 }: IPublicUserOptionsMenuProps) {
-  const { t } = useTranslation();
   const [isConfirmBlockingUser, setIsConfirmBlockingUser] = useState(false);
   const [isShareMenuOpened, setIsShareMenuOpened] = useState(false);
+  const { t } = useTranslation();
 
   const handleBlockUser = async (userId: string) => {
     await userService.blockUser(userId);
-    if (isFollowing) toggleFollowUser(userId);
+    if (isFollowing) toggleFollowUser?.(userId);
     setPublicUserData?.((prev) => (prev ? { ...prev, isBlocked: true } : prev));
     onBlocked?.();
     onClose(false);
@@ -168,7 +168,7 @@ export default function PublicUserOptionsMenu({
                 }}
               >
                 {t('profile.block')}
-                {publicUserData.firstName + ' ' + publicUserData.lastName}?
+                {publicUserData?.firstName + ' ' + publicUserData?.lastName}?
               </Typography>
               <Typography
                 sx={{
@@ -184,7 +184,11 @@ export default function PublicUserOptionsMenu({
               </Typography>
             </Box>
             <Button
-              onClick={() => handleBlockUser(publicUserData.id)}
+              onClick={() => {
+                if (publicUserData?.id) {
+                  handleBlockUser(publicUserData.id);
+                }
+              }}
               sx={{
                 padding: '15px 0',
                 width: '100%',

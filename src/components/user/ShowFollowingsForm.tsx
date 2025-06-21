@@ -1,18 +1,18 @@
-import CancelIcon from '@mui/icons-material/Cancel';
-import CloseIcon from '@mui/icons-material/Close';
-import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, Box, Dialog, InputAdornment, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import FollowersListSkeleton from '../../ui/skeletons/FollowersListSkeleton';
+import { Avatar, Box, Dialog, InputAdornment, TextField, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { PAGES } from '../../constants/pages.constants';
 import { authService } from '../../services/authService';
 import { userService } from '../../services/userService';
-import type { User } from '../../types/auth';
-import type { UserFollowings } from '../../types/user';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
 import { customScrollBar } from '../../ui/customScrollBar';
-import FollowersListSkeleton from '../../ui/skeletons/FollowersListSkeleton';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CloseIcon from '@mui/icons-material/Close';
+import SearchIcon from '@mui/icons-material/Search';
+import type { User } from '../../types/auth';
+import type { UserFollowings } from '../../types/user';
 
 interface IShowFollowingsFormProps {
   isOpened: boolean;
@@ -50,7 +50,7 @@ export default function ShowFollowingsForm({
         )
       );
     } catch (error) {
-      console.error('Помилка при підписці:', error);
+      console.error('Error following user: ', error);
     }
   };
 

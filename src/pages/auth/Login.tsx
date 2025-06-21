@@ -1,5 +1,11 @@
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
+import React, { useState } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import Logo from '../../ui/Logo';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../services/AuthContext';
+import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
 import {
   Alert,
   Box,
@@ -11,16 +17,11 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import React, { useState } from 'react';
-import type { SubmitHandler } from 'react-hook-form';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useAuth } from '../../services/AuthContext';
-import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
-import Logo from '../../ui/Logo';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
+import { PAGES } from '../../constants/pages.constants';
+import type { SubmitHandler } from 'react-hook-form';
 
 interface LoginFormInputs {
   email: string;
@@ -30,9 +31,9 @@ interface LoginFormInputs {
 const Login: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const { login, loading } = useAuth();
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
 
   const {
     control,
@@ -50,7 +51,7 @@ const Login: React.FC = () => {
     try {
       setSubmitError(null);
       await login(data);
-      navigate('/feed');
+      navigate(PAGES.HOME);
     } catch (error) {
       logErrorDetails(error);
       setSubmitError(formatErrorMessage(error));

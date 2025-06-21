@@ -1,5 +1,13 @@
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import EmailVerification from '../../components/auth/EmailVerification';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import Logo from '../../ui/Logo';
+import { PAGES } from '../../constants/pages.constants';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../services/AuthContext';
+import { authService } from '../../services/authService';
+import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
 import {
   Alert,
   Box,
@@ -12,17 +20,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import EmailVerification from '../../components/auth/EmailVerification';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useAuth } from '../../services/AuthContext';
-import { authService } from '../../services/authService';
-import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
-import Logo from '../../ui/Logo';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
-import { PAGES } from '../../constants/pages.constants';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 
 interface RegisterFormData {
   firstName: string;
@@ -60,7 +60,6 @@ const Register: React.FC = () => {
   const [pendingEmail, setPendingEmail] = useState('');
   const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
-
   const { loading } = useAuth();
   const navigate = useNavigate();
 

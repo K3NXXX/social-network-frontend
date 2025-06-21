@@ -1,9 +1,9 @@
 import { type FC, useState } from 'react';
-import { Box, Button, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
+import { Box, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import axiosInstance from '../../../../services/axiosConfig';
-import { NoOutlineButton } from '../../../../ui/NoOutlineButton';
 import { useTranslation } from 'react-i18next';
+import { NoOutlineButton } from '../../../../ui/NoOutlineButton';
 
 interface Props {
   open: boolean;

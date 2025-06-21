@@ -1,15 +1,6 @@
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Link,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
-import type { ChangeEvent, FormEvent } from 'react';
 import React, { useEffect, useState } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
+import { Alert, Box, CircularProgress, Link, Stack, TextField, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { authService } from '../../services/authService';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
@@ -27,14 +18,13 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
   onVerificationComplete,
   onBack,
 }) => {
-  const { t } = useTranslation();
-
   const [code, setCode] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(RESEND_COOLDOWN);
   const [canResend, setCanResend] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;

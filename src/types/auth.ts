@@ -39,6 +39,8 @@ export interface AuthResponse {
 export interface RegisterResponse {
   message: string;
   email: string;
+  user: User;
+  accessToken: string;
 }
 
 export interface VerificationResponse {

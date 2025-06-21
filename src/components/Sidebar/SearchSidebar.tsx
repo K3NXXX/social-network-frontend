@@ -1,17 +1,18 @@
-import { Box, InputAdornment, TextField, Typography } from '@mui/material';
-import { Close } from '@mui/icons-material';
-import SearchIcon from '@mui/icons-material/Search';
 import { useCallback, useEffect, useState } from 'react';
-import type { SearchUsers } from '../../types/user';
+import { Box, InputAdornment, TextField, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { Close } from '@mui/icons-material';
+import SearchItem from '../../ui/SearchItem';
+import SearchIcon from '@mui/icons-material/Search';
 import debounce from 'lodash/debounce';
 import { userService } from '../../services/userService';
-import SearchItem from '../../ui/SearchItem';
+import type { SearchUsers } from '../../types/user';
 
 const SearchSidebar = ({ isCollapsed }: { isCollapsed: boolean }) => {
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState<SearchUsers[] | []>([]);
   const { t } = useTranslation();
+
   const debounceSearch = useCallback(
     debounce(async (value: string) => {
       if (value.trim().length < 2) return setSearchResults([]);

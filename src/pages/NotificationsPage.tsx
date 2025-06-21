@@ -1,14 +1,14 @@
-import DoneAllIcon from '@mui/icons-material/DoneAll';
-import { Avatar, Box, Button, Card, Divider, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { PAGES } from '../constants/pages.constants';
-import { useTheme } from '../contexts/ThemeContext';
-import type { Notification } from '../types/notifications';
-import GlobalLoader from '../ui/GlobalLoader';
-import { formatCreatedAt } from '../utils/dateUtils';
+import { useTranslation } from 'react-i18next';
 import { useNotificationStore } from '../zustand/stores/notificationStore';
+import GlobalLoader from '../ui/GlobalLoader';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import { useTheme } from '../contexts/ThemeContext';
+import { PAGES } from '../constants/pages.constants';
+import { formatCreatedAt } from '../utils/dateUtils';
+import { Avatar, Box, Button, Card, Divider, Typography } from '@mui/material';
+import type { Notification } from '../types/notifications';
 
 export default function NotificationPage() {
   const { t, i18n } = useTranslation();

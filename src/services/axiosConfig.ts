@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Always use production backend
 const BASE_URL = 'https://vetra-8c5dfe3bdee7.herokuapp.com';
 
 const axiosInstance = axios.create({

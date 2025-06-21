@@ -9,9 +9,9 @@ import type { User } from '../../types/auth';
 
 export default function Header() {
   const [user, setUser] = useState<User | null>(null);
-  const location = useLocation();
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const location = useLocation();
 
   const pathnames = location.pathname.split('/').filter((x) => x);
   const isPublicProfile = location.pathname.startsWith('/user/profile/');
