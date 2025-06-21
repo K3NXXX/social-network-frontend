@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Box, InputAdornment, TextField, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { Close } from '@mui/icons-material';
-import SearchItem from '../../ui/SearchItem';
 import SearchIcon from '@mui/icons-material/Search';
+import { Box, InputAdornment, TextField, Typography } from '@mui/material';
 import debounce from 'lodash/debounce';
+import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { userService } from '../../services/userService';
 import type { SearchUsers } from '../../types/user';
+import SearchItem from '../../ui/SearchItem';
 
 const SearchSidebar = ({ isCollapsed }: { isCollapsed: boolean }) => {
   const [searchValue, setSearchValue] = useState('');
@@ -72,10 +72,24 @@ const SearchSidebar = ({ isCollapsed }: { isCollapsed: boolean }) => {
             </InputAdornment>
           ),
           sx: {
-            border: '2px solid #9885f4',
+            border: '1px solid #9885f4',
             color: 'white',
             borderRadius: '20px',
             padding: 0,
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#9885f4',
+              borderWidth: '1px',
+            },
+
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#9885f4',
+              borderWidth: '1px',
+            },
+
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#9885f4',
+              borderWidth: '1px',
+            },
             width: '300px',
             '& input': {
               padding: '1.5px 0px',

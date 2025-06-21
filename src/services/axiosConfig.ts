@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import i18n from 'i18next';
 const BASE_URL = 'https://vetra-8c5dfe3bdee7.herokuapp.com';
 
 const axiosInstance = axios.create({
@@ -25,14 +25,12 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.code === 'ECONNABORTED') {
       console.error('Request timeout - server took too long to respond');
-      return Promise.reject(new Error('Сервер не відповідає. Будь ласка, спробуйте пізніше.'));
+      return Promise.reject(new Error(i18n.t('server.timeout')));
     }
 
     if (!error.response) {
       console.error('Network error - no response from server:', error);
-      return Promise.reject(
-        new Error("Немає з'єднання з сервером. Перевірте, чи сервер запущено.")
-      );
+      return Promise.reject(new Error(i18n.t('server.noConnection')));
     }
 
     if (error.response.status === 401) {

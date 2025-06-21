@@ -192,5 +192,9 @@
       "NEW_FOLLOWER": "{{name}} followed you",
       "LIKE": "{{name}} liked your post"
     }
+  },
+  "server": {
+    "timeout": "Server is not responding. Please try later.",
+    "noConnection": "No connection to server. Please check if the server is running."
   }
 }
