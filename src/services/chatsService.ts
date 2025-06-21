@@ -18,7 +18,6 @@ export const chatsService = {
   async fetchChats(): Promise<ChatPreview[]> {
     try {
       const response = await axiosInstance.get(ENDPOINTS.CHATS);
-      console.log('data about chats:', response.data);
       return response.data;
     } catch (error) {
       console.error('Chats fetching error:', error);
@@ -43,7 +42,6 @@ export const chatsService = {
   ): Promise<{ messages: MessageData[]; hasNextPage: boolean }> {
     try {
       const response = await axiosInstance.get(`${ENDPOINTS.MESSAGES}${receiverId}`);
-      console.log('data about messages:', response.data);
       return response.data;
     } catch (error) {
       console.error('Messages fetching error:', error);
@@ -66,7 +64,6 @@ export const chatsService = {
   async fetchAllUsers(): Promise<UserPreview[]> {
     try {
       const response = await axiosInstance.get(ENDPOINTS.USERS);
-      console.log('data about user:', response.data);
       return response.data;
     } catch (error) {
       console.error('user fetching error:', error);
@@ -89,7 +86,6 @@ export const chatsService = {
   async fetchChat(receiverId: string): Promise<ChatDetails> {
     try {
       const response = await axiosInstance.get(`${ENDPOINTS.CHAT}${receiverId}`);
-      console.log('data about the chat:', response.data);
       return response.data;
     } catch (error) {
       console.error('Chat fetching error:', error);

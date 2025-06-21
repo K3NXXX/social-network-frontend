@@ -57,10 +57,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
 
   initSocket: (userId: string) => {
-    console.log('🔥 initSocket called with', userId);
     if (get().socket) return;
-    const token = authService.getAccessToken();
-    console.log('🔥 Current accessToken:', token);
     const socket = io('https://vetra-8c5dfe3bdee7.herokuapp.com', {
       path: '/socket.io',
       query: { userId },

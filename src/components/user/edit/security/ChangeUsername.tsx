@@ -26,7 +26,6 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
   };
 
   const handleSave = async () => {
-    console.log('checking:', newUsername);
     if (!isValidInstagramUsername(newUsername)) {
       setMessage(t('profile.edit.incorrectUsername'));
       setMessageType('error');

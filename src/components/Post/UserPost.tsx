@@ -87,8 +87,6 @@ const UserPosts: React.FC<Props> = ({ post, onUnsave }) => {
       if (newComment.parentId) {
         return prevComments.map((comment) => {
           if (comment.id === newComment.parentId) {
-            console.log(comment, newComment);
-
             return {
               ...comment,
               replies: [...(comment.replies || []), newComment],
@@ -97,7 +95,6 @@ const UserPosts: React.FC<Props> = ({ post, onUnsave }) => {
           return comment;
         });
       } else {
-        console.log([...prevComments, { ...newComment, replies: [] }]);
         return [...prevComments, { ...newComment, replies: [] }];
       }
     });

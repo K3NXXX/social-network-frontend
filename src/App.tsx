@@ -13,10 +13,8 @@ import Register from './pages/auth/Register';
 import ChatsPage from './pages/ChatsPage';
 import EditProfilePage from './pages/EditUserPage.tsx';
 import FeedPage from './pages/FeedPage';
-import FriendsListPage from './pages/FriendsListPage';
 import NotificationPage from './pages/NotificationsPage';
 import ProfilePage from './pages/ProfilePage';
-import SearchPage from './pages/SearchPage';
 import UserPublicProfile from './pages/UserPublicProfile';
 import { AuthProvider } from './services/AuthContext';
 import FullPostPage from './pages/FullPostPage';
@@ -52,10 +50,8 @@ function App() {
                 <Route path={PAGES.PROFILE} element={<ProfilePage />} />
                 <Route path={PAGES.EDIT_PROFILE} element={<EditProfilePage />} />
                 <Route path={PAGES.HOME} element={<FeedPage />} />
-                <Route path={PAGES.FRIENDS} element={<FriendsListPage />} />
                 <Route path={PAGES.ARCHIVE} element={<ArchivePage />} />
                 <Route path={PAGES.CHATS} element={<ChatsPage />} />
-                <Route path={PAGES.SEARCH} element={<SearchPage />} />
                 <Route path={PAGES.NOTIFICATIONS} element={<NotificationPage />} />
                 <Route path={`${PAGES.POST}/:postId`} element={<FullPostPage />} />
                 <Route path={`${PAGES.VIEW_PUBLIC_PROFILE}/:id`} element={<UserPublicProfile />} />
