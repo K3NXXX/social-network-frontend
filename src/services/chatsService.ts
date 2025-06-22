@@ -38,15 +38,10 @@ export const chatsService = {
     }
   },
   async fetchMessages(
-    userId: string,
-    receiverId: string,
-    cursor: string | null
+    receiverId: string
   ): Promise<{ messages: MessageData[]; hasNextPage: boolean }> {
     try {
-      if (cursor) console.log('CURSOR:', cursor);
-      const response = await axiosInstance.get(`${ENDPOINTS.MESSAGES}${receiverId}`, {
-        params: { userId, cursor: cursor ? cursor : undefined },
-      });
+      const response = await axiosInstance.get(`${ENDPOINTS.MESSAGES}${receiverId}`);
       console.log('data about messages:', response.data);
       return response.data;
     } catch (error) {
@@ -110,6 +105,20 @@ export const chatsService = {
         }
       }
       throw error;
+    }
+  },
+
+  //not working...
+  async refreshAccessToken(): Promise<string | null> {
+    try {
+      const res = await axiosInstance.post('/api/auth/refresh', {}, { withCredentials: true });
+      console.log('REFRESH RESULT:', res);
+      const newAccessToken = res.data.accessToken;
+      // localStorage.setItem('accessToken', newAccessToken);
+      return newAccessToken;
+    } catch (err) {
+      console.error('Token refresh failed:', err);
+      return null;
     }
   },
 };

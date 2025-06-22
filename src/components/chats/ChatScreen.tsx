@@ -1,4 +1,4 @@
-import { Box, Typography, Avatar, TextField, IconButton, Button } from '@mui/material';
+import { Box, Typography, Avatar, TextField, IconButton } from '@mui/material';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import sendIcon from '../../assets/paper-plane.svg';
 import type { ChatPreview, MessageData, UserPreview } from '../../types/chats';
@@ -24,7 +24,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
   //щоб передавати оновлені значення до useEffect
   const selectedChatRef = useRef<ChatPreview | null>(selectedChat);
   useEffect(() => {
-    setHasNextPage(true);
     selectedChatRef.current = selectedChat;
   }, [selectedChat]);
 
@@ -39,7 +38,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
   }, [messageInput]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [shouldScroll, setShouldScroll] = useState<boolean>(false);
   const scrollToBottom = () => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
@@ -48,24 +46,14 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
   };
 
   useEffect(() => {
-    if (!shouldScroll) return;
-
     scrollToBottom();
-    setShouldScroll(false);
-  }, [messages, shouldScroll]);
+  }, [messages]);
 
-  const [hasNextPage, setHasNextPage] = useState<boolean>(true);
-  //cursor = null лише тоді, коли заходимо в новий чат і хочемо взяти останні 30 повідомлень
-  const loadMessages = async (cursor: string | null, scroll: boolean) => {
+  const loadMessages = async () => {
     if (!otherUser) return;
     try {
-      if (!hasNextPage && cursor) throw new Error(`Error: there's no more messages`);
-      const data = await chatsService.fetchMessages(currentUser.id, otherUser.id, cursor);
-
-      if (!cursor) setMessages(data.messages);
-      else setMessages((msgs) => [...data.messages, ...(msgs || [])]);
-      setHasNextPage(data.hasNextPage);
-      if (scroll) setShouldScroll(true);
+      const data = await chatsService.fetchMessages(otherUser.id);
+      setMessages(data.messages);
     } catch (error) {
       console.error('Error fetching messages for the chat:', error);
     }
@@ -73,7 +61,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
 
   useEffect(() => {
     if (selectedChat) {
-      loadMessages(null, true);
+      loadMessages();
     }
   }, [selectedChat]);
 
@@ -104,7 +92,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
             isRead: message.isRead,
           },
         ]);
-        setShouldScroll(true);
       }
     };
 
@@ -299,11 +286,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
               flex: 1,
             }}
           >
-            {otherUser && messages ? (
-              <Button variant="contained" onClick={() => loadMessages(messages[0].id, false)}>
-                Load More!
-              </Button>
-            ) : null}
             {messages?.map((msg, index) => (
               <Message
                 key={index}
@@ -311,7 +293,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
                 data-id={msg.id}
                 innerRef={
                   //ставимо observer тільки якщо повідомлення від іншого юзера, і не прочитане
-
                   msg.senderId
                     ? msg.isRead === false && msg.senderId !== currentUser.id
                       ? observeElement

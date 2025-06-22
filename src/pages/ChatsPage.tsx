@@ -48,6 +48,17 @@ const ChatsPage: React.FC = () => {
     []
   );
 
+  //оновлення accessToken
+  // useEffect(() => {
+  //   console.log('REFRESHING ACCESS TOKEN...');
+  //   const setNewToken = async () => {
+  //     const newToken = await chatsService.refreshAccessToken();
+  //     console.log('NEW TOKEN!:', newToken);
+  //   };
+
+  //   setNewToken();
+  // }, []);
+
   useEffect(() => {
     debounceSearch(searchValue);
   }, [searchValue, debounceSearch]);
@@ -71,7 +82,6 @@ const ChatsPage: React.FC = () => {
 
     loadChats();
 
-    //події з веб-сокетами
     socketRef.current = io('https://vetra-8c5dfe3bdee7.herokuapp.com', {
       path: '/socket.io',
       withCredentials: true,
@@ -180,7 +190,6 @@ const ChatsPage: React.FC = () => {
 
   const findChat = async (friendId: string) => {
     //знаходить чат з другом за його id.
-    //дописати з пагінацією, (якщо чат не загрузився на фронті, але на сервері знайшовся)
     const foundChat =
       chats.find((chat) => chat.participants.find((user) => user.id === friendId)) || null;
     if (!foundChat) {
