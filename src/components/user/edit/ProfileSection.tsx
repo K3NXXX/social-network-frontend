@@ -1,14 +1,6 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  FormControl,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Avatar, Box, FormControl, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { NoOutlineButton } from '../../../ui/NoOutlineButton';
 
 interface Profile {
   profile: any;
@@ -33,7 +25,7 @@ const ProfileSection = ({
   handlePhotoDelete,
   handleSubmit,
 }: Profile) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <>
@@ -44,7 +36,6 @@ const ProfileSection = ({
         gap={2}
         mt={2}
         mb="32px"
-        bgcolor="action.hover"
         p="16px"
         borderRadius="16px"
       >
@@ -71,13 +62,26 @@ const ProfileSection = ({
           </Box>
         </Box>
         <Box display="flex" gap={1}>
-          <Button component="label" variant="outlined" size="small" onClick={handlePhotoDelete}>
+          <NoOutlineButton
+            component="label"
+            variant="outlined"
+            size="small"
+            onClick={handlePhotoDelete}
+            sx={{
+              color: 'var(--primary-color)',
+            }}
+          >
             {t('profile.deletePhoto')}
-          </Button>
-          <Button component="label" variant="contained" size="small">
+          </NoOutlineButton>
+          <NoOutlineButton
+            component="label"
+            variant="contained"
+            size="small"
+            sx={{ backgroundColor: 'var(--primary-color)' }}
+          >
             {t('profile.changePhoto')}
             <input type="file" hidden accept="image/*" onChange={handlePhotoUpload} />
-          </Button>
+          </NoOutlineButton>
         </Box>
       </Box>
 
@@ -86,13 +90,50 @@ const ProfileSection = ({
           label={t('profile.firstName')}
           value={profile.firstName}
           onChange={(e) => handleChange('firstName', e.target.value)}
+          InputLabelProps={{
+            sx: {
+              color: 'var(--text-color)',
+              '&.Mui-focused': {
+                color: 'var(--primary-color)',
+              },
+              '&.MuiFormLabel-filled': {
+                color: 'var(--primary-color)',
+              },
+            },
+          }}
           InputProps={{
             sx: {
-              '& .MuiInputBase-input': {
+              borderRadius: '10px',
+              '& input': {
+                color: 'var(--text-color)',
                 px: 2,
                 py: '10px',
               },
-              borderRadius: '10px',
+              '& input::placeholder': {
+                color: 'var(--text-color)',
+                opacity: 0.7,
+              },
+              '& input:-webkit-autofill': {
+                boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+                WebkitTextFillColor: 'var(--text-color) !important',
+                caretColor: 'var(--text-color) !important',
+              },
+            },
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '1px',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--border-color)',
+            },
+            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '2px',
+            },
+            '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--error-color)',
             },
           }}
         />
@@ -100,13 +141,50 @@ const ProfileSection = ({
           label={t('profile.lastName')}
           value={profile.lastName}
           onChange={(e) => handleChange('lastName', e.target.value)}
+          InputLabelProps={{
+            sx: {
+              color: 'var(--text-color)',
+              '&.Mui-focused': {
+                color: 'var(--primary-color)',
+              },
+              '&.MuiFormLabel-filled': {
+                color: 'var(--primary-color)',
+              },
+            },
+          }}
           InputProps={{
             sx: {
-              '& .MuiInputBase-input': {
+              borderRadius: '10px',
+              '& input': {
+                color: 'var(--text-color)',
                 px: 2,
                 py: '10px',
               },
-              borderRadius: '10px',
+              '& input::placeholder': {
+                color: 'var(--text-color)',
+                opacity: 0.7,
+              },
+              '& input:-webkit-autofill': {
+                boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+                WebkitTextFillColor: 'var(--text-color) !important',
+                caretColor: 'var(--text-color) !important',
+              },
+            },
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '1px',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--border-color)',
+            },
+            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '2px',
+            },
+            '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--error-color)',
             },
           }}
         />
@@ -115,16 +193,17 @@ const ProfileSection = ({
       <Typography
         fontSize="15px"
         fontWeight="bold"
-        color="black"
         textAlign="left"
         px="2px"
         py="16px"
+        sx={{ color: 'var(--text-color)' }}
       >
         {t('profile.birthDate')}
       </Typography>
       <Box display="flex" flexDirection="column">
         <TextField
           type="date"
+          lang={i18n.language}
           InputLabelProps={{ shrink: true }}
           value={profile.dateOfBirth}
           onChange={(e) => handleChange('dateOfBirth', e.target.value)}
@@ -133,23 +212,40 @@ const ProfileSection = ({
               '& .MuiInputBase-input': {
                 px: 2,
                 py: '10px',
-                '&::-webkit-calendar-picker-indicator': {
-                  filter: 'brightness(0)',
-                  cursor: 'pointer',
-                },
+                color: 'var(--text-color)',
+              },
+              '&::-webkit-calendar-picker-indicator': {
+                filter: 'brightness(0)',
+                cursor: 'pointer',
               },
               borderRadius: '10px',
+            },
+          }}
+          sx={{
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color) !important',
+              borderWidth: '1px',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--border-color)',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '2px',
+            },
+            '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--error-color)',
             },
           }}
         />
         <Typography
           fontSize="15px"
           fontWeight="bold"
-          color="black"
           textAlign="left"
           px="2px"
           py="16px"
           mt="32px"
+          sx={{ color: 'var(--text-color)' }}
         >
           {t('profile.gender')}
         </Typography>
@@ -164,12 +260,44 @@ const ProfileSection = ({
               '& .MuiSelect-select': {
                 px: 2,
                 py: '10px',
+                color: 'var(--text-color)',
+              },
+              '& .MuiSelect-icon': {
+                color: 'var(--text-color)',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--primary-color) !important',
+                borderWidth: '1px',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--border-color)',
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--primary-color)',
+                borderWidth: '2px',
+              },
+              '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'var(--error-color)',
               },
             }}
             MenuProps={{
               PaperProps: {
                 sx: {
                   borderRadius: '10px',
+                  backgroundColor: 'var(--background-color)',
+                  color: 'var(--text-color)',
+                  '& .MuiMenuItem-root': {
+                    '&:hover': {
+                      backgroundColor: 'var(--secondary-color)',
+                    },
+                    '&.Mui-selected': {
+                      backgroundColor: 'var(--primary-color)',
+                      color: 'var(--text-color)',
+                      '&:hover': {
+                        backgroundColor: 'var(--primary-color)',
+                      },
+                    },
+                  },
                 },
               },
             }}
@@ -184,11 +312,11 @@ const ProfileSection = ({
         <Typography
           fontSize="15px"
           fontWeight="bold"
-          color="black"
           textAlign="left"
           px="2px"
           py="16px"
           mt="32px"
+          sx={{ color: 'var(--text-color)' }}
         >
           {t('profile.location')}
         </Typography>
@@ -196,17 +324,45 @@ const ProfileSection = ({
           placeholder="м. Львів"
           value={profile.location}
           onChange={(e) => handleChange('location', e.target.value)}
+          InputLabelProps={{
+            sx: {
+              color: 'var(--text-color)',
+              '&.Mui-focused': {
+                color: 'var(--primary-color)',
+              },
+              '&.MuiFormLabel-filled': {
+                color: 'var(--primary-color)',
+              },
+            },
+          }}
           InputProps={{
             sx: {
-              '& .MuiInputBase-input': {
+              borderRadius: '10px',
+              '& input': {
+                color: 'var(--text-color)',
                 px: 2,
                 py: '10px',
-                '&::-webkit-calendar-picker-indicator': {
-                  filter: 'brightness(0)',
-                  cursor: 'pointer',
-                },
               },
-              borderRadius: '10px',
+              '& input::placeholder': {
+                color: 'var(--text-color)',
+                opacity: 0.7,
+              },
+            },
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '1px',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--border-color)',
+            },
+            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '2px',
+            },
+            '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--error-color)',
             },
           }}
         />
@@ -220,6 +376,7 @@ const ProfileSection = ({
         px="2px"
         py="16px"
         mt="32px"
+        sx={{ color: 'var(--text-color)' }}
       >
         {t('profile.bio')}
       </Typography>
@@ -233,14 +390,31 @@ const ProfileSection = ({
         InputProps={{
           sx: {
             borderRadius: '10px',
+            color: 'var(--text-color)',
+          },
+        }}
+        sx={{
+          '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'var(--primary-color)',
+            borderWidth: '1px',
+          },
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'var(--border-color)',
+          },
+          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'var(--primary-color)',
+            borderWidth: '2px',
+          },
+          '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'var(--error-color)',
           },
         }}
       />
 
       <Box my={4} display="flex" justifyContent="end" alignItems="center">
-        <Button variant="contained" onClick={handleSubmit}>
+        <NoOutlineButton sx={{ background: '#6969BC' }} variant="contained" onClick={handleSubmit}>
           {t('profile.saveChangesLabel')}
-        </Button>
+        </NoOutlineButton>
       </Box>
     </>
   );

@@ -9,13 +9,14 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Comment from './Comment';
 
 import { useTranslation } from 'react-i18next';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
-import { useAuth } from '../../services/AuthContext';
 import { postService } from '../../services/postService';
+import { userService } from '../../services/userService';
+import type { User } from '../../types/auth';
 import type { CommentType } from '../../types/post';
 import ReplyLoader from './ReplyLoader';
 
@@ -40,7 +41,6 @@ const PostComments: React.FC<Props> = ({
   onLoadMore,
   onUpdateComment,
 }) => {
-  const { user } = useAuth();
   const [newComment, setNewComment] = useState('');
   const { t } = useTranslation();
   const [visibleReplies, setVisibleReplies] = useState<Set<string>>(new Set());
@@ -50,6 +50,20 @@ const PostComments: React.FC<Props> = ({
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const [replyPages, setReplyPages] = useState<Record<string, number>>({});
   const take = 5;
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const profileData = await userService.getUserProfile();
+        setUser(profileData);
+      } catch (err: any) {
+        console.error('Profile fetch error:', err);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleSend = async () => {
     if (!newComment.trim()) return;
@@ -59,6 +73,19 @@ const PostComments: React.FC<Props> = ({
         newComment,
         replyingTo?.id ?? null
       );
+
+      if (replyingTo) {
+        fetchReplies(replyingTo.id);
+      }
+
+      if (user) {
+        createdComment.user = {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          avatarUrl: user.avatarUrl,
+        };
+      }
       onAddComment(createdComment);
 
       if (replyingTo) {
@@ -133,8 +160,11 @@ const PostComments: React.FC<Props> = ({
     onLoadMore();
   });
 
-  const renderComments = (comments: CommentType[], level: number = 0) => {
+  const renderComments = (comments: CommentType[], level: number = 0, renderedIds: Set<string>) => {
     return comments.map((comment) => {
+      if (renderedIds.has(comment.id)) return null;
+      renderedIds.add(comment.id);
+
       const isEditing = editingComment?.id === comment.id;
       const isVisible = visibleReplies.has(comment.id);
 
@@ -156,21 +186,34 @@ const PostComments: React.FC<Props> = ({
             <Button
               size="small"
               onClick={() => toggleReplies(comment)}
-              sx={{ ml: 6, mt: 1, textTransform: 'none' }}
+              sx={{
+                ml: 6,
+                mt: 1,
+                textTransform: 'none',
+                color: 'var(--primary-color)',
+                '&:focus': {
+                  outline: 'none',
+                  boxShadow: 'none',
+                },
+                '&:focus-visible': {
+                  outline: 'none',
+                  boxShadow: 'none',
+                },
+              }}
             >
-              {isVisible ?
-                t('posts.hideAnswers')
-                : `${t('posts.hideAnswers')} (${comment._count.replies})`}
+              {isVisible
+                ? t('posts.hideAnswers')
+                : `${t('posts.showAnswers')} (${comment._count.replies})`}
             </Button>
           )}
 
           {isVisible && (
             <>
               {comment.replies?.length > 0 && (
-                <Box sx={{ mt: 1 }}>{renderComments(comment.replies, level + 1)}</Box>
+                <Box sx={{ mt: 1 }}>{renderComments(comment.replies, level + 1, renderedIds)}</Box>
               )}
 
-              {comment.replies?.length < comment._count.replies && (
+              {comment.replies?.length < comment._count?.replies && (
                 <ReplyLoader
                   commentId={comment.id}
                   fetchReplies={fetchReplies}
@@ -193,14 +236,17 @@ const PostComments: React.FC<Props> = ({
     comments.forEach((comment) => {
       if (!seenIds.has(comment.id)) {
         seenIds.add(comment.id);
-        map.set(comment.id, { ...comment, replies: comment.replies ?? [] });
+        map.set(comment.id, { ...comment, replies: [] });
       }
     });
 
     map.forEach((comment) => {
       const parentId = comment.parentId;
       if (parentId && map.has(parentId)) {
-        map.get(parentId)!.replies.push(comment);
+        const parent = map.get(parentId)!;
+        if (!parent.replies.some((r) => r.id === comment.id)) {
+          parent.replies.push(comment);
+        }
       } else if (!parentId) {
         roots.push(comment);
       }
@@ -221,7 +267,10 @@ const PostComments: React.FC<Props> = ({
           pr: 1,
         }}
       >
-        {renderComments(commentTree)}
+        {(() => {
+          const renderedIds = new Set<string>();
+          return renderComments(commentTree, 0, renderedIds);
+        })()}
 
         {hasMore && <div ref={loaderRef} style={{ height: '1px' }} />}
       </Box>
@@ -233,7 +282,7 @@ const PostComments: React.FC<Props> = ({
             p: 1,
             borderLeft: '4px solid #6969cb',
             borderRadius: 2,
-            backgroundColor: '#f1f1f7',
+            backgroundColor: 'var(--background-color)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -242,10 +291,10 @@ const PostComments: React.FC<Props> = ({
           }}
         >
           <Box sx={{ textAlign: 'left' }}>
-            <Typography variant="subtitle2" color="primary" sx={{ mb: 0.5 }}>
+            <Typography variant="subtitle2" sx={{ mb: 0.5, color: 'var(--text-color)' }}>
               {t('posts.commentReply')}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'var(--text-color)' }}>
               <strong>{`${replyingTo.user.firstName} ${replyingTo.user.lastName}`}</strong>: "
               {replyingTo.content}"
             </Typography>
@@ -254,7 +303,17 @@ const PostComments: React.FC<Props> = ({
             size="small"
             color="error"
             onClick={() => setReplyingTo(null)}
-            sx={{ alignSelf: 'center' }}
+            sx={{
+              alignSelf: 'center',
+              '&:focus': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+              '&:focus-visible': {
+                outline: 'none',
+                boxShadow: 'none',
+              },
+            }}
           >
             {t('posts.commentCancel')}
           </Button>
@@ -280,11 +339,48 @@ const PostComments: React.FC<Props> = ({
               handleSend();
             }
           }}
+          InputProps={{
+            sx: {
+              '& textarea': {
+                color: 'var(--text-color)',
+              },
+              '& textarea::placeholder': {
+                color: 'var(--text-color)',
+                opacity: 0.7,
+              },
+            },
+          }}
           sx={{
-            backgroundColor: '#F8F8FC',
+            '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '1px',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--border-color)',
+            },
+            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '2px',
+            },
+            '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--error-color)',
+            },
           }}
         />
-        <IconButton onClick={handleSend} sx={{ color: 'primary.main' }}>
+        <IconButton
+          onClick={handleSend}
+          sx={{
+            color: 'var(--primary-color)',
+            '&:focus': {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+            '&:focus-visible': {
+              outline: 'none',
+              boxShadow: 'none',
+            },
+          }}
+        >
           <SendIcon />
         </IconButton>
       </Stack>

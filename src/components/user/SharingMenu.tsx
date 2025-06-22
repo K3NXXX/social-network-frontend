@@ -1,4 +1,5 @@
 import { Box, Button, Dialog, IconButton, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -9,20 +10,19 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from 'react-share';
-import type { UserPublicProfile } from '../../types/user';
+import { PAGES } from '../../constants/pages.constants';
+import type { PostType } from '../../types/post';
 
-interface IShareProfileMenuProps {
-  publicUserData: UserPublicProfile;
+interface ISharingMenuProps {
   open: boolean;
   onClose: (isShareMenuOpened: boolean) => void;
+  isPost?: boolean;
+  post?: PostType;
 }
 
-export default function ShareProfileMenu({
-  publicUserData,
-  open,
-  onClose,
-}: IShareProfileMenuProps) {
-  const profileUrl = `http://localhost:5173/user/profile/${publicUserData.id}`;
+export default function SharingMenu({ open, onClose, isPost, post }: ISharingMenuProps) {
+  const sharingURL = isPost ? `${location.origin}${PAGES.POST}/${post?.id}` : window.location.href;
+  const { t } = useTranslation();
 
   return (
     <Dialog
@@ -48,7 +48,7 @@ export default function ShareProfileMenu({
           paddingTop: '20px',
         }}
       >
-        Поділитися профілем
+        {isPost ? t('posts.sharePost') : t('profile.shareProfile')}
       </Typography>
 
       <Box
@@ -60,7 +60,7 @@ export default function ShareProfileMenu({
         gap={2}
       >
         <Box textAlign="center">
-          <FacebookShareButton url={profileUrl}>
+          <FacebookShareButton url={sharingURL}>
             <IconButton disableRipple sx={{ outline: 'none', '&:focus': { outline: 'none' } }}>
               <FacebookIcon size={48} round />
             </IconButton>
@@ -77,7 +77,7 @@ export default function ShareProfileMenu({
         </Box>
 
         <Box textAlign="center">
-          <TelegramShareButton url={profileUrl}>
+          <TelegramShareButton url={sharingURL}>
             <IconButton disableRipple sx={{ outline: 'none', '&:focus': { outline: 'none' } }}>
               <TelegramIcon size={48} round />
             </IconButton>
@@ -94,7 +94,7 @@ export default function ShareProfileMenu({
         </Box>
 
         <Box textAlign="center">
-          <WhatsappShareButton url={profileUrl}>
+          <WhatsappShareButton url={sharingURL}>
             <IconButton disableRipple sx={{ outline: 'none', '&:focus': { outline: 'none' } }}>
               <WhatsappIcon size={48} round />
             </IconButton>
@@ -111,7 +111,7 @@ export default function ShareProfileMenu({
         </Box>
 
         <Box textAlign="center">
-          <TwitterShareButton url={profileUrl}>
+          <TwitterShareButton url={sharingURL}>
             <IconButton disableRipple sx={{ outline: 'none', '&:focus': { outline: 'none' } }}>
               <TwitterIcon size={48} round />
             </IconButton>
@@ -146,7 +146,7 @@ export default function ShareProfileMenu({
             textAlign: 'center',
           }}
         >
-          Скасувати
+          {t('profile.cancel')}
         </Typography>
       </Button>
     </Dialog>

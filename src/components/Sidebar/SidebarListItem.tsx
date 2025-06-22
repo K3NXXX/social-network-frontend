@@ -1,7 +1,7 @@
-import { Box, Typography } from '@mui/material';
 import React from 'react';
-import { type ISidebarList } from '../../lists/sidebar.list';
+import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { type ISidebarList } from '../../lists/sidebar.list';
 
 interface SidebarListItemProps {
   item: ISidebarList;

@@ -3,16 +3,16 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { userService } from '../../services/userService';
 import type { UserPublicProfile } from '../../types/user';
-import ShareProfileMenu from './ShareProfileMenu';
+import SharingMenu from './SharingMenu';
 
 interface IPublicUserOptionsMenuProps {
   isOpened: boolean;
   onClose: (isPublicUserMenuOpened: boolean) => void;
-  publicUserData: UserPublicProfile;
-  setPublicUserData?: React.Dispatch<React.SetStateAction<UserPublicProfile>>;
+  publicUserData: UserPublicProfile | undefined | null;
+  setPublicUserData?: React.Dispatch<React.SetStateAction<UserPublicProfile | null>>;
   onBlocked?: () => void;
-  toggleFollowUser: (id: string) => void;
-  isFollowing: boolean;
+  toggleFollowUser: ((id: string) => void) | undefined;
+  isFollowing: boolean | undefined;
   isBlocked: boolean;
   handleUnblock: () => void;
 }
@@ -28,13 +28,13 @@ export default function PublicUserOptionsMenu({
   isBlocked,
   handleUnblock,
 }: IPublicUserOptionsMenuProps) {
-  const { t } = useTranslation();
   const [isConfirmBlockingUser, setIsConfirmBlockingUser] = useState(false);
   const [isShareMenuOpened, setIsShareMenuOpened] = useState(false);
+  const { t } = useTranslation();
 
   const handleBlockUser = async (userId: string) => {
     await userService.blockUser(userId);
-    if (isFollowing) toggleFollowUser(userId);
+    if (isFollowing) toggleFollowUser?.(userId);
     setPublicUserData?.((prev) => (prev ? { ...prev, isBlocked: true } : prev));
     onBlocked?.();
     onClose(false);
@@ -83,7 +83,7 @@ export default function PublicUserOptionsMenu({
                     textAlign: 'center',
                   }}
                 >
-                  Розблокувати користувача
+                  {t('profile.unblockUser')}
                 </Typography>
               </Button>
             ) : (
@@ -100,13 +100,14 @@ export default function PublicUserOptionsMenu({
                   sx={{
                     color: '#fc4f4f',
                     fontFamily: 'Ubuntu, sans-serif',
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: 500,
                     userSelect: 'none',
                     textAlign: 'center',
+                    textTransform: 'none',
                   }}
                 >
-                  Заблокувати користувача
+                  {t('profile.block')}
                 </Typography>
               </Button>
             )}
@@ -123,13 +124,14 @@ export default function PublicUserOptionsMenu({
                 sx={{
                   color: '#fff',
                   fontFamily: 'Ubuntu, sans-serif',
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: 500,
                   userSelect: 'none',
                   textAlign: 'center',
+                  textTransform: 'none',
                 }}
               >
-                Поширити профіль
+                {t('profile.share')}
               </Typography>
             </Button>
           </Box>
@@ -165,7 +167,8 @@ export default function PublicUserOptionsMenu({
                   marginBottom: '10px',
                 }}
               >
-                Заблокувати користувача {publicUserData.firstName + ' ' + publicUserData.lastName}?
+                {t('profile.block')}
+                {publicUserData?.firstName + ' ' + publicUserData?.lastName}?
               </Typography>
               <Typography
                 sx={{
@@ -177,12 +180,15 @@ export default function PublicUserOptionsMenu({
                   textAlign: 'center',
                 }}
               >
-                Цей користувач не зможе знайти ваш профіль і дописи в Vetra. Vetra не повідомлятиме
-                йому про блокування.
+                {t('profile.blockMessage')}
               </Typography>
             </Box>
             <Button
-              onClick={() => handleBlockUser(publicUserData.id)}
+              onClick={() => {
+                if (publicUserData?.id) {
+                  handleBlockUser(publicUserData.id);
+                }
+              }}
               sx={{
                 padding: '15px 0',
                 width: '100%',
@@ -201,7 +207,7 @@ export default function PublicUserOptionsMenu({
                   textAlign: 'center',
                 }}
               >
-                Заблокувати
+                {t('profile.block')}
               </Typography>
             </Button>
             <Button
@@ -222,7 +228,7 @@ export default function PublicUserOptionsMenu({
                   textAlign: 'center',
                 }}
               >
-                Скасувати
+                {t('profile.cancel')}
               </Typography>
             </Button>
           </Box>
@@ -230,11 +236,7 @@ export default function PublicUserOptionsMenu({
       )}
 
       {isShareMenuOpened && (
-        <ShareProfileMenu
-          publicUserData={publicUserData}
-          open={isShareMenuOpened}
-          onClose={() => setIsShareMenuOpened(false)}
-        />
+        <SharingMenu open={isShareMenuOpened} onClose={() => setIsShareMenuOpened(false)} />
       )}
     </>
   );

@@ -1,17 +1,18 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import FollowersListSkeleton from '../../ui/skeletons/FollowersListSkeleton';
+import { Avatar, Box, Dialog, InputAdornment, TextField, Typography } from '@mui/material';
+import { authService } from '../../services/authService';
+import { userService } from '../../services/userService';
+import { NoOutlineButton } from '../../ui/NoOutlineButton';
+import { customScrollBar } from '../../ui/customScrollBar';
+import { PAGES } from '../../constants/pages.constants';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, Box, Dialog, InputAdornment, TextField, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import { PAGES } from '../../constants/pages.constants';
-import { authService } from '../../services/authService';
-import { userService } from '../../services/userService';
 import type { User } from '../../types/auth';
 import type { UserFollowers } from '../../types/user';
-import { NoOutlineButton } from '../../ui/NoOutlineButton';
-import { customScrollBar } from '../../ui/customScrollBar';
 
 interface IShowFollowersFormProps {
   isOpened: boolean;
@@ -31,9 +32,8 @@ export default function ShowFollowersForm({
   const [searchValue, setSearchValue] = useState('');
   const [userFollowers, setUserFollowers] = useState<UserFollowers[] | []>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
-
-  console.log('blocked', blockedUsers);
 
   const isUserBlocked = (userIdToCheck: string) => {
     return blockedUsers?.some((blockedUser) => blockedUser.blocked.id === userIdToCheck);
@@ -50,13 +50,14 @@ export default function ShowFollowersForm({
         )
       );
     } catch (error) {
-      console.error('Помилка при підписці:', error);
+      console.error('Error following user: ', error);
     }
   };
 
   useEffect(() => {
     const getUserFollowers = async () => {
       try {
+        setIsLoading(true);
         const data = await userService.getUsersFollowers(userId);
         const userData = await authService.getCurrentUser();
         setUserFollowers(data);
@@ -64,6 +65,8 @@ export default function ShowFollowersForm({
       } catch (error) {
         console.log(error);
         setUserFollowers([]);
+      } finally {
+        setIsLoading(false);
       }
     };
     getUserFollowers();
@@ -188,7 +191,9 @@ export default function ShowFollowersForm({
               ...customScrollBar,
             }}
           >
-            {userFollowers.length > 0 ? (
+            {isLoading ? (
+              [...Array(5)].map((_, index) => <FollowersListSkeleton key={index} />)
+            ) : userFollowers.length > 0 ? (
               userFollowers.map((item) => (
                 <Box
                   display="flex"
@@ -203,7 +208,7 @@ export default function ShowFollowersForm({
                     onClick={() => onClose(false)}
                   >
                     <Box display="flex" gap="0 20px" alignItems="center">
-                      <Avatar src={item.avatarUrl ? item?.avatarUrl : ''} />
+                      <Avatar src={item.avatarUrl ? item.avatarUrl : ''} />
                       <Box display="flex" flexDirection="column" gap="2px 0">
                         {item.username && (
                           <Typography
@@ -229,7 +234,7 @@ export default function ShowFollowersForm({
                       size="small"
                       onClick={() => handleFollowToggle(item.id)}
                       sx={{
-                        backgroundColor: item.isFollowed ? '#747474' : '',
+                        backgroundColor: item.isFollowed ? '#747474' : 'var(--primary-color)',
                         color: '#fff',
                       }}
                     >

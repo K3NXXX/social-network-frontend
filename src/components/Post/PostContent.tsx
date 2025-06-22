@@ -8,7 +8,7 @@ interface Props {
 
 const PostContent: React.FC<Props> = ({ content, photo }) => (
   <CardContent sx={{ pt: 0, textAlign: 'left' }}>
-    <Typography variant="body1" gutterBottom>
+    <Typography variant="body1" gutterBottom sx={{ color: 'var(--text-color)' }}>
       {content}
     </Typography>
     {photo && (

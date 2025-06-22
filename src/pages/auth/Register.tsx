@@ -1,23 +1,28 @@
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import EmailVerification from '../../components/auth/EmailVerification';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import Logo from '../../ui/Logo';
+import { PAGES } from '../../constants/pages.constants';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../services/AuthContext';
+import { authService } from '../../services/authService';
+import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
 import {
   Alert,
   Box,
-  Button,
   CircularProgress,
   Container,
   Fade,
+  IconButton,
   Link,
   Paper,
   TextField,
   Typography,
 } from '@mui/material';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import EmailVerification from '../../components/auth/EmailVerification';
-import { useAuth } from '../../services/AuthContext';
-import { authService } from '../../services/authService';
-import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
-import Logo from '../../ui/Logo';
+import { NoOutlineButton } from '../../ui/NoOutlineButton';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 
 interface RegisterFormData {
   firstName: string;
@@ -54,7 +59,7 @@ const Register: React.FC = () => {
   const [isVerificationStep, setIsVerificationStep] = useState(false);
   const [pendingEmail, setPendingEmail] = useState('');
   const { t } = useTranslation();
-
+  const { theme, toggleTheme } = useTheme();
   const { loading } = useAuth();
   const navigate = useNavigate();
 
@@ -155,6 +160,28 @@ const Register: React.FC = () => {
 
   return (
     <Container component="main" maxWidth="xs">
+      <IconButton
+        onClick={toggleTheme}
+        sx={{
+          position: 'absolute',
+          bottom: 30,
+          right: 30,
+          color: 'var(--text-color)',
+          '&:hover': {
+            color: 'var(--primary-color)',
+          },
+          '&:active': {
+            border: 'none',
+            outline: 'none',
+          },
+          '&:focus': {
+            border: 'none',
+            outline: 'none',
+          },
+        }}
+      >
+        {theme === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
+      </IconButton>
       <Box
         sx={{
           display: 'flex',
@@ -173,6 +200,7 @@ const Register: React.FC = () => {
             alignItems: 'center',
             width: '100%',
             borderRadius: '12px',
+            backgroundColor: 'var(--secondary-color)',
           }}
         >
           <Logo size="30px" />
@@ -182,7 +210,7 @@ const Register: React.FC = () => {
             sx={{
               mb: 3,
               textAlign: 'center',
-              color: '#333',
+              color: 'var(--text-color)',
               fontSize: { xs: '1.6rem' },
               letterSpacing: '0.3px',
               fontFamily: 'Ubuntu',
@@ -229,6 +257,54 @@ const Register: React.FC = () => {
                   error={!!formErrors.firstName}
                   helperText={formErrors.firstName}
                   disabled={loading}
+                  InputLabelProps={{
+                    sx: {
+                      color: 'var(--text-color)',
+                      '&.Mui-focused': {
+                        color: 'var(--primary-color)',
+                      },
+                      '&.MuiFormLabel-filled': {
+                        color: 'var(--primary-color)',
+                      },
+                    },
+                  }}
+                  InputProps={{
+                    sx: {
+                      '& input': {
+                        color: 'var(--text-color)',
+                      },
+                      '& input::placeholder': {
+                        color: 'var(--text-color)',
+                        opacity: 0.7,
+                      },
+                      '& input:-webkit-autofill': {
+                        boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+                        WebkitTextFillColor: 'var(--text-color) !important',
+                        caretColor: 'var(--text-color) !important',
+                      },
+                      '& textarea:-webkit-autofill': {
+                        boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+                        WebkitTextFillColor: 'var(--text-color) !important',
+                        caretColor: 'var(--text-color) !important',
+                      },
+                    },
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '1px',
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--border-color)',
+                    },
+                    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '2px',
+                    },
+                    '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--error-color)',
+                    },
+                  }}
                 />
                 <TextField
                   margin="normal"
@@ -243,6 +319,54 @@ const Register: React.FC = () => {
                   error={!!formErrors.lastName}
                   helperText={formErrors.lastName}
                   disabled={loading}
+                  InputLabelProps={{
+                    sx: {
+                      color: 'var(--text-color)',
+                      '&.Mui-focused': {
+                        color: 'var(--primary-color)',
+                      },
+                      '&.MuiFormLabel-filled': {
+                        color: 'var(--primary-color)',
+                      },
+                    },
+                  }}
+                  InputProps={{
+                    sx: {
+                      '& input': {
+                        color: 'var(--text-color)',
+                      },
+                      '& input::placeholder': {
+                        color: 'var(--text-color)',
+                        opacity: 0.7,
+                      },
+                      '& input:-webkit-autofill': {
+                        boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+                        WebkitTextFillColor: 'var(--text-color) !important',
+                        caretColor: 'var(--text-color) !important',
+                      },
+                      '& textarea:-webkit-autofill': {
+                        boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+                        WebkitTextFillColor: 'var(--text-color) !important',
+                        caretColor: 'var(--text-color) !important',
+                      },
+                    },
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '1px',
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--border-color)',
+                    },
+                    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '2px',
+                    },
+                    '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--error-color)',
+                    },
+                  }}
                 />
                 <TextField
                   margin="normal"
@@ -257,6 +381,54 @@ const Register: React.FC = () => {
                   error={!!formErrors.email}
                   helperText={formErrors.email}
                   disabled={loading}
+                  InputLabelProps={{
+                    sx: {
+                      color: 'var(--text-color)',
+                      '&.Mui-focused': {
+                        color: 'var(--primary-color)',
+                      },
+                      '&.MuiFormLabel-filled': {
+                        color: 'var(--primary-color)',
+                      },
+                    },
+                  }}
+                  InputProps={{
+                    sx: {
+                      '& input': {
+                        color: 'var(--text-color)',
+                      },
+                      '& input::placeholder': {
+                        color: 'var(--text-color)',
+                        opacity: 0.7,
+                      },
+                      '& input:-webkit-autofill': {
+                        boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+                        WebkitTextFillColor: 'var(--text-color) !important',
+                        caretColor: 'var(--text-color) !important',
+                      },
+                      '& textarea:-webkit-autofill': {
+                        boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+                        WebkitTextFillColor: 'var(--text-color) !important',
+                        caretColor: 'var(--text-color) !important',
+                      },
+                    },
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '1px',
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--border-color)',
+                    },
+                    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '2px',
+                    },
+                    '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--error-color)',
+                    },
+                  }}
                 />
                 <TextField
                   margin="normal"
@@ -272,6 +444,54 @@ const Register: React.FC = () => {
                   error={!!formErrors.password}
                   helperText={formErrors.password}
                   disabled={loading}
+                  InputLabelProps={{
+                    sx: {
+                      color: 'var(--text-color)',
+                      '&.Mui-focused': {
+                        color: 'var(--primary-color)',
+                      },
+                      '&.MuiFormLabel-filled': {
+                        color: 'var(--primary-color)',
+                      },
+                    },
+                  }}
+                  InputProps={{
+                    sx: {
+                      '& input': {
+                        color: 'var(--text-color)',
+                      },
+                      '& input::placeholder': {
+                        color: 'var(--text-color)',
+                        opacity: 0.7,
+                      },
+                      '& input:-webkit-autofill': {
+                        boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+                        WebkitTextFillColor: 'var(--text-color) !important',
+                        caretColor: 'var(--text-color) !important',
+                      },
+                      '& textarea:-webkit-autofill': {
+                        boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+                        WebkitTextFillColor: 'var(--text-color) !important',
+                        caretColor: 'var(--text-color) !important',
+                      },
+                    },
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '1px',
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--border-color)',
+                    },
+                    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '2px',
+                    },
+                    '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--error-color)',
+                    },
+                  }}
                 />
                 <TextField
                   margin="normal"
@@ -287,18 +507,75 @@ const Register: React.FC = () => {
                   error={!!formErrors.confirmPassword}
                   helperText={formErrors.confirmPassword}
                   disabled={loading}
+                  InputLabelProps={{
+                    sx: {
+                      color: 'var(--text-color)',
+                      '&.Mui-focused': {
+                        color: 'var(--primary-color)',
+                      },
+                      '&.MuiFormLabel-filled': {
+                        color: 'var(--primary-color)',
+                      },
+                    },
+                  }}
+                  InputProps={{
+                    sx: {
+                      '& input': {
+                        color: 'var(--text-color)',
+                      },
+                      '& input::placeholder': {
+                        color: 'var(--text-color)',
+                        opacity: 0.7,
+                      },
+                      '& input:-webkit-autofill': {
+                        boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+                        WebkitTextFillColor: 'var(--text-color) !important',
+                        caretColor: 'var(--text-color) !important',
+                      },
+                      '& textarea:-webkit-autofill': {
+                        boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+                        WebkitTextFillColor: 'var(--text-color) !important',
+                        caretColor: 'var(--text-color) !important',
+                      },
+                    },
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '1px',
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--border-color)',
+                    },
+                    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '2px',
+                    },
+                    '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--error-color)',
+                    },
+                  }}
                 />
-                <Button
+                <NoOutlineButton
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
+                  sx={{ mt: 3, mb: 2, backgroundColor: 'var(--primary-color)', padding: '10px' }}
                   disabled={loading}
                 >
-                  {loading ? <CircularProgress size={24} /> : t('auth.register')}
-                </Button>
+                  {loading ? (
+                    <CircularProgress size={24} sx={{ color: 'var(--primary-color)' }} />
+                  ) : (
+                    t('auth.register')
+                  )}
+                </NoOutlineButton>
                 <Box sx={{ textAlign: 'center' }}>
-                  <Link component={RouterLink} to="/login" variant="body2">
+                  <Link
+                    component={RouterLink}
+                    to={PAGES.LOGIN}
+                    variant="body2"
+                    sx={{ color: 'var(--primary-color)' }}
+                  >
                     {t('auth.alreadyHaveAccount')}
                   </Link>
                 </Box>

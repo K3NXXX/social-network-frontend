@@ -1,23 +1,33 @@
-import React, { useRef, useState } from 'react';
 import { Card, Divider } from '@mui/material';
+import React, { useRef, useState } from 'react';
 
 import PostActions from './PostActions';
 import PostComments from './PostComments';
 import PostContent from './PostContent';
 import PostHeader from './PostHeader';
 
-import type { CommentType, PostType } from '../../types/post';
-import { useAuth } from '../../services/AuthContext';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { useAuth } from '../../services/AuthContext';
 import { postService } from '../../services/postService';
+import type { CommentType, PostType } from '../../types/post';
+import ArchivePostModal from './ArchivePostModal';
 import EditPostModal from './EditPostModal';
 
 interface Props {
   post: PostType;
   onDelete: (id: string) => void;
+  onUnsave?: (id: string) => void;
+  isArchivePage?: boolean;
+  onPostPrivacyChange?: (updatedPost: PostType) => void;
 }
 
-const Post: React.FC<Props> = ({ post, onDelete }) => {
+const Post: React.FC<Props> = ({
+  post,
+  onDelete,
+  onUnsave,
+  isArchivePage,
+  onPostPrivacyChange,
+}) => {
   const { user } = useAuth();
   const [liked, setLiked] = useState(post.liked);
   const [likesCount, setLikesCount] = useState(post._count.likes);
@@ -29,6 +39,7 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
   const take = 5;
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
   const [currentPost, setCurrentPost] = useState(post);
   const [saved, setSaved] = useState(post.saved ?? false);
 
@@ -92,7 +103,7 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
     }
   };
 
-  const handleDeleteComment = (commentId: string) => {
+  const handleDeleteComment = async (commentId: string) => {
     setComments((prevComments) =>
       prevComments
         .filter((comment) => comment.id !== commentId)
@@ -101,7 +112,8 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
           replies: comment.replies?.filter((reply) => reply.id !== commentId) || [],
         }))
     );
-    setCommentsCount((prev) => prev - 1);
+    const updatedPost = await postService.fetchSinglePost(post.id);
+    setCommentsCount(updatedPost._count.comments);
   };
 
   const handleAddReplies = (replies: CommentType[]) => {
@@ -133,12 +145,21 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
 
   const handleUpdatePost = (updatedPost: PostType) => {
     setCurrentPost(updatedPost);
+
+    if (isArchivePage && updatedPost.privacy === 'PUBLIC') {
+      onPostPrivacyChange?.(updatedPost);
+    }
+
+    if (!isArchivePage && updatedPost.privacy === 'PRIVATE') {
+      onPostPrivacyChange?.(updatedPost);
+    }
   };
 
   const handleToggleSave = async () => {
     try {
       if (saved) {
         await postService.unsavePost(post.id);
+        onUnsave?.(post.id);
       } else {
         await postService.savePost(post.id);
       }
@@ -149,13 +170,25 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
   };
 
   return (
-    <Card sx={{ width: '100%', maxWidth: '1200px', mx: 'auto', p: 2, mb: 4 }}>
+    <Card
+      sx={{
+        width: '100%',
+        maxWidth: '1200px',
+        mx: 'auto',
+        p: 2,
+        mb: 4,
+        backgroundColor: 'var(--secondary-color)',
+      }}
+    >
       <PostHeader
         user={post.user}
         createdAt={post.createdAt}
         isOwner={post.user.id === user?.id}
         onDelete={handleDeletePost}
         onEdit={() => setEditOpen(true)}
+        onArchive={() => setArchiveOpen(true)}
+        isArchivePage={isArchivePage}
+        post={post}
       />
 
       <EditPostModal
@@ -163,6 +196,14 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
         onClose={() => setEditOpen(false)}
         post={currentPost}
         onUpdate={handleUpdatePost}
+      />
+
+      <ArchivePostModal
+        post={currentPost}
+        open={archiveOpen}
+        onClose={() => setArchiveOpen(false)}
+        onUpdate={handleUpdatePost}
+        isArchivePage={isArchivePage}
       />
 
       <PostContent content={currentPost.content} photo={currentPost.photo} />
@@ -179,6 +220,7 @@ const Post: React.FC<Props> = ({ post, onDelete }) => {
         }}
         saved={saved}
         onToggleSave={handleToggleSave}
+        post={post}
       />
       {showComments && (
         <PostComments

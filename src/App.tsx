@@ -1,84 +1,35 @@
-import { Box, createTheme, ThemeProvider } from '@mui/material';
+import { Box } from '@mui/material';
+import { useState } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Header from './components/Header/Header';
+import SearchSidebar from './components/Sidebar/SearchSidebar.tsx';
 import Sidebar from './components/Sidebar/Sidebar';
 import { PAGES } from './constants/pages.constants';
+import { ThemeProvider } from './contexts/ThemeContext.tsx';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import ChatsPage from './pages/ChatsPage';
+import EditProfilePage from './pages/EditUserPage.tsx';
 import FeedPage from './pages/FeedPage';
-import FriendsListPage from './pages/FriendsListPage';
 import NotificationPage from './pages/NotificationsPage';
 import ProfilePage from './pages/ProfilePage';
-import SearchPage from './pages/SearchPage';
 import UserPublicProfile from './pages/UserPublicProfile';
 import { AuthProvider } from './services/AuthContext';
-import EditProfilePage from './pages/EditUserPage.tsx';
-import SearchSidebar from './components/Sidebar/SearchSidebar.tsx';
-import { useState } from 'react';
+import FullPostPage from './pages/FullPostPage';
+import NotificationProvider from './utils/NotificationProvider.tsx';
+import ArchivePage from './pages/ArchivePage.tsx';
 
 function App() {
   const { pathname } = useLocation();
   const hideLayout = pathname === PAGES.LOGIN || pathname === PAGES.REGISTER;
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: '#6969cb',
-      },
-    },
-    typography: {
-      fontFamily: '"Roboto", sans-serif',
-    },
-    components: {
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            borderRadius: '10px',
-            fontWeight: 'bolder',
-            textTransform: 'none',
-            '&:focus': {
-              outline: 'none',
-              boxShadow: 'none',
-            },
-            '&:focus-visible': {
-              outline: 'none',
-              boxShadow: 'none',
-            },
-          },
-        },
-      },
-      MuiIconButton: {
-        styleOverrides: {
-          root: {
-            '&:focus': {
-              outline: 'none',
-              boxShadow: 'none',
-            },
-            '&:focus-visible': {
-              outline: 'none',
-              boxShadow: 'none',
-            },
-          },
-        },
-      },
-      MuiCard: {
-        styleOverrides: {
-          root: {
-            borderRadius: '10px',
-          },
-        },
-      },
-    },
-  });
-
-  //щоб Sidebar міг контролювати SearchSidebar
   const [searchSidebarCollapsed, setSearchSidebarCollapsed] = useState<boolean>(true);
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider>
       <AuthProvider>
+        <NotificationProvider />
         <Box display="flex" sx={{ width: '100%', minHeight: '100vh' }}>
           {!hideLayout && (
             <Box display={'flex'}>
@@ -99,10 +50,10 @@ function App() {
                 <Route path={PAGES.PROFILE} element={<ProfilePage />} />
                 <Route path={PAGES.EDIT_PROFILE} element={<EditProfilePage />} />
                 <Route path={PAGES.HOME} element={<FeedPage />} />
-                <Route path={PAGES.FRIENDS} element={<FriendsListPage />} />
+                <Route path={PAGES.ARCHIVE} element={<ArchivePage />} />
                 <Route path={PAGES.CHATS} element={<ChatsPage />} />
-                <Route path={PAGES.SEARCH} element={<SearchPage />} />
                 <Route path={PAGES.NOTIFICATIONS} element={<NotificationPage />} />
+                <Route path={`${PAGES.POST}/:postId`} element={<FullPostPage />} />
                 <Route path={`${PAGES.VIEW_PUBLIC_PROFILE}/:id`} element={<UserPublicProfile />} />
               </Route>
               <Route path="*" element={<Navigate to={PAGES.LOGIN} replace />} />

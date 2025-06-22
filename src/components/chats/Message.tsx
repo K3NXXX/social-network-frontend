@@ -47,7 +47,7 @@ const Message: React.FC<MessageProps & { innerRef?: React.Ref<HTMLDivElement> }>
 
   return (
     <Box
-      sx={currentUser.id === data.sender.id ? currentUserStyles : otherUserStyles}
+      sx={currentUser.id === data.sender?.id ? currentUserStyles : otherUserStyles}
       ref={innerRef}
       data-id={data.id}
     >
@@ -58,11 +58,11 @@ const Message: React.FC<MessageProps & { innerRef?: React.Ref<HTMLDivElement> }>
         sx={{
           fontSize: 12,
           alignSelf: 'flex-end',
-          color: currentUser.id === data.sender.id ? 'white' : 'gray',
+          color: currentUser.id === data.sender?.id ? 'white' : 'gray',
         }}
       >
         {new Date(data.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        {currentUser.id === data.sender.id &&
+        {currentUser.id === data.sender?.id &&
           (data.isRead === true
             ? `, ${t('chats.read')}`
             : data.isRead === false

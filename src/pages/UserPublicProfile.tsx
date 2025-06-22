@@ -1,11 +1,12 @@
-import { CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import ProfilePage from './ProfilePage';
+import { useTranslation } from 'react-i18next';
 import { authService } from '../services/authService';
 import { userService } from '../services/userService';
+import ProfileSkeleton from '../ui/skeletons/ProfileSkeleton';
 import type { User } from '../types/auth';
 import type { UserPublicProfile } from '../types/user';
-import ProfilePage from './ProfilePage';
 
 export default function UserPublicProfile() {
   const { id } = useParams();
@@ -14,6 +15,8 @@ export default function UserPublicProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const isThisMe = currentUser?.id === userData?.id;
   const [blockedMessage, setBlockedMessage] = useState(false);
+  const { t } = useTranslation();
+
   const toggleFollowUser = async (id: string) => {
     try {
       const isNowFollowing = await userService.followUser(id);
@@ -61,15 +64,13 @@ export default function UserPublicProfile() {
   }, [userData]);
 
   if (!userData && !blockedMessage) {
-    return <CircularProgress />;
+    return <ProfileSkeleton />;
   }
 
   if (blockedMessage) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px' }}>
-        <p style={{ color: 'gray', fontSize: '18px' }}>
-          Цей користувач заблокував вас. Ви не можете переглядати його профіль.
-        </p>
+        <p style={{ color: 'gray', fontSize: '18px' }}>{t('profile.youAreBlocked')}</p>
       </div>
     );
   }

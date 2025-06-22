@@ -9,7 +9,6 @@ export interface MessageData {
   chatId?: string;
 }
 
-//чат зі списку чатів (GET /chat/i)
 export interface ChatPreview {
   chatId: string;
   name: string | null;
@@ -18,7 +17,6 @@ export interface ChatPreview {
   participants: UserPreview[];
 }
 
-//чат з івента chat_created
 export interface ChatPreview_ChatCreated {
   id: string;
   name: string | null;
@@ -29,7 +27,6 @@ export interface ChatPreview_ChatCreated {
   }[];
 }
 
-//чат (GET /chat/:receiverId)
 export interface ChatDetails {
   id: string;
   isGroup: boolean;

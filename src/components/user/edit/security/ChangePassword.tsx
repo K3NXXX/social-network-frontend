@@ -1,7 +1,9 @@
 import { type FC, useState } from 'react';
-import { Box, Button, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
+import { Box, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../../../services/axiosConfig';
+import { NoOutlineButton } from '../../../../ui/NoOutlineButton';
 
 interface Props {
   open: boolean;
@@ -13,6 +15,7 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
   const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
+  const { t } = useTranslation();
 
   const handleSave = async () => {
     try {
@@ -20,13 +23,13 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
         currentPassword,
         newPassword,
       });
-      setMessage('Пароль успішно змінено!');
+      setMessage(t('profile.edit.passwordChanged'));
       setMessageType('success');
 
       setCurrentPassword('');
       setNewPassword('');
     } catch (err: any) {
-      setMessage(err.response?.data?.message || 'Помилка зміни паролю');
+      setMessage(err.response?.data?.message || t('profile.edit.passwordError'));
       setMessageType('error');
     }
   };
@@ -50,33 +53,62 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
           transform: 'translate(-50%, -50%)',
           p: 3,
           borderRadius: 4,
+          backgroundColor: 'var(--secondary-color)',
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography fontSize="20px" fontWeight={600}>
-            Змінити пароль
+          <Typography fontSize="20px" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
+            {t('profile.edit.changePassword')}
           </Typography>
-          <IconButton onClick={handleClose}>
-            <CloseIcon />
+          <IconButton
+            sx={{
+              '&:focus': { outline: 'none' },
+              '&:focus-visible': { outline: 'none' },
+            }}
+            onClick={handleClose}
+          >
+            <CloseIcon sx={{ color: 'var(--text-color)' }} />
           </IconButton>
         </Box>
 
         <TextField
           fullWidth
           type="password"
-          placeholder="Поточний пароль"
+          placeholder={t('profile.edit.currentPassword')}
           onChange={(e) => setCurrentPassword(e.target.value)}
           error={!!message && messageType === 'error'}
-          sx={{ mb: 2 }}
+          sx={{
+            mb: 2,
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color) !important',
+              borderWidth: '1px',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--border-color)',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '2px',
+            },
+            '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--error-color)',
+            },
+          }}
           InputProps={{
             sx: {
               '& .MuiInputBase-input': {
                 px: 2,
                 py: '10px',
+                color: 'var(--text-color)',
                 '&::-webkit-calendar-picker-indicator': {
                   filter: 'brightness(0)',
                   cursor: 'pointer',
                 },
+              },
+              '& input:-webkit-autofill': {
+                boxShadow: '0 0 0px 1000px var(--secondary-color) inset !important',
+                WebkitTextFillColor: 'var(--text-color) !important',
+                caretColor: 'var(--text-color) !important',
               },
               borderRadius: '10px',
             },
@@ -85,7 +117,7 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
         <TextField
           fullWidth
           type="password"
-          placeholder="Новий пароль"
+          placeholder={t('profile.edit.newPassword')}
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           error={!!message && messageType === 'error'}
@@ -107,24 +139,41 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
               '& .MuiInputBase-input': {
                 px: 2,
                 py: '10px',
-                '&::-webkit-calendar-picker-indicator': {
-                  filter: 'brightness(0)',
-                  cursor: 'pointer',
-                },
+                color: 'var(--text-color)',
+              },
+              '&::-webkit-calendar-picker-indicator': {
+                filter: 'brightness(0)',
+                cursor: 'pointer',
               },
               borderRadius: '10px',
             },
           }}
+          sx={{
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color) !important',
+              borderWidth: '1px',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--border-color)',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '2px',
+            },
+            '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--error-color)',
+            },
+          }}
         />
-        <Button
+        <NoOutlineButton
           fullWidth
           variant="contained"
-          sx={{ mt: 2 }}
+          sx={{ mt: 2, backgroundColor: 'var(--primary-color)' }}
           onClick={handleSave}
           disabled={!currentPassword && !newPassword}
         >
-          Зберегти
-        </Button>
+          {t('profile.edit.save')}
+        </NoOutlineButton>
       </Paper>
     </Modal>
   );

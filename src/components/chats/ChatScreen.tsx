@@ -1,11 +1,12 @@
 import { Box, Typography, Avatar, TextField, IconButton } from '@mui/material';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import sendIcon from '../../assets/paper-plane.svg';
 import type { ChatPreview, MessageData, UserPreview } from '../../types/chats';
 import Message from './Message';
 import { chatsService } from '../../services/chatsService';
 import type { Socket } from 'socket.io-client';
 import { useTranslation } from 'react-i18next';
+import SendIcon from '@mui/icons-material/Send';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export interface ChatScreenProps {
   selectedChat: ChatPreview | null;
@@ -19,6 +20,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
   const [messages, setMessages] = useState<MessageData[]>();
   const [messageInput, setMessageInput] = useState<string>('');
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   const otherUser = selectedChat?.participants.find((user) => user.id !== currentUser.id);
   //щоб передавати оновлені значення до useEffect
@@ -183,10 +185,10 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            bgcolor: 'white',
+            bgcolor: 'var(--background-color)',
           }}
         >
-          <Typography variant="h6" color="text.secondary">
+          <Typography variant="h6" sx={{ color: theme === 'light' ? 'gray' : 'white' }}>
             {t('chats.chooseChat')}
           </Typography>
         </Box>
@@ -194,7 +196,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
         <Box
           sx={{
             width: '100%',
-            bgcolor: 'white',
+            bgcolor: 'var(--background-color)',
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -203,7 +205,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
             sx={{
               width: '100%',
               height: 70,
-              borderBottom: '1px solid #dedede',
+              borderBottom: '1px solid var(--border-color)',
               display: 'flex',
             }}
           >
@@ -230,7 +232,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  bgcolor: '#9885f4',
+                  bgcolor: 'var(--primary-color)',
                   color: 'white',
                 }}
               >
@@ -258,7 +260,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
               <Typography
                 variant="body1"
                 component="p"
-                sx={{ color: 'black', fontWeight: 'bold', fontSize: '16px' }}
+                sx={{ color: 'var(--text-color)', fontWeight: 'bold', fontSize: '16px' }}
               >
                 {otherUser
                   ? fullNameString(otherUser)
@@ -266,7 +268,11 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
                     ? fullNameString(newChatUser)
                     : null}
               </Typography>
-              <Typography variant="body1" component="p" sx={{ color: 'grey', fontSize: '14px' }}>
+              <Typography
+                variant="body1"
+                component="p"
+                sx={{ color: 'var(--text-color)', opacity: 0.5, fontSize: '14px' }}
+              >
                 {otherUser
                   ? otherUser?.isOnline || otherUser?.isActive === 'ACTIVE'
                     ? t('chats.online')
@@ -325,34 +331,68 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
             >
               <TextField
                 variant="outlined"
+                placeholder={t('chats.writeYourMessage')}
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                InputProps={{
+                  sx: {
+                    color: 'var(--text-color)',
+                    opacity: 0.7,
+                    borderRadius: '20px',
+                    '& input': {
+                      padding: '1.5px 0px',
+                      color: 'var(--text-color)',
+                    },
+                    '&.Mui-focused': {
+                      color: 'var(--primary-color)',
+                      opacity: 1,
+                    },
+                    '&.MuiFormLabel-filled': {
+                      color: 'var(--primary-color)',
+                    },
+                  },
+                }}
                 sx={{
                   flex: 1,
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: '30px',
+                    borderRadius: '20px',
+                    borderColor: 'var(--border-color)',
+                    padding: 0,
+                    '& input': {
+                      paddingTop: 1.5,
+                      paddingBottom: 1.5,
+                      paddingLeft: 1.5,
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                    },
                     '& fieldset': {
-                      border: '1px solid #dedede',
+                      borderColor: 'var(--border-color)',
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--border-color)',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--primary-color)',
+                      borderWidth: '2px',
                     },
                   },
-                  color: '#dedede',
                 }}
-                placeholder="Напишіть своє повідомлення тут..."
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
               ></TextField>
               <IconButton
                 onClick={() => handleSendMessage(messageInput)}
                 sx={{
                   width: 50,
-                  height: '100%',
+                  height: '90%',
                   borderRadius: '35%',
-                  border: '1px solid #dedede',
+                  border: '1px solid var(--primary-color)',
                   marginLeft: '10px',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
               >
-                <img src={sendIcon} alt="send" style={{ width: 24, height: 24 }} />
+                <SendIcon sx={{ color: 'var(--text-color)' }} />
               </IconButton>
             </Box>
           </Box>

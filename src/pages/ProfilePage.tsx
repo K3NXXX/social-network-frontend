@@ -1,38 +1,28 @@
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import {
-  Avatar,
-  avatarGroupClasses,
-  Box,
-  Container,
-  Divider,
-  Tab,
-  Tabs,
-  Typography,
-} from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import UserPosts from '../components/Post/UserPosts.tsx';
 import PublicUserOptionsMenu from '../components/user/PublicUserOptionsMenu.tsx';
 import ShowFollowersForm from '../components/user/ShowFollowersForm.tsx';
 import ShowFollowingsForm from '../components/user/ShowFollowingsForm.tsx';
+import ProfileSkeleton from '../ui/skeletons/ProfileSkeleton.tsx';
+import axiosInstance from '../services/axiosConfig.ts';
+import { useTranslation } from 'react-i18next';
 import { PAGES } from '../constants/pages.constants.ts';
 import { useAuth } from '../services/AuthContext.tsx';
-import axiosInstance from '../services/axiosConfig.ts';
 import { userService } from '../services/userService.ts';
-import type { User } from '../types/auth.ts';
-import type { UserPublicProfile } from '../types/user.ts';
-import GlobalLoader from '../ui/GlobalLoader.tsx';
+import { Avatar, Box, Container, Divider, Tab, Tabs, Typography } from '@mui/material';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
-import { first, isMatchWith } from 'lodash';
+import type { UserPublicProfile } from '../types/user.ts';
+import type { User } from '../types/auth.ts';
 
 interface IProfilePageProps {
-  isPublicProfile: boolean;
-  publicUserData: UserPublicProfile;
-  setPublicUserData?: React.Dispatch<React.SetStateAction<UserPublicProfile>>;
-  toggleFollowUser: (id: string) => void;
-  isFollowing: boolean;
-  isThisMe: boolean;
+  isPublicProfile?: boolean;
+  publicUserData?: UserPublicProfile | null;
+  setPublicUserData?: React.Dispatch<React.SetStateAction<UserPublicProfile | null>>;
+  toggleFollowUser?: (id: string) => void;
+  isFollowing?: boolean;
+  isThisMe?: boolean;
 }
 
 export default function ProfilePage({
@@ -55,12 +45,10 @@ export default function ProfilePage({
   const [tab, setTab] = useState(0);
   const { t } = useTranslation();
 
-  console.log('public blocked', blockedUsers);
-
   const displayedTabs =
     isPublicProfile && !isThisMe
-      ? [t('profile.tabs.posts'), t('profile.tabs.tagged')]
-      : [t('profile.tabs.posts'), t('profile.tabs.saved'), t('profile.tabs.tagged')];
+      ? [t('profile.tabs.posts')]
+      : [t('profile.tabs.posts'), t('profile.tabs.saved')];
 
   const navigate = useNavigate();
 
@@ -71,13 +59,15 @@ export default function ProfilePage({
   const handleUnblock = async () => {
     if (!isPublicProfile) return;
     try {
-      await userService.unblockUser(publicUserData.id);
+      if (publicUserData?.id) {
+        await userService.unblockUser(publicUserData.id);
+      }
       const updated = await userService.getBlockedUsers();
       setBlockedUsers(updated);
-      const isBlockedNow = updated.some((user: any) => user.blocked?.id === publicUserData.id);
+      const isBlockedNow = updated.some((user: any) => user.blocked?.id === publicUserData?.id);
       setIsBlocked(isBlockedNow);
     } catch (error) {
-      console.log('Помилка при розблокуванні користувача:', error);
+      console.log('Error unblocking user: ', error);
     }
   };
 
@@ -127,7 +117,7 @@ export default function ProfilePage({
   }, [publicUserData, profile]);
 
   if (loading) {
-    return <GlobalLoader />;
+    return <ProfileSkeleton />;
   }
 
   if (error) {
@@ -153,7 +143,7 @@ export default function ProfilePage({
           <Box display="flex" alignItems="center" flexWrap="wrap" position={'relative'}>
             {isPublicProfile ? (
               <Typography fontSize="18px" fontWeight={400}>
-                {publicUserData.firstName} {publicUserData.lastName}
+                {publicUserData?.firstName} {publicUserData?.lastName}
               </Typography>
             ) : (
               <Typography fontSize="18px" fontWeight={400}>
@@ -183,14 +173,18 @@ export default function ProfilePage({
                     size="small"
                     sx={{ backgroundColor: '#d9534f' }}
                   >
-                    Розблокувати
+                    {t('profile.unblock')}
                   </NoOutlineButton>
                 ) : (
                   <NoOutlineButton
-                    onClickCapture={() => toggleFollowUser(publicUserData.id)}
+                    onClickCapture={() => {
+                      if (publicUserData?.id) {
+                        toggleFollowUser?.(publicUserData.id);
+                      }
+                    }}
                     variant="contained"
                     size="small"
-                    sx={{ backgroundColor: isFollowing ? '#737373' : '' }}
+                    sx={{ backgroundColor: isFollowing ? '#737373' : 'var(--primary-color)' }}
                   >
                     {isFollowing ? t('profile.followingLabel') : t('profile.followLabel')}
                   </NoOutlineButton>
@@ -200,32 +194,43 @@ export default function ProfilePage({
                   variant="contained"
                   size="small"
                   onClick={() => navigate(PAGES.EDIT_PROFILE)}
+                  sx={{ backgroundColor: 'var(--primary-color)' }}
                 >
                   {t('profile.editProfileLabel')}
                 </NoOutlineButton>
               )}
               {isPublicProfile && !isThisMe ? (
                 <Link to={`${PAGES.CHATS}`} state={{ userData: publicUserData }}>
-                  <NoOutlineButton variant="contained" size="small">
+                  <NoOutlineButton
+                    variant="contained"
+                    size="small"
+                    sx={{ backgroundColor: 'var(--primary-color)' }}
+                  >
                     {t('profile.messageLabel')}
                   </NoOutlineButton>
                 </Link>
               ) : (
-                <NoOutlineButton variant="contained" size="small">
-                  {t('profile.viewArchiveLabel')}
-                </NoOutlineButton>
+                <Link to={PAGES.ARCHIVE}>
+                  <NoOutlineButton
+                    variant="contained"
+                    size="small"
+                    sx={{ backgroundColor: 'var(--primary-color)' }}
+                  >
+                    {t('profile.viewArchiveLabel')}
+                  </NoOutlineButton>
+                </Link>
               )}
               {isPublicProfile && !isThisMe && (
                 <Box
                   onClick={() => setIsPublicUserMenuOpened(true)}
                   sx={{
-                    backgroundColor: '#aaaaaa',
+                    backgroundColor: 'var(--background-color)',
                     padding: '5px',
                     borderRadius: '10px',
                     cursor: 'pointer',
                   }}
                 >
-                  <MoreHorizIcon sx={{ color: 'white' }} />
+                  <MoreHorizIcon sx={{ color: 'var(--text-color)' }} />
                 </Box>
               )}
             </Box>
@@ -234,7 +239,7 @@ export default function ProfilePage({
           <Box display="flex" gap={4} marginTop="32px" marginBottom="20px">
             <Box display="flex" gap={0.5}>
               <Typography fontWeight="bold" fontSize="15px">
-                {isBlocked ? 0 : isPublicProfile ? publicUserData.posts : profile.posts}
+                {isBlocked ? 0 : isPublicProfile ? publicUserData?.posts : profile.posts}
               </Typography>
               <Typography color="#737373" fontSize="15px">
                 {t('profile.postsLabel')}
@@ -249,7 +254,7 @@ export default function ProfilePage({
               sx={{ cursor: isBlocked ? '' : 'pointer' }}
             >
               <Typography fontWeight="bold" fontSize="15px">
-                {isBlocked ? 0 : isPublicProfile ? publicUserData.followers : profile.followers}
+                {isBlocked ? 0 : isPublicProfile ? publicUserData?.followers : profile.followers}
               </Typography>
               <Typography color="#737373" fontSize="15px">
                 {t('profile.followersLabel')}
@@ -265,7 +270,7 @@ export default function ProfilePage({
               sx={{ cursor: isBlocked ? '' : 'pointer' }}
             >
               <Typography fontWeight="bold" fontSize="15px">
-                {isBlocked ? 0 : isPublicProfile ? publicUserData.following : profile.following}
+                {isBlocked ? 0 : isPublicProfile ? publicUserData?.following : profile.following}
               </Typography>
               <Typography color="#737373" fontSize="15px">
                 {t('profile.followingsLabel')}
@@ -274,7 +279,7 @@ export default function ProfilePage({
           </Box>
 
           <Box display="flex" flexDirection="column" alignSelf="start" textAlign="justify">
-            <Typography> {isPublicProfile ? publicUserData.bio : profile.bio}</Typography>
+            <Typography> {isPublicProfile ? publicUserData?.bio : profile.bio}</Typography>
           </Box>
         </Box>
       </Box>
@@ -290,7 +295,7 @@ export default function ProfilePage({
               sx: {
                 top: 0,
                 height: '1px',
-                backgroundColor: 'primary.main',
+                backgroundColor: 'var(--primary-color)',
               },
             }}
           >
@@ -300,6 +305,7 @@ export default function ProfilePage({
                   key={label + index}
                   label={label}
                   sx={{
+                    color: 'var(--text-color)',
                     outline: 'none',
                     border: 'none',
                     transition: 'none',
@@ -311,6 +317,7 @@ export default function ProfilePage({
                     },
                     '&.Mui-selected': {
                       transition: 'none',
+                      color: 'var(--primary-color)',
                     },
                   }}
                 />
@@ -319,24 +326,24 @@ export default function ProfilePage({
         </Box>
 
         <Box mt={2}>
-          {tab === 0 && (
+          {tab === 0 && !isBlocked && (
             <>
-              {!isBlocked && (
+              {(isPublicProfile ? publicUserData?.posts : profile.posts) > 0 ? (
                 <UserPosts isPublicProfile={isPublicProfile} publicUserData={publicUserData} />
+              ) : (
+                <Typography align="center" color="#737373">
+                  {t('profile.noPostsLabel')}
+                </Typography>
               )}
             </>
           )}
 
           {tab === 1 && (
-            <Typography align="center" color="#737373">
-              {t('profile.noSavedPostsLabel')}
-            </Typography>
-          )}
-
-          {tab === 2 && (
-            <Typography align="center" color="#737373">
-              {t('profile.noTaggedPostsLabel')}
-            </Typography>
+            <UserPosts
+              isSavedPosts={true}
+              isPublicProfile={isPublicProfile}
+              publicUserData={publicUserData}
+            />
           )}
         </Box>
       </Box>
@@ -344,7 +351,7 @@ export default function ProfilePage({
         <ShowFollowersForm
           onClose={() => setIsShowFollowersFormOpened(false)}
           isOpened={isShowFollowersFormOpened}
-          userId={isPublicProfile ? publicUserData.id : profile.id}
+          userId={isPublicProfile ? publicUserData?.id : profile.id}
           setProfile={setProfile}
           blockedUsers={blockedUsers}
         />
@@ -354,7 +361,7 @@ export default function ProfilePage({
         <ShowFollowingsForm
           onClose={() => setIsShowFollowingsFormOpened(false)}
           isOpened={isShowFollowingsFormOpened}
-          userId={isPublicProfile ? publicUserData.id : profile.id}
+          userId={isPublicProfile ? publicUserData?.id : profile.id}
           setProfile={setProfile}
           blockedUsers={blockedUsers}
         />

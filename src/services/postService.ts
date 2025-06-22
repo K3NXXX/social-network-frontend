@@ -1,5 +1,5 @@
-import axiosInstance from './axiosConfig';
 import type { CommentType, PostType } from '../types/post';
+import axiosInstance from './axiosConfig';
 
 const POST_ENDPOINTS = {
   POSTS: '/api/posts',
@@ -8,6 +8,8 @@ const POST_ENDPOINTS = {
   FEED_POSTS: '/api/posts/feed',
   DISCOVER_POSTS: '/api/posts/discover',
   SINGLE_POST: (id: string) => `/api/posts/${id}`,
+  UPDATE_PRIVACY: `/api/posts`,
+  GET_ARCHIVE_POSTS: '/api/posts/user/archive',
 
   CREATE_POST: '/api/posts',
   DELETE_POST: (id: string) => `/api/posts/${id}`,
@@ -298,6 +300,26 @@ export const postService = {
     } catch (error) {
       console.error(`Failed to unsave post ${postId}:`, error);
       throw error;
+    }
+  },
+
+  async updatePostPrivacy(id: string, privacy: 'PRIVATE' | 'PUBLIC') {
+    try {
+      const { data } = await axiosInstance.patch(`${POST_ENDPOINTS.UPDATE_PRIVACY}/${id}`, {
+        privacy,
+      });
+      return data;
+    } catch (error) {
+      console.log('Failed to update post privacy: ', error);
+    }
+  },
+
+  async getArchivePosts() {
+    try {
+      const { data } = await axiosInstance.get(POST_ENDPOINTS.GET_ARCHIVE_POSTS);
+      return data;
+    } catch (error) {
+      console.log('Failed to get archive posts: ', error);
     }
   },
 };

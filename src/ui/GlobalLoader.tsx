@@ -11,7 +11,7 @@ export default function GlobalLoader() {
         justifyContent: 'center',
       }}
     >
-      <CircularProgress />
+      <CircularProgress sx={{ color: 'var(--primary-color)' }} />
     </Box>
   );
 }

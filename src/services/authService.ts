@@ -47,13 +47,7 @@ const handleError = (error: unknown, defaultMessage: string): never => {
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      console.log('Sending login request:', {
-        email: credentials.email,
-        passwordProvided: !!credentials.password,
-      });
       const response = await axiosInstance.post<AuthResponse>(AUTH_ENDPOINTS.LOGIN, credentials);
-      console.log('Login response:', response.data);
-
       if (response.data && response.data.accessToken) {
         setSession(response.data.accessToken, response.data.user);
         return response.data;
@@ -67,7 +61,6 @@ export const authService = {
 
   async register(credentials: RegisterCredentials): Promise<RegisterResponse> {
     try {
-      console.log('Sending registration request:', credentials);
       const response = await axiosInstance.post<RegisterResponse>(
         AUTH_ENDPOINTS.REGISTER,
         credentials
@@ -129,7 +122,7 @@ export const authService = {
     }
   },
 
-  async getCurrentUser(): Promise<User | null> {
+  getCurrentUser(): User | null {
     const userStr = localStorage.getItem('user');
     if (userStr) {
       return JSON.parse(userStr);

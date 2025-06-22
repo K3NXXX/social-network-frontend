@@ -1,7 +1,9 @@
 import { type FC, useState } from 'react';
-import { Box, Button, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
+import { Box, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import axiosInstance from '../../../../services/axiosConfig';
+import { useTranslation } from 'react-i18next';
+import { NoOutlineButton } from '../../../../ui/NoOutlineButton';
 
 interface Props {
   open: boolean;
@@ -13,6 +15,7 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
   const [newUsername, setNewUsername] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
+  const { t } = useTranslation();
 
   const isValidInstagramUsername = (username: string) => {
     const regex = /^(?!.*\.\.)(?!.*\.$)[a-zA-Z0-9._]{1,20}$/;
@@ -23,16 +26,15 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
   };
 
   const handleSave = async () => {
-    console.log('checking:', newUsername);
     if (!isValidInstagramUsername(newUsername)) {
-      setMessage('Некоректний username. Лише латиниця, цифри, ".", "_" (1–20 символів)');
+      setMessage(t('profile.edit.incorrectUsername'));
       setMessageType('error');
       return;
     }
 
     try {
       await axiosInstance.patch('/api/user/account', { newUsername });
-      setMessage('Username успішно змінено!');
+      setMessage(t('profile.edit.usernameChanged'));
       setMessageType('success');
 
       onUsernameUpdated(newUsername);
@@ -62,24 +64,31 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
           transform: 'translate(-50%, -50%)',
           p: 3,
           borderRadius: 4,
+          backgroundColor: 'var(--secondary-color)',
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography fontSize="20px" fontWeight={600}>
-            Username
+          <Typography fontSize="20px" fontWeight={600} sx={{ color: 'var(--text-color)' }}>
+            {t('profile.edit.username')}
           </Typography>
-          <IconButton onClick={handleClose}>
-            <CloseIcon />
+          <IconButton
+            sx={{
+              '&:focus': { outline: 'none' },
+              '&:focus-visible': { outline: 'none' },
+            }}
+            onClick={handleClose}
+          >
+            <CloseIcon sx={{ color: 'var(--text-color)' }} />
           </IconButton>
         </Box>
 
-        <Typography fontSize="15px" mb={2}>
-          Введіть новий username
+        <Typography fontSize="15px" mb={2} sx={{ color: 'var(--text-color)' }}>
+          {t('profile.edit.enterNewUsername')}
         </Typography>
 
         <TextField
           fullWidth
-          placeholder="Username"
+          placeholder={t('profile.edit.username')}
           value={newUsername}
           onChange={(e) => setNewUsername(e.target.value)}
           error={!!message && messageType === 'error'}
@@ -101,6 +110,7 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
               '& .MuiInputBase-input': {
                 px: 2,
                 py: '10px',
+                color: 'var(--text-color)',
                 '&::-webkit-calendar-picker-indicator': {
                   filter: 'brightness(0)',
                   cursor: 'pointer',
@@ -109,16 +119,32 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
               borderRadius: '10px',
             },
           }}
+          sx={{
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color) !important',
+              borderWidth: '1px',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--border-color)',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--primary-color)',
+              borderWidth: '2px',
+            },
+            '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--error-color)',
+            },
+          }}
         />
-        <Button
+        <NoOutlineButton
           fullWidth
           variant="contained"
-          sx={{ mt: 2 }}
+          sx={{ mt: 2, backgroundColor: 'var(--primary-color)' }}
           onClick={handleSave}
           disabled={!newUsername}
         >
-          Зберегти
-        </Button>
+          {t('profile.edit.save')}
+        </NoOutlineButton>
       </Paper>
     </Modal>
   );

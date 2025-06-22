@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   CircularProgress,
@@ -9,16 +8,15 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import { useAuth } from '../services/AuthContext.tsx';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import axiosInstance from '../services/axiosConfig.ts';
 import ProfileSection from '../components/user/edit/ProfileSection.tsx';
-import PrivacySection from '../components/user/edit/PrivacySection.tsx';
 import SecuritySection from '../components/user/edit/security/SecuritySection.tsx';
+import { useAuth } from '../services/AuthContext.tsx';
+import axiosInstance from '../services/axiosConfig.ts';
 
 const sidebarItems = [
   { key: 'edit', label: 'Редагувати профіль' },
-  { key: 'privacy', label: 'Приватність акаунту' },
   { key: 'security', label: 'Безпека' },
 ];
 
@@ -27,7 +25,6 @@ const EditUserPage = () => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [username, setUsername] = useState<string>('');
-
   const [activeSection, setActiveSection] = useState('edit');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,10 +52,10 @@ const EditUserPage = () => {
 
       await axiosInstance.patch('/api/user/profile', updateProfile);
       await fetchProfile();
-      setMessage('Профіль успішно оновлено!');
+      setMessage(t('profile.edit.success'));
       setMessageType('success');
     } catch (error: any) {
-      const msg = error.response?.data?.message || 'Не вдалося зберегти зміни.';
+      const msg = error.response?.data?.message || t('profile.edit.error');
       setMessage(msg);
       setMessageType('error');
     } finally {
@@ -80,7 +77,7 @@ const EditUserPage = () => {
       await axiosInstance.patch('/api/user/update/avatar', formData);
       await fetchProfile();
     } catch {
-      setMessage('Помилка при завантаженні фото');
+      setMessage(t('profile.edit.errorUploadingAvatar'));
       setMessageType('error');
     }
   };
@@ -90,7 +87,7 @@ const EditUserPage = () => {
       await axiosInstance.delete('/api/user/delete/avatar');
       await fetchProfile();
     } catch {
-      setMessage('Помилка при видаленні фото');
+      setMessage(t('profile.edit.errorDeletingAvatar'));
       setMessageType('error');
     }
   };
@@ -109,10 +106,10 @@ const EditUserPage = () => {
       setError(null);
     } catch (err: any) {
       if (err.response?.status === 401) {
-        setError('Сесія завершена. Увійдіть знову.');
+        setError(t('profile.edit.sessionExpired'));
         logout?.();
       } else {
-        setError('Не вдалося завантажити профіль.');
+        setError(t('profile.edit.loadingProfileError'));
       }
     } finally {
       setLoading(false);
@@ -126,7 +123,7 @@ const EditUserPage = () => {
   if (loading) {
     return (
       <Box sx={{ textAlign: 'center', mt: 10 }}>
-        <CircularProgress />
+        <CircularProgress sx={{ color: 'var(--primary-color)' }} />
       </Box>
     );
   }
@@ -155,14 +152,17 @@ const EditUserPage = () => {
             py: 1.5,
             boxShadow: 3,
             zIndex: 1300,
+            padding: '0 10px',
           }}
         >
-          <Typography fontSize="14px">{message}</Typography>
+          <Typography fontSize="14px" fontFamily={'Ubuntu, sans-serif'}>
+            {message}
+          </Typography>
         </Box>
       )}
 
       <Box display="flex">
-        <Box sx={{ width: 240, borderRight: '1px solid #e0e0e0', px: 2 }}>
+        <Box sx={{ width: 240, borderRight: '1px solid var(--border-color)', px: 2 }}>
           <Typography fontSize="18px" fontWeight="bold" my={2} textAlign="left" px={2}>
             {t('profile.settingsLabel')}
           </Typography>
@@ -176,11 +176,11 @@ const EditUserPage = () => {
                     borderRadius: '8px',
                     mb: 1,
                     '&.Mui-selected': {
-                      backgroundColor: 'action.selected', // або свій колір, наприклад: '#f0f0f0'
+                      backgroundColor: 'action.selected',
                       borderRadius: '8px',
                     },
                     '&.Mui-selected:hover': {
-                      backgroundColor: 'action.hover', // колір при наведенні на активний
+                      backgroundColor: 'action.hover',
                     },
                   }}
                 >
@@ -197,7 +197,7 @@ const EditUserPage = () => {
           </List>
         </Box>
 
-        <Container maxWidth="sm">
+        <Container sx={{ width: '40%' }}>
           {activeSection === 'edit' && profile && (
             <ProfileSection
               profile={profile}
@@ -216,7 +216,6 @@ const EditUserPage = () => {
               onUsernameChange={setUsername}
             />
           )}
-          {activeSection === 'privacy' && <PrivacySection />}
         </Container>
       </Box>
     </Box>

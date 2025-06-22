@@ -1,10 +1,10 @@
 import React from 'react';
-import { Box } from '@mui/material';
 import PostsList from '../components/Post/PostList';
 import CreatePostCard from '../components/Post/CreatePostCard';
 import { usePosts } from '../hooks/usePosts';
 import { postService } from '../services/postService';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
+import { Box } from '@mui/material';
 
 const UserPostsPage: React.FC = () => {
   const { posts, setPosts, page, totalPages, loading, fetchPosts, loaderRef } = usePosts(

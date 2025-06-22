@@ -1,16 +1,17 @@
-import { Box, Typography, TextField, InputAdornment } from '@mui/material';
+import { Close } from '@mui/icons-material';
+import SearchIcon from '@mui/icons-material/Search';
+import { Box, InputAdornment, TextField, Typography } from '@mui/material';
+import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { io, Socket } from 'socket.io-client';
 import ChatBar from '../components/chats/ChatBar';
 import ChatScreen from '../components/chats/ChatScreen';
 import { chatsService } from '../services/chatsService';
 import type { ChatPreview, ChatPreview_ChatCreated, UserPreview } from '../types/chats';
-import { io, Socket } from 'socket.io-client';
 import SearchBlock from '../components/chats/SearchBlock';
-import SearchIcon from '@mui/icons-material/Search';
-import { Close } from '@mui/icons-material';
-import debounce from 'lodash/debounce';
+import { useTheme } from '../contexts/ThemeContext';
 import { userService } from '../services/userService';
-import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const ChatsPage: React.FC = () => {
@@ -19,25 +20,26 @@ const ChatsPage: React.FC = () => {
   const userData: UserPreview = location.state?.userData;
 
   const { t } = useTranslation();
-
   const [selectedChat, setSelectedChat] = useState<ChatPreview | null>(null);
   const [chats, setChats] = useState<ChatPreview[]>([]);
-
-  const socketRef = useRef<Socket | null>(null);
-  const lastChatIdRef = useRef<string | null>(null); // для leave_chat івента
-
-  //якщо з користувачем раніше чата не було-
   const [newChatUser, setNewChatUser] = useState<UserPreview | undefined>(undefined);
   const newChatUserRef = useRef<UserPreview | undefined>(undefined);
+  const lastChatIdRef = useRef<string | null>(null);
+  const socketRef = useRef<Socket | null>(null);
+  const { theme } = useTheme();
 
   //висота Header для обчислення висоти цього екрана
   const [headerHeight, setHeaderHeight] = useState<number>(0);
 
   const [searchValue, setSearchValue] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<UserPreview[] | []>([]);
+  const [searchResults, setSearchResults] = useState<UserPreview[]>([]);
+
   const debounceSearch = useCallback(
     debounce(async (value: string) => {
-      if (value.trim().length < 2) return setSearchResults([]);
+      if (value.trim().length < 2) {
+        setSearchResults([]);
+        return;
+      }
       try {
         const data = await userService.searchUsers(value);
         setSearchResults(data);
@@ -62,24 +64,24 @@ const ChatsPage: React.FC = () => {
   useEffect(() => {
     debounceSearch(searchValue);
   }, [searchValue, debounceSearch]);
+
   useEffect(() => {
     newChatUserRef.current = newChatUser;
   }, [newChatUser]);
 
+  // --- Ініціалізація WS та завантаження чатів
   useEffect(() => {
     const headerEl = document.querySelector('.MuiCard-root');
     if (headerEl) setHeaderHeight(Number.parseInt(getComputedStyle(headerEl).height));
 
-    //завантажуємо дані про чати при відкритті сторінки
     const loadChats = async () => {
       try {
         const data = await chatsService.fetchChats();
         setChats(data);
-      } catch (error) {
-        console.error('Error fetching chats:', error);
+      } catch (e) {
+        console.error('Error fetching chats:', e);
       }
     };
-
     loadChats();
 
     socketRef.current = io('https://vetra-8c5dfe3bdee7.herokuapp.com', {
@@ -94,7 +96,6 @@ const ChatsPage: React.FC = () => {
     socketRef.current.on('connect', () => {
       console.log('Socket connected:', socketRef.current?.id);
     });
-
     socketRef.current.on('disconnect', () => {
       console.log('Socket disconnected');
     });
@@ -141,52 +142,34 @@ const ChatsPage: React.FC = () => {
     if (lastChatIdRef.current && lastChatIdRef.current !== selectedChat.chatId) {
       socketRef.current?.emit('leave_chat', lastChatIdRef.current);
     }
-
     lastChatIdRef.current = selectedChat.chatId;
     socketRef.current?.emit('join_chat', selectedChat.chatId);
   }, [selectedChat]);
 
-  const handleSelectUser = async (userData: UserPreview) => {
-    console.log('handling select user:', userData);
-
-    setSearchValue('');
-    setSearchResults([]);
-    const chat = await findChat(userData.id);
-    if (chat) {
-      setSelectedChat(chat);
-      lastChatIdRef.current = chat.chatId;
-    } else {
-      setSelectedChat(null);
-      setNewChatUser(userData);
-    }
-  };
-
-  //івент chat_created
+  // --- Обробник створення нового групового чату
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket) return;
-    if (!socket.connected) socket.connect();
 
-    const handleChatCreated = async (newChat: ChatPreview_ChatCreated) => {
-      const chatData: ChatPreview = {
+    const onChatCreated = (newChat: ChatPreview_ChatCreated) => {
+      const preview: ChatPreview = {
         chatId: newChat.id,
         isGroup: newChat.isGroup,
         name: newChat.name,
-        lastMessage: newChat.messages[newChat.messages.length - 1],
-        participants: [newChat.participants[0].user, newChat.participants[1].user],
+        lastMessage: newChat.messages.at(-1) ?? null,
+        participants: newChat.participants.map((p) => p.user),
       };
-      setChats((chats) => [chatData, ...chats]);
-      setSelectedChat(chatData);
-      setNewChatUser(undefined);
-      lastChatIdRef.current = chatData.chatId;
+      setChats((prev) => [preview, ...prev]);
+      setSelectedChat(preview);
+      newChatUserRef.current = undefined;
+      lastChatIdRef.current = preview.chatId;
     };
 
-    socket.on('chat_created', handleChatCreated);
-
+    socket.on('chat_created', onChatCreated);
     return () => {
-      socket.off('chat_created', handleChatCreated);
+      socket.off('chat_created', onChatCreated);
     };
-  }, [socketRef.current]);
+  }, []);
 
   const findChat = async (friendId: string) => {
     //знаходить чат з другом за його id.
@@ -216,106 +199,110 @@ const ChatsPage: React.FC = () => {
     } else return foundChat;
   };
 
+  const handleSelectUser = async (userData: UserPreview) => {
+    setSearchValue('');
+    setSearchResults([]);
+    const chat = await findChat(userData.id);
+    if (chat) {
+      setSelectedChat(chat);
+      lastChatIdRef.current = chat.chatId;
+    } else {
+      setSelectedChat(null);
+      setNewChatUser(userData);
+    }
+  };
+
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        height: `calc(${window.innerHeight}px - ${headerHeight}px)`,
-      }}
-    >
-      {/* бічна панель */}
+    <Box sx={{ display: 'flex', height: `calc(${window.innerHeight}px - ${headerHeight}px)` }}>
+      {/* Сайдбар з пошуком */}
       <Box
         sx={{
-          width: '340px',
+          width: 340,
           flexShrink: 0,
-          bgcolor: 'white',
-          display: 'flex',
-          flexDirection: 'column',
-          borderRight: '1px solid #dedede',
+          bgcolor: 'var(--background-color)',
+          borderRight: '1px solid var(--border-color)',
+          p: 2,
         }}
       >
         <TextField
-          autoComplete="off"
+          fullWidth
           placeholder={t('chats.chooseToWrite')}
           variant="outlined"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
+          sx={{
+            backgroundColor: theme === 'dark' ? '#1e1e1e' : '#fff',
+            '& .MuiOutlinedInput-root': {
+              color: theme === 'dark' ? '#fff' : '#000',
+              '& fieldset': {
+                borderColor: theme === 'dark' ? '#555' : '#ccc',
+              },
+              '&:hover fieldset': {
+                borderColor: theme === 'dark' ? '#888' : '#888',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#9885f4',
+              },
+            },
+            input: {
+              color: theme === 'dark' ? '#fff' : '#000',
+            },
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ color: '#888', marginLeft: '10px' }} />
+                <SearchIcon sx={{ color: theme === 'light' ? '#949494' : 'white' }} />
               </InputAdornment>
             ),
-            endAdornment: searchValue.length > 0 && (
+            endAdornment: searchValue && (
               <InputAdornment position="end">
                 <Close
+                  sx={{ color: theme === 'light' ? '#949494' : 'white' }}
                   onClick={() => setSearchValue('')}
-                  sx={{ color: '#888', mx: '10px', cursor: 'pointer' }}
                 />
               </InputAdornment>
             ),
-            sx: {
-              padding: 0,
-              '& input': {
-                padding: '1.5px 0px',
-              },
-            },
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              margin: '10px 5px 0 5px',
-              padding: 0,
-              '& input': {
-                paddingTop: 1.5,
-                paddingBottom: 1.5,
-              },
-            },
           }}
         />
         {searchResults.length > 0 && (
           <Box
             sx={{
-              alignSelf: 'center',
               position: 'absolute',
-              width: '300px',
-              marginTop: '60px',
+              width: 300,
+              mt: 6,
               bgcolor: '#181424',
               boxShadow: 3,
-              borderRadius: '10px',
+              borderRadius: 1,
               zIndex: 1000,
-              padding: '10px',
-              maxHeight: '700px',
+              maxHeight: 400,
               overflowY: 'auto',
-              // border: '1px solid red',
             }}
           >
-            {searchResults.map((result) => (
-              <SearchBlock key={result.id} data={result} onSelect={handleSelectUser} />
+            {searchResults.map((u) => (
+              <SearchBlock key={u.id} data={u} onSelect={handleSelectUser} />
             ))}
           </Box>
         )}
-        <Typography
-          variant="body1"
-          sx={{ fontSize: 25, fontWeight: 'bold', margin: '10% 0 2% 0', color: 'black' }}
-        >
+
+        <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>
           {t('chats.chatsLabel')}
         </Typography>
-        <Box>
-          {chats.map((chat) => (
-            <ChatBar
-              key={chat.chatId}
-              data={chat}
-              onSelect={() => {
-                setNewChatUser(undefined);
-                setSelectedChat(chat);
-                lastChatIdRef.current = chat.chatId;
-              }}
-              sx={selectedChat?.chatId === chat.chatId ? { bgcolor: '#e6e6e6' } : null}
-              socketRef={socketRef}
-            />
-          ))}
-        </Box>
+        {chats.map((chat) => (
+          <ChatBar
+            key={chat.chatId}
+            data={chat}
+            onSelect={() => setSelectedChat(chat)}
+            sx={
+              selectedChat?.chatId === chat.chatId
+                ? { bgcolor: 'var(--background-color)' }
+                : undefined
+            }
+            socketRef={socketRef}
+          />
+        ))}
       </Box>
+
+      {/* Основний екран чату */}
       <ChatScreen selectedChat={selectedChat} socketRef={socketRef} newChatUser={newChatUser} />
     </Box>
   );

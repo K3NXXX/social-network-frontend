@@ -1,5 +1,17 @@
 {
   "searchPlaceholder": "Search...",
+  "welcome": "Welcome back,",
+  "breadcrumb": {
+    "profile": "profile",
+    "publicProfile": "Public Profile",
+    "user": "user",
+    "feed": "Feed",
+    "chats": "Chats",
+    "notifications": "Notifications",
+    "edit": "Edit",
+    "archive": "Archive",
+    "post": "Post"
+  },
   "sidebar": {
     "home": "Home",
     "notifications": "Notifications",
@@ -7,6 +19,8 @@
     "search": "Search",
     "profile": "Profile",
     "changeLanguage": "Change language",
+    "themeSwitchLight": "Light theme",
+    "themeSwitchDark": "Dark theme",
     "logout": "Logout"
   },
   "posts": {
@@ -18,12 +32,21 @@
     "editLabel": "Edit",
     "saveLabel": "Save",
     "deleteLabel": "Delete",
+    "makePrivate": "Make private",
+    "addToArchive": "Add to archive",
+    "addToArchiveInfo": "You can add the post to the archive and make it private. Other users will not be able to see it.",
+    "noArchivePosts": "No archived posts",
+    "title": "Private Posts Archive",
+    "makePublic": "Make public",
+    "makePublicInfo": "You can make this post public, and all users will be able to see it.",
     "hideAnswers": "Hide answers",
     "showAnswers": "Show answers",
     "commentReply": "Reply to comment",
     "commentCancel": "Cancel",
     "emptyPostsLabel": "No posts here yet.",
-    "feedEndDiscoverLabel": "That’s all from people you follow — here’s something else you might like:"
+    "feedEndDiscoverLabel": "That’s all from people you follow — here’s something else you might like:",
+    "feedMessage": "No more posts from people you follow. Here are some interesting posts for you:",
+    "sharePost": "Share post"
   },
   "profile": {
     "postsLabel": "posts",
@@ -66,17 +89,53 @@
       "male": "Male",
       "female": "Female",
       "other": "Other"
+    },
+    "share": "Share profile",
+    "block": "Block user ",
+    "blockMessage": "This user will not be able to find your profile or posts on Vetra. Vetra will not notify them about the block.",
+    "cancel": "Cancel",
+    "shareProfile": "Share profile",
+    "unblock": "Unblock",
+    "unblockUser": "Unblock user",
+    "youAreBlocked": "This user has blocked you. You can't view their profile.",
+    "edit": {
+      "email": "Email",
+      "username": "Username",
+      "error": "Unable to save changes",
+      "success": "Profile successfully updated!",
+      "password": "Password",
+      "errorCode": "Error sending code",
+      "emailUpdated": "Email successfully updated!",
+      "invalidCode": "Invalid code",
+      "changePassword": "Change password",
+      "enterEmail": "Enter your new email address",
+      "checkEmail": "Check your email",
+      "sendCode": "Send code",
+      "sentTo": "Enter the code we sent to ",
+      "incorrectUsername": "Incorrect username. Only Latin letters, digits, '.', and '_' are allowed (1–20 characters).",
+      "usernameChanged": "Username successfully changed",
+      "enterNewUsername": "Enter new username",
+      "save": "Save",
+      "passwordChanged": "Password successfully changed!",
+      "passwordError": "Password change error",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "errorUploadingAvatar": "Error uploading avatar",
+      "errorDeletingAvatar": "Error deleting avatar",
+      "sessionExpired": "Session expired. Please log in again",
+      "loadingProfileError": "Error during loading profile"
     }
   },
   "chats": {
     "chooseToWrite": "Choose someone to messaging",
     "chatsLabel": "Chats",
     "chooseChat": "Select a chat to start messaging",
-    "onLine": " Online",
+    "online": " Online",
     "offline": " Offline",
     "read": "read",
     "sent": "sent",
-    "authError": "Error: {{message}}. Please log in again."
+    "authError": "Error: {{message}}. Please log in again.",
+    "writeYourMessage": "Write your message here..."
   },
   "auth": {
     "createProfileLabel": "Create an account",
@@ -114,5 +173,29 @@
       "resendCode": "Resend code",
       "availableIn": "Available in {{seconds}}s"
     }
+  },
+  "notification": {
+    "title": "Notifications",
+    "markAllAsRead": "Mark all as read",
+    "filters": {
+      "all": "All",
+      "likes": "Likes",
+      "comments": "Comments",
+      "followers": "Followers"
+    },
+    "types": {
+      "LIKE": "New like",
+      "COMMENT": "New comment",
+      "NEW_FOLLOWER": "New follower"
+    },
+    "messages": {
+      "COMMENT": "{{name}} commented on your post",
+      "NEW_FOLLOWER": "{{name}} followed you",
+      "LIKE": "{{name}} liked your post"
+    }
+  },
+  "server": {
+    "timeout": "Server is not responding. Please try later.",
+    "noConnection": "No connection to server. Please check if the server is running."
   }
 }

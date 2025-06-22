@@ -1,7 +1,9 @@
 {
   "files": [],
   "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
-  "jsx": "react-jsx",
-  "esModuleInterop": true,
-  "allowSyntheticDefaultImports": true
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  }
 }
