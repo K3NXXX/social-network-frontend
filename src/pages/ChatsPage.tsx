@@ -268,14 +268,16 @@ const ChatsPage: React.FC = () => {
           <Box
             sx={{
               position: 'absolute',
-              width: 300,
-              mt: 6,
+              width: 305,
+              mt: 1,
               bgcolor: '#181424',
               boxShadow: 3,
               borderRadius: 1,
               zIndex: 1000,
               maxHeight: 400,
               overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
             {searchResults.map((u) => (
