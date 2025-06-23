@@ -33,7 +33,7 @@ export default function FullPostPage() {
     if (background) {
       navigate(background.pathname + (background.search || ''), { replace: true });
     } else {
-      navigate(PAGES.NOTIFICATIONS, { replace: true });
+      navigate(PAGES.HOME, { replace: true });
     }
   };
 
@@ -42,7 +42,7 @@ export default function FullPostPage() {
       await postService.deletePost(id);
       navigate(-1);
     } catch (err) {
-      console.error('Не вдалось видалити пост', err);
+      console.error('Error deleting post: ', err);
     }
   };
 
