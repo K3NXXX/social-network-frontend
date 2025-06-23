@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import type { CommentType } from '../../types/post';
 import { formatCreatedAt } from '../../utils/dateUtils';
 import { postService } from '../../services/postService';
+import i18n from '../../internationalization/i18n';
 
 interface CommentProps {
   comment: CommentType;
@@ -34,6 +35,7 @@ const Comment: React.FC<CommentProps> = ({
   const [liked, setLiked] = useState(comment.liked);
   const [likesCount, setLikesCount] = useState(comment._count?.likes || 0);
   const { t } = useTranslation();
+  const locale = i18n.language;
 
   const handleToggleLike = async () => {
     try {
@@ -159,7 +161,9 @@ const Comment: React.FC<CommentProps> = ({
         </Box>
 
         <Stack direction="row" spacing={2} sx={{ color: 'var(--text-color)' }}>
-          <Typography variant="caption">{formatCreatedAt(comment.createdAt)}</Typography>
+          <Typography variant="caption">
+            {formatCreatedAt(comment.createdAt, locale as 'uk' | 'en')}
+          </Typography>
           <Button
             variant="text"
             size="small"
