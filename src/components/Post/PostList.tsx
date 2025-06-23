@@ -15,7 +15,7 @@ type Props = {
 const PostsList: React.FC<Props> = ({ posts, loading, onDelete, onPostPrivacyChange }) => {
   const { t } = useTranslation();
 
-  if (!posts.length) {
+  if (!posts.length && loading) {
     return (
       <>
         {[...Array(3)].map((_, index) => (
