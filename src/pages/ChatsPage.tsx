@@ -84,7 +84,7 @@ const ChatsPage: React.FC = () => {
     };
     loadChats();
 
-    socketRef.current = io('https://vetra-8c5dfe3bdee7.herokuapp.com', {
+    socketRef.current = io(import.meta.env.VITE_API_URL, {
       path: '/socket.io',
       withCredentials: true,
       auth: {
@@ -214,7 +214,6 @@ const ChatsPage: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', height: `calc(${window.innerHeight}px - ${headerHeight}px)` }}>
-      {/* Сайдбар з пошуком */}
       <Box
         sx={{
           width: 340,
@@ -303,8 +302,6 @@ const ChatsPage: React.FC = () => {
           />
         ))}
       </Box>
-
-      {/* Основний екран чату */}
       <ChatScreen selectedChat={selectedChat} socketRef={socketRef} newChatUser={newChatUser} />
     </Box>
   );
