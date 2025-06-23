@@ -7,7 +7,7 @@ export const useSocket = (userId: string | null) => {
   useEffect(() => {
     if (!userId) return;
 
-    socketRef.current = io('https://vetra-8c5dfe3bdee7.herokuapp.com', {
+    socketRef.current = io(import.meta.env.VITE_API_URL, {
       path: '/socket.io',
       query: { userId },
       withCredentials: true,
