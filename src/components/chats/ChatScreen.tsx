@@ -298,7 +298,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
                 data={msg}
                 data-id={msg.id}
                 innerRef={
-                  //ставимо observer тільки якщо повідомлення від іншого юзера, і не прочитане
                   msg.senderId
                     ? msg.isRead === false && msg.senderId !== currentUser.id
                       ? observeElement
