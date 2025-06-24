@@ -51,6 +51,7 @@ const PostComments: React.FC<Props> = ({
   const [replyPages, setReplyPages] = useState<Record<string, number>>({});
   const take = 5;
   const [user, setUser] = useState<User | null>(null);
+  const MAX_NESTING_LEVEL = 1;
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -169,7 +170,16 @@ const PostComments: React.FC<Props> = ({
       const isVisible = visibleReplies.has(comment.id);
 
       return (
-        <Box key={comment.id} sx={{ pl: level * 4, mb: 2 }}>
+        <Box
+          key={comment.id}
+          sx={{
+            pl: {
+              xs: 0,
+              sm: Math.min(level, MAX_NESTING_LEVEL) * 4,
+            },
+            mb: 2,
+          }}
+        >
           <Comment
             comment={comment}
             isOwner={comment.user.id === user?.id}
@@ -284,20 +294,44 @@ const PostComments: React.FC<Props> = ({
             borderRadius: 2,
             backgroundColor: 'var(--background-color)',
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             justifyContent: 'space-between',
-            gap: 8,
-            flexWrap: 'wrap',
+            gap: 2,
           }}
         >
-          <Box sx={{ textAlign: 'left' }}>
-            <Typography variant="subtitle2" sx={{ mb: 0.5, color: 'var(--text-color)' }}>
+          <Box
+            sx={{
+              textAlign: 'left',
+              maxWidth: { xs: '25vh', sm: '50vh' },
+              wordBreak: 'break-word',
+            }}
+          >
+            <Typography
+              variant="subtitle2"
+              sx={{
+                mb: 0.5,
+                color: 'var(--text-color)',
+              }}
+            >
               {t('posts.commentReply')}
             </Typography>
-            <Typography variant="body2" sx={{ color: 'var(--text-color)' }}>
-              <strong>{`${replyingTo.user.firstName} ${replyingTo.user.lastName}`}</strong>: "
-              {replyingTo.content}"
-            </Typography>
+            <Box
+              sx={{
+                backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                borderRadius: 2,
+                p: 1,
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'var(--text-color)',
+                }}
+              >
+                <strong>{`${replyingTo.user.firstName} ${replyingTo.user.lastName}`}</strong>: "
+                {replyingTo.content}"
+              </Typography>
+            </Box>
           </Box>
           <Button
             size="small"

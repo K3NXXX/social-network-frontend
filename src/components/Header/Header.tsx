@@ -52,20 +52,26 @@ export default function Header() {
         borderBottom: '1px solid var(--border-color)',
         background: 'var(--background-color)',
         boxShadow: 'none',
-        padding: '20px',
+        p: 2,
         position: 'sticky',
-        top: '0',
+        top: 0,
         zIndex: 500,
         overflow: 'visible',
       }}
     >
-      <Box display="flex" justifyContent="space-between" alignItems="center">
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        gap={1}
+      >
         <Breadcrumbs
           aria-label="breadcrumb"
           sx={{
-            paddingLeft: '10px',
-            fontSize: '17px',
+            pl: 1,
+            fontSize: { xs: '15px', sm: '17px' },
             color: theme === 'light' ? '#626166' : '#ffffff',
+            flexWrap: 'wrap',
           }}
         >
           <MUILink
@@ -79,6 +85,7 @@ export default function Header() {
               '&:hover': {
                 textDecoration: 'underline',
               },
+              fontSize: { xs: '15px', sm: '17px' },
             }}
           >
             Vetra
@@ -90,7 +97,7 @@ export default function Header() {
                 color: theme === 'light' ? '#626166' : '#ffffff',
                 fontWeight: 500,
                 fontFamily: 'Ubuntu',
-                fontSize: '17px',
+                fontSize: { xs: '15px', sm: '17px' },
               }}
             >
               {t('breadcrumb.publicProfile')}
@@ -109,7 +116,7 @@ export default function Header() {
                     fontWeight: 500,
                     fontFamily: 'Ubuntu',
                     textTransform: 'capitalize',
-                    fontSize: '17px',
+                    fontSize: { xs: '15px', sm: '17px' },
                   }}
                 >
                   {label}
@@ -125,7 +132,7 @@ export default function Header() {
                     fontWeight: 500,
                     fontFamily: 'Ubuntu',
                     textTransform: 'capitalize',
-                    fontSize: '17px',
+                    fontSize: { xs: '15px', sm: '17px' },
                     '&:hover': {
                       textDecoration: 'underline',
                     },
@@ -142,7 +149,7 @@ export default function Header() {
           <Link to={PAGES.PROFILE} style={{ textDecoration: 'none' }}>
             <Typography
               sx={{
-                fontSize: '18px',
+                fontSize: { xs: '15px', sm: '17px' },
                 fontWeight: 500,
                 letterSpacing: '0.5px',
                 color: theme === 'light' ? '#2c2452' : '#ffffff',

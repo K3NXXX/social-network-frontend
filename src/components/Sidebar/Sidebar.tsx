@@ -1,3 +1,4 @@
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { pathname } = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const isSmallScreen = useMediaQuery('(max-width:1000px)');
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -43,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
     };
   }, [fetchNotifications, initSocket, disconnectSocket]);
 
-  const toggleCollapse = () => setIsCollapsed((prev) => !prev);
+  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
 
   const logout = () => {
     disconnectSocket();
@@ -56,13 +58,17 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
     i18n.changeLanguage(nextLang);
   };
 
+  useEffect(() => {
+    setIsCollapsed(isSmallScreen || searchSidebarCollapsed);
+  }, [isSmallScreen, searchSidebarCollapsed]);
+
   return (
     <Box
       sx={{
         position: 'sticky',
         top: 0,
         height: '100vh',
-        width: isCollapsed ? 80 : 300,
+        width: isSmallScreen ? (isCollapsed ? '80px' : '100vw') : isCollapsed ? '80px' : '300px',
         background: '#181424',
         p: 2,
         display: 'flex',
@@ -86,6 +92,9 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
             setSearchSidebarCollapsed(true);
           }}
           sx={{
+            '@media (max-width:1000px)': {
+              display: 'none',
+            },
             cursor: 'pointer',
             p: 1.5,
             borderRadius: '16px',

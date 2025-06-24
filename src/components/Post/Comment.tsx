@@ -8,6 +8,7 @@ import type { CommentType } from '../../types/post';
 import { formatCreatedAt } from '../../utils/dateUtils';
 import { postService } from '../../services/postService';
 import i18n from '../../internationalization/i18n';
+import CommentMenu from './CommentMenu';
 
 interface CommentProps {
   comment: CommentType;
@@ -48,7 +49,14 @@ const Comment: React.FC<CommentProps> = ({
   };
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, width: '100%' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 2,
+        width: '100%',
+      }}
+    >
       <Avatar src={comment.user?.avatarUrl ?? undefined}>
         {!comment.user?.avatarUrl &&
           `${comment.user?.firstName?.[0]?.toUpperCase() ?? ''}${comment.user?.lastName?.[0]?.toUpperCase() ?? ''}`}
@@ -64,13 +72,29 @@ const Comment: React.FC<CommentProps> = ({
               flex: 1,
             }}
           >
-            <Typography
-              variant="subtitle2"
-              fontWeight="bold"
-              sx={{ textAlign: 'left', display: 'block', color: 'var(--text-color)' }}
-            >
-              {`${comment.user?.firstName} ${comment.user?.lastName}`}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography
+                variant="subtitle2"
+                fontWeight="bold"
+                sx={{
+                  color: 'var(--text-color)',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {`${comment.user?.firstName} ${comment.user?.lastName}`}
+              </Typography>
+
+              {isOwner && (
+                <Box sx={{ display: { xs: 'inline-flex', sm: 'none' }, ml: 1 }}>
+                  <CommentMenu
+                    onEdit={onEditClick ?? (() => { })}
+                    onDelete={onDeleteClick ?? (() => { })}
+                  />
+                </Box>
+              )}
+            </Box>
 
             {isEditing ? (
               <Stack spacing={1}>
@@ -126,7 +150,12 @@ const Comment: React.FC<CommentProps> = ({
             ) : (
               <Typography
                 variant="body2"
-                sx={{ textAlign: 'left', display: 'block', color: 'var(--text-color)' }}
+                sx={{
+                  textAlign: 'left',
+                  display: 'block',
+                  color: 'var(--text-color)',
+                  wordBreak: 'break-word',
+                }}
               >
                 {comment.content}
               </Typography>
@@ -153,6 +182,8 @@ const Comment: React.FC<CommentProps> = ({
                 outline: 'none',
                 boxShadow: 'none',
               },
+              minWidth: 0,
+              whiteSpace: 'nowrap',
             }}
             onClick={handleToggleLike}
           >
@@ -160,7 +191,15 @@ const Comment: React.FC<CommentProps> = ({
           </Button>
         </Box>
 
-        <Stack direction="row" spacing={2} sx={{ color: 'var(--text-color)' }}>
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
+            color: 'var(--text-color)',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}
+        >
           <Typography variant="caption">
             {formatCreatedAt(comment.createdAt, locale as 'uk' | 'en')}
           </Typography>
@@ -188,50 +227,36 @@ const Comment: React.FC<CommentProps> = ({
           </Button>
           {isOwner && (
             <>
-              <Button
-                variant="text"
-                size="small"
-                sx={{
-                  p: 0,
-                  fontSize: 12,
-                  textTransform: 'none',
-                  color: 'var(--text-color)',
-                  opacity: 0.5,
-                  '&:focus': {
-                    outline: 'none',
-                    boxShadow: 'none',
-                  },
-                  '&:focus-visible': {
-                    outline: 'none',
-                    boxShadow: 'none',
-                  },
-                }}
-                onClick={onDeleteClick}
-              >
-                {t('posts.deleteLabel')}
-              </Button>
-              <Button
-                variant="text"
-                size="small"
-                sx={{
-                  p: 0,
-                  fontSize: 12,
-                  textTransform: 'none',
-                  color: 'var(--text-color)',
-                  opacity: 0.5,
-                  '&:focus': {
-                    outline: 'none',
-                    boxShadow: 'none',
-                  },
-                  '&:focus-visible': {
-                    outline: 'none',
-                    boxShadow: 'none',
-                  },
-                }}
-                onClick={onEditClick}
-              >
-                {t('posts.editLabel')}
-              </Button>
+              <Box sx={{ display: { xs: 'none', sm: 'inline-flex' }, gap: 2 }}>
+                <Button
+                  variant="text"
+                  size="small"
+                  onClick={onDeleteClick}
+                  sx={{
+                    p: 0,
+                    fontSize: 12,
+                    textTransform: 'none',
+                    color: 'var(--text-color)',
+                    opacity: 0.5,
+                  }}
+                >
+                  {t('posts.deleteLabel')}
+                </Button>
+                <Button
+                  variant="text"
+                  size="small"
+                  onClick={onEditClick}
+                  sx={{
+                    p: 0,
+                    fontSize: 12,
+                    textTransform: 'none',
+                    color: 'var(--text-color)',
+                    opacity: 0.5,
+                  }}
+                >
+                  {t('posts.editLabel')}
+                </Button>
+              </Box>
             </>
           )}
         </Stack>

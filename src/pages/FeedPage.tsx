@@ -100,6 +100,7 @@ const FeedPage: React.FC = () => {
         alignItems: 'center',
         minHeight: '100vh',
         py: 3,
+        px: 1,
         backgroundColor: 'var(--background-color)',
         color: 'var(--text-color)',
       }}
@@ -126,6 +127,7 @@ const FeedPage: React.FC = () => {
                 mb: 4,
                 color: 'var(--text-color)',
                 opacity: 0.7,
+                fontSize: { xs: '1rem', sm: '1.2rem', md: '1.25rem' },
               }}
             >
               {t('posts.feedEndDiscoverLabel')}
@@ -151,8 +153,8 @@ const FeedPage: React.FC = () => {
           onClick={handleScrollToTopAndReload}
           sx={{
             position: 'fixed',
-            bottom: 32,
-            right: 32,
+            bottom: { xs: 16, sm: 24, md: 32 },
+            right: { xs: 16, sm: 24, md: 32 },
             zIndex: 1000,
             backgroundColor: 'var(--primary-color)',
             color: '#fff',

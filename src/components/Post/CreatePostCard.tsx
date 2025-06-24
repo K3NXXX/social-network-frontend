@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import ClearIcon from '@mui/icons-material/Clear';
 import { postService } from '../../services/postService';
 import type { PostType } from '../../types/post';
 import { useTranslation } from 'react-i18next';
@@ -112,16 +113,48 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
         </Stack>
 
         {previewUrl && (
-          <Box mt={2}>
+          <Box
+            mt={2}
+            position="relative"
+            display="inline-block"
+            sx={{
+              borderRadius: '8px',
+              overflow: 'hidden',
+              border: '1px solid var(--border-color)',
+            }}
+          >
             <img
               src={previewUrl}
               alt="preview"
               style={{
-                maxHeight: '200px',
+                display: 'block',
+                maxWidth: '100%',
+                maxHeight: '300px',
+                objectFit: 'contain',
                 borderRadius: '8px',
-                border: '1px solid var(--border-color)',
               }}
             />
+            <Button
+              onClick={() => {
+                setImageFile(null);
+                setPreviewUrl(null);
+              }}
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                minWidth: 'auto',
+                padding: 0.5,
+                backgroundColor: 'rgba(0,0,0,0.6)',
+                color: '#fff',
+                borderRadius: '50%',
+                '&:hover': {
+                  backgroundColor: 'rgba(0,0,0,0.8)',
+                },
+              }}
+            >
+              <ClearIcon fontSize="small" />
+            </Button>
           </Box>
         )}
       </CardContent>
@@ -129,7 +162,7 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
       <Divider sx={{ my: 2, mx: -2 }} />
 
       <CardActions sx={{ justifyContent: 'space-between', pt: 0 }}>
-        <div>
+        <Box display="flex" alignItems="center" flexWrap="wrap">
           <input
             accept="image/*"
             style={{ display: 'none' }}
@@ -147,10 +180,7 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
               {t('posts.uploadPhotoLabel')}
             </Button>
           </label>
-          {imageFile && (
-            <span style={{ marginLeft: 8, color: 'var(--text-color)' }}>{imageFile.name}</span>
-          )}
-        </div>
+        </Box>
         <NoOutlineButton
           variant="contained"
           endIcon={<SendIcon />}

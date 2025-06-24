@@ -8,7 +8,15 @@ import { userService } from '../../services/userService';
 import type { SearchUsers } from '../../types/user';
 import SearchItem from '../../ui/SearchItem';
 
-const SearchSidebar = ({ isCollapsed }: { isCollapsed: boolean }) => {
+interface SearchSidebarProps {
+  isCollapsed: boolean;
+  setSearchSidebarCollapsed: (value: boolean) => void;
+}
+
+const SearchSidebar: React.FC<SearchSidebarProps> = ({
+  isCollapsed,
+  setSearchSidebarCollapsed,
+}) => {
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState<SearchUsers[] | []>([]);
   const { t } = useTranslation();
@@ -129,6 +137,7 @@ const SearchSidebar = ({ isCollapsed }: { isCollapsed: boolean }) => {
               result={result}
               setSearchValue={setSearchValue}
               setSearchResults={setSearchResults}
+              setSearchSidebarCollapsed={setSearchSidebarCollapsed}
             />
           ))}
         </Box>
