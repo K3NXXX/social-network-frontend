@@ -163,6 +163,11 @@ const Register: React.FC = () => {
       <IconButton
         onClick={toggleTheme}
         sx={{
+          '@media (max-width:600px)': {
+            top: 30,
+            right: 30,
+            bottom: 'unset',
+          },
           position: 'absolute',
           bottom: 30,
           right: 30,

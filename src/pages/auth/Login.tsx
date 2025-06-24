@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../services/AuthContext';
 import { formatErrorMessage, logErrorDetails } from '../../services/errorHandling';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import {
   Alert,
   Box,
@@ -17,8 +19,6 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
 import { NoOutlineButton } from '../../ui/NoOutlineButton';
 import { PAGES } from '../../constants/pages.constants';
 import type { SubmitHandler } from 'react-hook-form';
@@ -72,6 +72,11 @@ const Login: React.FC = () => {
         <IconButton
           onClick={toggleTheme}
           sx={{
+            '@media (max-width:600px)': {
+              top: 30,
+              right: 30,
+              bottom: 'unset',
+            },
             position: 'absolute',
             bottom: 30,
             right: 30,

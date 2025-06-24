@@ -1,3 +1,4 @@
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +15,6 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import SidebarListItem from './SidebarListItem';
-import useMediaQuery from '@mui/material/useMediaQuery';
 
 interface SidebarProps {
   searchSidebarCollapsed: boolean;
@@ -25,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { pathname } = useLocation();
   const { theme, toggleTheme } = useTheme();
-  const isSmallScreen = useMediaQuery('(max-width:768px)');
+  const isSmallScreen = useMediaQuery('(max-width:1000px)');
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -58,6 +58,9 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
     i18n.changeLanguage(nextLang);
   };
 
+  useEffect(() => {
+    setIsCollapsed(isSmallScreen || searchSidebarCollapsed);
+  }, [isSmallScreen, searchSidebarCollapsed]);
 
   return (
     <Box
@@ -89,6 +92,9 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
             setSearchSidebarCollapsed(true);
           }}
           sx={{
+            '@media (max-width:1000px)': {
+              display: 'none',
+            },
             cursor: 'pointer',
             p: 1.5,
             borderRadius: '16px',

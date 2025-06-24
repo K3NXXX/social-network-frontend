@@ -132,7 +132,18 @@ export default function ProfilePage({
 
   return (
     <Container maxWidth={false} sx={{ maxWidth: '935px', py: 4 }}>
-      <Box display="flex" flexDirection="row" justifyContent="center" gap={4}>
+      <Box
+        sx={{
+          '@media (max-width:730px)': {
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 2,
+          },
+        }}
+        display="flex"
+        justifyContent="center"
+        gap={4}
+      >
         <Box
           sx={{
             '@media (max-width:1100px)': {
@@ -152,19 +163,31 @@ export default function ProfilePage({
             sx={{ width: 120, height: 120 }}
           />
         </Box>
-        <Box flex={1}>
+        <Box>
           <Box
             sx={{
-              '@media (max-width:1000px)': {
+              '@media (max-width:730px)': {
                 flexDirection: 'column-reverse',
-                alignItems: 'flex-start',
+                alignItems: 'center',
+                gap: '20px 0',
               },
             }}
             display="flex"
             alignItems="center"
             position={'relative'}
           >
-            <Box display="flex" flexDirection="column" alignItems="self-start" marginTop="10px">
+            <Box
+              sx={{
+                '@media (max-width:730px)': {
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                },
+              }}
+              display="flex"
+              flexDirection="column"
+              alignItems="self-start"
+              marginTop="10px"
+            >
               {isPublicProfile ? (
                 <Typography fontSize="18px" fontWeight={400}>
                   {publicUserData?.firstName} {publicUserData?.lastName}
@@ -181,16 +204,7 @@ export default function ProfilePage({
               )}
             </Box>
 
-            <Box
-              sx={{
-                '@media (max-width:1000px)': {
-                  ml: 0,
-                },
-              }}
-              display="flex"
-              gap={1}
-              ml={4}
-            >
+            <Box display="flex" gap={1} ml={4}>
               {isPublicProfile && !isThisMe ? (
                 isBlocked ? (
                   <NoOutlineButton
