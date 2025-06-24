@@ -13,6 +13,7 @@ import SearchBlock from '../components/chats/SearchBlock';
 import { useTheme } from '../contexts/ThemeContext';
 import { userService } from '../services/userService';
 import { useLocation, useNavigate } from 'react-router-dom';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const ChatsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -33,6 +34,8 @@ const ChatsPage: React.FC = () => {
 
   const [searchValue, setSearchValue] = useState<string>('');
   const [searchResults, setSearchResults] = useState<UserPreview[]>([]);
+
+  const isMobile = useMediaQuery('(max-width:768px)');
 
   const debounceSearch = useCallback(
     debounce(async (value: string) => {
@@ -212,97 +215,111 @@ const ChatsPage: React.FC = () => {
     }
   };
 
+  const handleBack = () => {
+    setSelectedChat(null);
+    setNewChatUser(undefined);
+  };
+
   return (
     <Box sx={{ display: 'flex', height: `calc(${window.innerHeight}px - ${headerHeight}px)` }}>
-      <Box
-        sx={{
-          width: 340,
-          flexShrink: 0,
-          bgcolor: 'var(--background-color)',
-          borderRight: '1px solid var(--border-color)',
-          p: 2,
-        }}
-      >
-        <TextField
-          fullWidth
-          placeholder={t('chats.chooseToWrite')}
-          variant="outlined"
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
+      {(!isMobile || !selectedChat) && !newChatUser && (
+        <Box
           sx={{
-            backgroundColor: theme === 'dark' ? '#1e1e1e' : '#fff',
-            '& .MuiOutlinedInput-root': {
-              color: theme === 'dark' ? '#fff' : '#000',
-              '& fieldset': {
-                borderColor: theme === 'dark' ? '#555' : '#ccc',
-              },
-              '&:hover fieldset': {
-                borderColor: theme === 'dark' ? '#888' : '#888',
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: '#9885f4',
-              },
-            },
-            input: {
-              color: theme === 'dark' ? '#fff' : '#000',
-            },
+            width: isMobile ? '100%' : 340,
+            flexShrink: 0,
+            bgcolor: 'var(--background-color)',
+            borderRight: isMobile ? '' : '1px solid var(--border-color)',
+            p: 2,
           }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon sx={{ color: theme === 'light' ? '#949494' : 'white' }} />
-              </InputAdornment>
-            ),
-            endAdornment: searchValue && (
-              <InputAdornment position="end">
-                <Close
-                  sx={{ color: theme === 'light' ? '#949494' : 'white' }}
-                  onClick={() => setSearchValue('')}
-                />
-              </InputAdornment>
-            ),
-          }}
-        />
-        {searchResults.length > 0 && (
-          <Box
+        >
+          <TextField
+            fullWidth
+            placeholder={t('chats.chooseToWrite')}
+            variant="outlined"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
             sx={{
-              position: 'absolute',
-              width: 305,
-              mt: 1,
-              bgcolor: '#181424',
-              boxShadow: 3,
-              borderRadius: 1,
-              zIndex: 1000,
-              maxHeight: 400,
-              overflowY: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
+              backgroundColor: theme === 'dark' ? '#1e1e1e' : '#fff',
+              '& .MuiOutlinedInput-root': {
+                color: theme === 'dark' ? '#fff' : '#000',
+                '& fieldset': {
+                  borderColor: theme === 'dark' ? '#555' : '#ccc',
+                },
+                '&:hover fieldset': {
+                  borderColor: theme === 'dark' ? '#888' : '#888',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#9885f4',
+                },
+              },
+              input: {
+                color: theme === 'dark' ? '#fff' : '#000',
+              },
             }}
-          >
-            {searchResults.map((u) => (
-              <SearchBlock key={u.id} data={u} onSelect={handleSelectUser} />
-            ))}
-          </Box>
-        )}
-
-        <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>
-          {t('chats.chatsLabel')}
-        </Typography>
-        {chats.map((chat) => (
-          <ChatBar
-            key={chat.chatId}
-            data={chat}
-            onSelect={() => setSelectedChat(chat)}
-            sx={
-              selectedChat?.chatId === chat.chatId
-                ? { bgcolor: 'var(--background-color)' }
-                : undefined
-            }
-            socketRef={socketRef}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: theme === 'light' ? '#949494' : 'white' }} />
+                </InputAdornment>
+              ),
+              endAdornment: searchValue && (
+                <InputAdornment position="end">
+                  <Close
+                    sx={{ color: theme === 'light' ? '#949494' : 'white' }}
+                    onClick={() => setSearchValue('')}
+                  />
+                </InputAdornment>
+              ),
+            }}
           />
-        ))}
-      </Box>
-      <ChatScreen selectedChat={selectedChat} socketRef={socketRef} newChatUser={newChatUser} />
+          {searchResults.length > 0 && (
+            <Box
+              sx={{
+                position: 'absolute',
+                width: 305,
+                mt: 1,
+                bgcolor: '#181424',
+                boxShadow: 3,
+                borderRadius: 1,
+                zIndex: 1000,
+                maxHeight: 400,
+                overflowY: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              {searchResults.map((u) => (
+                <SearchBlock key={u.id} data={u} onSelect={handleSelectUser} />
+              ))}
+            </Box>
+          )}
+
+          <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>
+            {t('chats.chatsLabel')}
+          </Typography>
+          {chats.map((chat) => (
+            <ChatBar
+              key={chat.chatId}
+              data={chat}
+              onSelect={() => setSelectedChat(chat)}
+              sx={
+                selectedChat?.chatId === chat.chatId
+                  ? { bgcolor: 'var(--background-color)' }
+                  : undefined
+              }
+              socketRef={socketRef}
+            />
+          ))}
+        </Box>
+      )}
+      {(selectedChat || newChatUser) && (
+        <ChatScreen
+          selectedChat={selectedChat}
+          socketRef={socketRef}
+          newChatUser={newChatUser}
+          onBack={isMobile ? handleBack : undefined}
+        />
+      )}
     </Box>
   );
 };

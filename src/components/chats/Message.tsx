@@ -10,7 +10,7 @@ const currentUserStyles = {
   alignSelf: 'flex-end',
   borderRadius: '16px 16px 0 16px',
   padding: '10px 16px',
-  maxWidth: '40%',
+  maxWidth: '70%',
   margin: '6px 0',
   wordBreak: 'break-word',
   boxShadow: '0 1px 5px rgb(0 0 0 / 0.1)',
@@ -25,7 +25,7 @@ const otherUserStyles = {
   alignSelf: 'flex-start',
   borderRadius: '16px 16px 16px 0',
   padding: '10px 16px',
-  maxWidth: '40%',
+  maxWidth: '70%',
   margin: '6px 0',
   wordBreak: 'break-word',
   boxShadow: '0 1px 5px rgb(0 0 0 / 0.1)',
@@ -51,7 +51,14 @@ const Message: React.FC<MessageProps & { innerRef?: React.Ref<HTMLDivElement> }>
       ref={innerRef}
       data-id={data.id}
     >
-      <Typography sx={{ alignSelf: 'flex-start', textAlign: 'left', wordBreak: 'break-all' }}>
+      <Typography
+        sx={{
+          alignSelf: 'flex-start',
+          textAlign: 'left',
+          overflowWrap: 'anywhere',
+          wordBreak: 'break-word',
+        }}
+      >
         {data.content}
       </Typography>
       <Box
