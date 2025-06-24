@@ -1,20 +1,20 @@
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { Avatar, Box, Container, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import UserPosts from '../components/Post/UserPosts.tsx';
 import PublicUserOptionsMenu from '../components/user/PublicUserOptionsMenu.tsx';
 import ShowFollowersForm from '../components/user/ShowFollowersForm.tsx';
 import ShowFollowingsForm from '../components/user/ShowFollowingsForm.tsx';
-import ProfileSkeleton from '../ui/skeletons/ProfileSkeleton.tsx';
-import axiosInstance from '../services/axiosConfig.ts';
-import { useTranslation } from 'react-i18next';
 import { PAGES } from '../constants/pages.constants.ts';
 import { useAuth } from '../services/AuthContext.tsx';
+import axiosInstance from '../services/axiosConfig.ts';
 import { userService } from '../services/userService.ts';
-import { Avatar, Box, Container, Divider, Tab, Tabs, Typography } from '@mui/material';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
-import type { UserPublicProfile } from '../types/user.ts';
 import type { User } from '../types/auth.ts';
+import type { UserPublicProfile } from '../types/user.ts';
+import { NoOutlineButton } from '../ui/NoOutlineButton.tsx';
+import ProfileSkeleton from '../ui/skeletons/ProfileSkeleton.tsx';
 
 interface IProfilePageProps {
   isPublicProfile?: boolean;
@@ -385,7 +385,9 @@ export default function ProfilePage({
                 </NoOutlineButton>
               ) : (
                 <NoOutlineButton
-                  onClickCapture={() => toggleFollowUser(publicUserData.id)}
+                  onClickCapture={() => {
+                    if (publicUserData) toggleFollowUser?.(publicUserData.id);
+                  }}
                   variant="contained"
                   size="small"
                   sx={{ backgroundColor: isFollowing ? '#737373' : 'var(--primary-color)' }}

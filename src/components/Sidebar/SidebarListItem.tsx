@@ -7,7 +7,7 @@ interface SidebarListItemProps {
   item: ISidebarList;
   onClickCallback: (() => void) | undefined;
   backgroundColor: string;
-  isCollapsed: boolean;
+  isCollapsed?: boolean;
 }
 
 const SidebarListItem: React.FC<SidebarListItemProps> = ({

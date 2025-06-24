@@ -3,8 +3,8 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import { Box, Typography } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useEffect, useState } from 'react';
+import 'animate.css';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PAGES } from '../../constants/pages.constants';
@@ -13,21 +13,16 @@ import i18n from '../../internationalization/i18n';
 import { sidebarList } from '../../lists/sidebar.list';
 import { authService } from '../../services/authService';
 import Logo from '../../ui/Logo';
+import { useGlobalStore } from '../../zustand/stores/globalStore';
 import { useNotificationStore } from '../../zustand/stores/notificationStore';
 import SidebarListItem from './SidebarListItem';
 
-interface SidebarProps {
-  searchSidebarCollapsed: boolean;
-  setSearchSidebarCollapsed: (value: boolean) => void;
-}
-
-const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSidebarCollapsed }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+const SidebarMobile: React.FC = () => {
   const { pathname } = useLocation();
   const { theme, toggleTheme } = useTheme();
-  const isSmallScreen = useMediaQuery('(max-width:1000px)');
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { setBurgerOpen } = useGlobalStore();
 
   const { notifications, fetchNotifications, initSocket, disconnectSocket } =
     useNotificationStore();
@@ -45,8 +40,6 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
     };
   }, [fetchNotifications, initSocket, disconnectSocket]);
 
-  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
-
   const logout = () => {
     disconnectSocket();
     authService.logout();
@@ -58,42 +51,29 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
     i18n.changeLanguage(nextLang);
   };
 
-  useEffect(() => {
-    setIsCollapsed(isSmallScreen || searchSidebarCollapsed);
-  }, [isSmallScreen, searchSidebarCollapsed]);
-
   return (
     <Box
+      className="animate__animated animate__fadeInLeft"
       sx={{
-        position: 'sticky',
+        position: 'fixed',
         top: 0,
+        left: 0,
         height: '100vh',
-        width: isSmallScreen ? (isCollapsed ? '80px' : '100vw') : isCollapsed ? '80px' : '300px',
+        width: '270px',
         background: '#181424',
         p: 2,
         display: 'flex',
         flexDirection: 'column',
-        zIndex: 500,
-        transition: 'width 0.3s ease',
-        overflow: 'hidden',
+        zIndex: 502,
+        transition: 'transform 0.3s ease-in-out',
         '@media (max-width:500px)': {
-          display: 'none',
+          display: 'flex',
         },
       }}
     >
-      <Box
-        mb={3}
-        display="flex"
-        justifyContent={isCollapsed ? 'center' : 'space-between'}
-        alignItems="center"
-        px={isCollapsed ? 0 : 1.5}
-      >
-        {!isCollapsed && <Logo />}
+      <Box mb={3} display="flex" justifyContent={'space-between'} alignItems="center" px={1.5}>
+        {<Logo />}
         <Box
-          onClick={() => {
-            toggleCollapse();
-            setSearchSidebarCollapsed(true);
-          }}
           sx={{
             '@media (max-width:1000px)': {
               display: 'none',
@@ -111,7 +91,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
             sx={{
               color: 'white',
               fontSize: 14,
-              transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)',
+              transform: 'rotate(0deg)',
               transition: 'transform 0.3s ease',
             }}
           />
@@ -126,6 +106,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
             if (item.id !== 5) {
               return (
                 <Link
+                  onClick={() => setBurgerOpen(false)}
                   key={item.id}
                   to={item.url!}
                   style={{ textDecoration: 'none', width: '100%' }}
@@ -134,7 +115,6 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
                     item={item}
                     onClickCallback={undefined}
                     backgroundColor={isActive ? '#2a2340' : ''}
-                    isCollapsed={isCollapsed}
                   />
                 </Link>
               );
@@ -142,30 +122,30 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
 
             return (
               <SidebarListItem
+                onClickCallback={undefined}
+                backgroundColor={isActive ? '#2a2340' : ''}
                 key={item.id}
                 item={item}
-                onClickCallback={() => {
-                  setSearchSidebarCollapsed(!searchSidebarCollapsed);
-                  if (!isCollapsed) setIsCollapsed(!isCollapsed);
-                }}
-                backgroundColor={searchSidebarCollapsed ? '' : '#2a2340'}
-                isCollapsed={isCollapsed}
               />
             );
           })}
 
-        <Link to={PAGES.NOTIFICATIONS} style={{ textDecoration: 'none', width: '100%' }}>
+        <Link
+          onClick={() => setBurgerOpen(false)}
+          to={PAGES.NOTIFICATIONS}
+          style={{ textDecoration: 'none', width: '100%' }}
+        >
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: isCollapsed ? 0 : 2.5,
+              gap: 2.5,
               p: 1,
               borderRadius: '16px',
               mb: 1,
               cursor: 'pointer',
               '&:hover': { backgroundColor: '#2a2340' },
-              justifyContent: isCollapsed ? 'center' : 'flex-start',
+              justifyContent: 'flex-start',
             }}
           >
             <Box sx={{ position: 'relative' }}>
@@ -200,11 +180,10 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
                 </Box>
               )}
             </Box>
-            {!isCollapsed && (
-              <Typography sx={{ color: 'white', fontSize: 17 }}>
-                {t('sidebar.notifications')}
-              </Typography>
-            )}
+
+            <Typography sx={{ color: 'white', fontSize: 17 }}>
+              {t('sidebar.notifications')}
+            </Typography>
           </Box>
         </Link>
         {sidebarList
@@ -216,7 +195,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: isCollapsed ? 0 : '20px',
+                gap: '20px',
                 padding: '10px 8px',
                 borderRadius: 4,
                 width: '100%',
@@ -225,25 +204,24 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
                 '&:hover': {
                   backgroundColor: '#2a2340',
                 },
-                justifyContent: isCollapsed ? 'center' : 'flex-start',
+                justifyContent: 'flex-start',
               }}
             >
               <item.icon sx={{ color: 'white', fontSize: 30 }} />
-              {!isCollapsed && (
-                <Typography
-                  sx={{
-                    color: 'white',
-                    fontSize: '17px',
-                    opacity: isCollapsed ? 0 : 1,
-                    width: isCollapsed ? 0 : 'auto',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    transition: 'opacity 0.3s ease, width 0.3s ease',
-                  }}
-                >
-                  {t(item.labelKey)}
-                </Typography>
-              )}
+
+              <Typography
+                sx={{
+                  color: 'white',
+                  fontSize: '17px',
+                  opacity: 1,
+                  width: 'auto',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  transition: 'opacity 0.3s ease, width 0.3s ease',
+                }}
+              >
+                {t(item.labelKey)}
+              </Typography>
             </Box>
           ))}
       </Box>
@@ -253,7 +231,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
         sx={{
           display: 'flex',
           alignItems: 'center',
-          gap: isCollapsed ? 0 : '20px',
+          gap: '20px',
           padding: '10px 8px',
           borderRadius: 4,
           width: '100%',
@@ -262,7 +240,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
           '&:hover': {
             backgroundColor: '#2a2340',
           },
-          justifyContent: isCollapsed ? 'center' : 'flex-start',
+          justifyContent: 'flex-start',
         }}
       >
         {theme === 'light' ? (
@@ -270,37 +248,36 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
         ) : (
           <LightModeIcon sx={{ color: 'white', fontSize: '30px' }} />
         )}
-        {!isCollapsed && (
-          <Typography
-            sx={{
-              color: 'white',
-              fontSize: '17px',
-              opacity: isCollapsed ? 0 : 1,
-              width: isCollapsed ? 0 : 'auto',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-              transition: 'opacity 0.3s ease, width 0.3s ease',
-            }}
-          >
-            {theme === 'light' ? t('sidebar.themeSwitchLight') : t('sidebar.themeSwitchDark')}
-          </Typography>
-        )}
+
+        <Typography
+          sx={{
+            color: 'white',
+            fontSize: '17px',
+            opacity: 1,
+            width: 'auto',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            transition: 'opacity 0.3s ease, width 0.3s ease',
+          }}
+        >
+          {theme === 'light' ? t('sidebar.themeSwitchLight') : t('sidebar.themeSwitchDark')}
+        </Typography>
       </Box>
 
       {sidebarList
         .filter((item) => item.id === 8)
         .map((item) => (
-          <Link key={item.id} to={item.url!} style={{ textDecoration: 'none', width: '100%' }}>
-            <SidebarListItem
-              item={item}
-              onClickCallback={logout}
-              backgroundColor=""
-              isCollapsed={isCollapsed}
-            />
+          <Link
+            onClick={() => setBurgerOpen(false)}
+            key={item.id}
+            to={item.url!}
+            style={{ textDecoration: 'none', width: '100%' }}
+          >
+            <SidebarListItem item={item} onClickCallback={logout} backgroundColor="" />
           </Link>
         ))}
     </Box>
   );
 };
 
-export default Sidebar;
+export default SidebarMobile;
