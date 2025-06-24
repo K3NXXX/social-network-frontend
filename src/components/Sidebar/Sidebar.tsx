@@ -134,7 +134,7 @@ const Sidebar: React.FC<SidebarProps> = ({ searchSidebarCollapsed, setSearchSide
                 item={item}
                 onClickCallback={() => {
                   setSearchSidebarCollapsed(!searchSidebarCollapsed);
-                  setIsCollapsed(false);
+                  setIsCollapsed(!isCollapsed);
                 }}
                 backgroundColor={searchSidebarCollapsed ? '' : '#2a2340'}
                 isCollapsed={isCollapsed}
