@@ -348,11 +348,13 @@ export default function ProfilePage({
             sx={{
               '@media (max-width:730px)': {
                 maxWidth: '500px',
+                textAlign: 'center',
               },
             }}
             display="flex"
             flexDirection="column"
-            alignSelf="start"
+            textAlign="start"
+            maxWidth="500px"
           >
             <Typography> {isPublicProfile ? publicUserData?.bio : profile.bio}</Typography>
           </Box>
