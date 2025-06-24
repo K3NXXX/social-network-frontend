@@ -167,7 +167,7 @@ export default function ProfilePage({
           <Box
             sx={{
               '@media (max-width:730px)': {
-                flexDirection: 'column-reverse',
+                flexDirection: 'column',
                 alignItems: 'center',
                 gap: '20px 0',
               },
@@ -181,6 +181,7 @@ export default function ProfilePage({
                 '@media (max-width:730px)': {
                   flexDirection: 'column',
                   alignItems: 'center',
+                  marginTop: '0px',
                 },
               }}
               display="flex"
@@ -204,7 +205,17 @@ export default function ProfilePage({
               )}
             </Box>
 
-            <Box display="flex" gap={1} ml={4}>
+            <Box
+              sx={{
+                '@media (max-width:730px)': {
+                  ml: 0,
+                  display: 'none',
+                },
+              }}
+              display="flex"
+              gap={1}
+              ml={4}
+            >
               {isPublicProfile && !isThisMe ? (
                 isBlocked ? (
                   <NoOutlineButton
@@ -278,7 +289,20 @@ export default function ProfilePage({
             </Box>
           </Box>
 
-          <Box display="flex" gap={4} marginTop="20px" marginBottom="20px">
+          <Box
+            sx={{
+              '@media (max-width:730px)': {
+                justifyContent: 'center',
+                gap: 2,
+                marginTop: '10px',
+                marginBottom: '10px',
+              },
+            }}
+            display="flex"
+            gap={4}
+            marginTop="20px"
+            marginBottom="20px"
+          >
             <Box display="flex" gap={0.5}>
               <Typography fontWeight="bold" fontSize="15px">
                 {isBlocked ? 0 : isPublicProfile ? publicUserData?.posts : profile.posts}
@@ -320,8 +344,94 @@ export default function ProfilePage({
             </Box>
           </Box>
 
-          <Box display="flex" flexDirection="column" alignSelf="start" textAlign="justify">
+          <Box
+            sx={{
+              '@media (max-width:730px)': {
+                maxWidth: '500px',
+              },
+            }}
+            display="flex"
+            flexDirection="column"
+            alignSelf="start"
+          >
             <Typography> {isPublicProfile ? publicUserData?.bio : profile.bio}</Typography>
+          </Box>
+          <Box
+            sx={{
+              '@media (max-width:730px)': {
+                ml: 0,
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: ' 20px',
+              },
+            }}
+            display="none"
+            gap={1}
+            ml={4}
+          >
+            {isPublicProfile && !isThisMe ? (
+              isBlocked ? (
+                <NoOutlineButton
+                  onClick={() => {
+                    handleUnblock();
+                  }}
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: '#d9534f' }}
+                >
+                  {t('profile.unblock')}
+                </NoOutlineButton>
+              ) : (
+                <NoOutlineButton
+                  onClickCapture={() => toggleFollowUser(publicUserData.id)}
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: isFollowing ? '#737373' : 'var(--primary-color)' }}
+                >
+                  {isFollowing ? t('profile.followingLabel') : t('profile.followLabel')}
+                </NoOutlineButton>
+              )
+            ) : (
+              <NoOutlineButton
+                variant="contained"
+                size="small"
+                onClick={() => navigate(PAGES.EDIT_PROFILE)}
+                sx={{ backgroundColor: 'var(--primary-color)' }}
+              >
+                {t('profile.editProfileLabel')}
+              </NoOutlineButton>
+            )}
+
+            {isPublicProfile && !isThisMe ? (
+              <NoOutlineButton
+                variant="contained"
+                size="small"
+                sx={{ backgroundColor: 'var(--primary-color)' }}
+              >
+                {t('profile.messageLabel')}
+              </NoOutlineButton>
+            ) : (
+              <NoOutlineButton
+                variant="contained"
+                size="small"
+                sx={{ backgroundColor: 'var(--primary-color)' }}
+              >
+                {t('profile.viewArchiveLabel')}
+              </NoOutlineButton>
+            )}
+            {isPublicProfile && !isThisMe && (
+              <Box
+                onClick={() => setIsPublicUserMenuOpened(true)}
+                sx={{
+                  backgroundColor: 'var(--background-color)',
+                  padding: '5px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                }}
+              >
+                <MoreHorizIcon sx={{ color: 'var(--text-color)' }} />
+              </Box>
+            )}
           </Box>
         </Box>
       </Box>
