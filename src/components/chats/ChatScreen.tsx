@@ -7,14 +7,21 @@ import type { Socket } from 'socket.io-client';
 import { useTranslation } from 'react-i18next';
 import SendIcon from '@mui/icons-material/Send';
 import { useTheme } from '../../contexts/ThemeContext';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export interface ChatScreenProps {
   selectedChat: ChatPreview | null;
   socketRef: React.RefObject<Socket | null>;
   newChatUser: UserPreview | undefined;
+  onBack?: () => void;
 }
 
-const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newChatUser }) => {
+const ChatScreen: React.FC<ChatScreenProps> = ({
+  selectedChat,
+  socketRef,
+  newChatUser,
+  onBack,
+}) => {
   const currentUser = chatsService.getUser();
 
   const [messages, setMessages] = useState<MessageData[]>();
@@ -209,6 +216,23 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
               display: 'flex',
             }}
           >
+            {onBack && (
+              <IconButton onClick={onBack} sx={{ ml: 1 }}>
+                <ArrowBackIcon
+                  sx={{
+                    color: 'var(--text-color)',
+                    '&:focus': {
+                      outline: 'none',
+                      boxShadow: 'none',
+                    },
+                    '&:focus-visible': {
+                      outline: 'none',
+                      boxShadow: 'none',
+                    },
+                  }}
+                />
+              </IconButton>
+            )}
             <Box
               sx={{
                 display: 'flex',
@@ -381,14 +405,21 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ selectedChat, socketRef, newCha
               <IconButton
                 onClick={() => handleSendMessage(messageInput)}
                 sx={{
-                  width: 50,
+                  width: 35,
                   height: '90%',
-                  borderRadius: '35%',
-                  border: '1px solid var(--primary-color)',
-                  marginLeft: '10px',
+                  marginLeft: 0.5,
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
+                  '&:focus': {
+                    outline: 'none',
+                    boxShadow: 'none',
+                  },
+                  '&:focus-visible': {
+                    outline: 'none',
+                    boxShadow: 'none',
+                  },
+                  padding: 0,
                 }}
               >
                 <SendIcon sx={{ color: 'var(--text-color)' }} />
