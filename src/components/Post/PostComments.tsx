@@ -51,6 +51,7 @@ const PostComments: React.FC<Props> = ({
   const [replyPages, setReplyPages] = useState<Record<string, number>>({});
   const take = 5;
   const [user, setUser] = useState<User | null>(null);
+  const MAX_NESTING_LEVEL = 1;
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -169,7 +170,16 @@ const PostComments: React.FC<Props> = ({
       const isVisible = visibleReplies.has(comment.id);
 
       return (
-        <Box key={comment.id} sx={{ pl: level * 4, mb: 2 }}>
+        <Box
+          key={comment.id}
+          sx={{
+            pl: {
+              xs: 0,
+              sm: Math.min(level, MAX_NESTING_LEVEL) * 4,
+            },
+            mb: 2,
+          }}
+        >
           <Comment
             comment={comment}
             isOwner={comment.user.id === user?.id}
