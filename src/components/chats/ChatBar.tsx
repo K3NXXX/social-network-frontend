@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import type { ChatPreview, MessageData } from '../../types/chats';
 import { chatsService } from '../../services/chatsService';
 import type { Socket } from 'socket.io-client';
+import { useTranslation } from 'react-i18next';
 
 interface ChatBarProps {
   data: ChatPreview;
@@ -18,6 +19,7 @@ const formatLastMessage = (content: string, maxLength: number) => {
 };
 
 const ChatBar: React.FC<ChatBarProps> = ({ data, onSelect, sx, socketRef }) => {
+  const { t } = useTranslation();
   const { lastMessage, participants } = data;
   const currentUser = chatsService.getUser();
   const otherUser = participants.find((user) => user.id !== currentUser.id);
@@ -115,14 +117,14 @@ const ChatBar: React.FC<ChatBarProps> = ({ data, onSelect, sx, socketRef }) => {
           {newMessage
             ? newMessage?.sender
               ? newMessage.sender.id === currentUser.id
-                ? `Ви: ${formatLastMessage(newMessage.content, 16)}`
+                ? `${t('chats.you')}: ${formatLastMessage(newMessage.content, 16)}`
                 : `${formatLastMessage(newMessage.content, 20)}`
               : newMessage.senderId
                 ? newMessage.senderId === currentUser.id
-                  ? `Ви: ${formatLastMessage(newMessage.content, 16)}`
+                  ? `${t('chats.you')}: ${formatLastMessage(newMessage.content, 16)}`
                   : `${formatLastMessage(newMessage.content, 20)}`
-                : 'Повідомлень ще немає-'
-            : 'Повідомлень ще немає'}
+                : `${t('chats.noMessagesYet')}`
+            : `${t('chats.noMessagesYet')}`}
         </Typography>
       </Box>
     </Box>

@@ -135,7 +135,9 @@
     "read": "read",
     "sent": "sent",
     "authError": "Error: {{message}}. Please log in again.",
-    "writeYourMessage": "Write your message here..."
+    "writeYourMessage": "Write your message here...",
+    "you": "You",
+    "noMessagesYet": "No messages yet"
   },
   "auth": {
     "createProfileLabel": "Create an account",
