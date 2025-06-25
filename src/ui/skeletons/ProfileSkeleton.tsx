@@ -14,6 +14,12 @@ export default function ProfileSkeleton() {
         gap={4}
         width="100%"
         maxWidth={935}
+        sx={{
+          '@media (max-width:730px)': {
+            flexDirection: 'column',
+            gap: '5px 0',
+          },
+        }}
       >
         <Box width={220} display="flex" justifyContent="center" alignItems="center">
           <Skeleton
@@ -33,6 +39,14 @@ export default function ProfileSkeleton() {
               flexWrap="wrap"
               position="relative"
               mb={2}
+              sx={{
+                '@media (max-width:730px)': {
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  justifyContent: 'center',
+                  margin: '5px auto',
+                },
+              }}
             >
               <Skeleton
                 variant="text"
@@ -48,7 +62,18 @@ export default function ProfileSkeleton() {
               />
             </Box>
 
-            <Box display="flex" gap={1} flexWrap="wrap" ml={4} mb={3}>
+            <Box
+              sx={{
+                '@media (max-width:730px)': {
+                  display: 'none',
+                },
+              }}
+              display="flex"
+              gap={1}
+              flexWrap="wrap"
+              ml={4}
+              mb={3}
+            >
               {[...Array(2)].map((_, i) => (
                 <Skeleton
                   key={i}
@@ -77,7 +102,17 @@ export default function ProfileSkeleton() {
             ))}
           </Box>
 
-          <Box display="flex" flexDirection="column" textAlign="justify">
+          <Box
+            sx={{
+              '@media (max-width:730px)': {
+                alignItems: 'center',
+                textAlign: 'center',
+              },
+            }}
+            display="flex"
+            flexDirection="column"
+            textAlign="justify"
+          >
             <Skeleton
               variant="text"
               width="70%"

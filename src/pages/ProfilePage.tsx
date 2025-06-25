@@ -224,7 +224,7 @@ export default function ProfilePage({
                     }}
                     variant="contained"
                     size="small"
-                    sx={{ backgroundColor: '#d9534f' }}
+                    sx={{ backgroundColor: '#d9534f', height: '33px' }}
                   >
                     {t('profile.unblock')}
                   </NoOutlineButton>
@@ -237,7 +237,10 @@ export default function ProfilePage({
                     }}
                     variant="contained"
                     size="small"
-                    sx={{ backgroundColor: isFollowing ? '#737373' : 'var(--primary-color)' }}
+                    sx={{
+                      backgroundColor: isFollowing ? '#737373' : 'var(--primary-color)',
+                      height: '33px',
+                    }}
                   >
                     {isFollowing ? t('profile.followingLabel') : t('profile.followLabel')}
                   </NoOutlineButton>
@@ -390,7 +393,10 @@ export default function ProfilePage({
                   }}
                   variant="contained"
                   size="small"
-                  sx={{ backgroundColor: isFollowing ? '#737373' : 'var(--primary-color)' }}
+                  sx={{
+                    backgroundColor: isFollowing ? '#737373' : 'var(--primary-color)',
+                    height: '33px',
+                  }}
                 >
                   {isFollowing ? t('profile.followingLabel') : t('profile.followLabel')}
                 </NoOutlineButton>
@@ -407,21 +413,25 @@ export default function ProfilePage({
             )}
 
             {isPublicProfile && !isThisMe ? (
-              <NoOutlineButton
-                variant="contained"
-                size="small"
-                sx={{ backgroundColor: 'var(--primary-color)' }}
-              >
-                {t('profile.messageLabel')}
-              </NoOutlineButton>
+              <Link to={`${PAGES.CHATS}`} state={{ userData: publicUserData }}>
+                <NoOutlineButton
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: 'var(--primary-color)' }}
+                >
+                  {t('profile.messageLabel')}
+                </NoOutlineButton>
+              </Link>
             ) : (
-              <NoOutlineButton
-                variant="contained"
-                size="small"
-                sx={{ backgroundColor: 'var(--primary-color)' }}
-              >
-                {t('profile.viewArchiveLabel')}
-              </NoOutlineButton>
+              <Link to={PAGES.ARCHIVE}>
+                <NoOutlineButton
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: 'var(--primary-color)' }}
+                >
+                  {t('profile.viewArchiveLabel')}
+                </NoOutlineButton>
+              </Link>
             )}
             {isPublicProfile && !isThisMe && (
               <Box

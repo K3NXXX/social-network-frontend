@@ -60,7 +60,8 @@ const ChangeEmail: FC<Props> = ({ open, onClose, onEmailUpdated }) => {
     <Modal open={open} onClose={handleClose}>
       <Paper
         sx={{
-          width: '500px',
+          maxWidth: '500px',
+          width: '90%',
           position: 'absolute',
           top: '50%',
           left: '50%',

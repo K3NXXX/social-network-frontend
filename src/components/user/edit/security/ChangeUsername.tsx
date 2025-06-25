@@ -1,8 +1,8 @@
-import { type FC, useState } from 'react';
-import { Box, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import axiosInstance from '../../../../services/axiosConfig';
+import { Box, IconButton, Modal, Paper, TextField, Typography } from '@mui/material';
+import { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import axiosInstance from '../../../../services/axiosConfig';
 import { NoOutlineButton } from '../../../../ui/NoOutlineButton';
 
 interface Props {
@@ -57,7 +57,8 @@ const ChangeUsername: FC<Props> = ({ open, onClose, onUsernameUpdated }) => {
     <Modal open={open} onClose={handleClose}>
       <Paper
         sx={{
-          width: '450px',
+          maxWidth: '500px',
+          width: '90%',
           position: 'absolute',
           top: '50%',
           left: '50%',
