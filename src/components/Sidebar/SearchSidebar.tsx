@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { userService } from '../../services/userService';
 import type { SearchUsers } from '../../types/user';
 import SearchItem from '../../ui/SearchItem';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 interface SearchSidebarProps {
   isCollapsed: boolean;
@@ -55,6 +56,21 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
         borderLeft: isCollapsed ? '' : '2px solid #9885f4',
       }}
     >
+      <Box
+        sx={{
+          width: '100%',
+          display: { xs: 'flex', sm: 'none' },
+          alignItems: 'center',
+          gap: 1,
+          px: 2,
+          pt: 2,
+          cursor: 'pointer',
+        }}
+        onClick={() => setSearchSidebarCollapsed(true)}
+      >
+        <ArrowBackIosIcon sx={{ color: 'white', fontSize: 18 }} />
+      </Box>
+
       <Typography sx={{ color: 'white', marginTop: '22px', fontSize: '20px', fontWeight: 'bold' }}>
         Search
       </Typography>

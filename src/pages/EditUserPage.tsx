@@ -161,12 +161,42 @@ const EditUserPage = () => {
         </Box>
       )}
 
-      <Box display="flex">
-        <Box sx={{ width: 240, borderRight: '1px solid var(--border-color)', px: 2 }}>
+      <Box
+        sx={{
+          '@media (max-width:1600px)': {
+            flexDirection: 'column',
+            alignItems: 'center',
+          },
+        }}
+        display="flex"
+      >
+        <Box
+          sx={{
+            width: 240,
+            borderRight: '1px solid var(--border-color)',
+            px: 2,
+            '@media (max-width:1600px)': {
+              borderRight: 'none',
+              width: '40%',
+            },
+            '@media (max-width:500px)': {
+              width: '100%',
+            },
+          }}
+        >
           <Typography fontSize="18px" fontWeight="bold" my={2} textAlign="left" px={2}>
             {t('profile.settingsLabel')}
           </Typography>
-          <List>
+          <List
+            sx={{
+              '@media (max-width:1200px)': {
+                display: 'flex',
+              },
+              '@media (max-width:730px)': {
+                flexDirection: 'column',
+              },
+            }}
+          >
             {sidebarItems.map((item) => (
               <ListItem key={item.key} disablePadding>
                 <ListItemButton
@@ -197,7 +227,20 @@ const EditUserPage = () => {
           </List>
         </Box>
 
-        <Container sx={{ width: '40%' }}>
+        <Container
+          sx={{
+            width: '40%',
+            '@media (max-width:1200px)': {
+              width: '60% ',
+            },
+            '@media (max-width:730px)': {
+              width: '80%',
+            },
+            '@media (max-width:430px)': {
+              width: '100%',
+            },
+          }}
+        >
           {activeSection === 'edit' && profile && (
             <ProfileSection
               profile={profile}

@@ -39,6 +39,13 @@ export default function ShowFollowersForm({
     return blockedUsers?.some((blockedUser) => blockedUser.blocked.id === userIdToCheck);
   };
 
+  const filteredFollowers = userFollowers.filter((follower) => {
+    const search = searchValue.toLowerCase().trim();
+    const fullName = `${follower.firstName} ${follower.lastName}`.toLowerCase();
+    const username = follower.username?.toLowerCase() || '';
+    return fullName.includes(search) || username.includes(search);
+  });
+
   const handleFollowToggle = async (followerId: string) => {
     try {
       const result = await userService.followUser(followerId);
@@ -193,8 +200,8 @@ export default function ShowFollowersForm({
           >
             {isLoading ? (
               [...Array(5)].map((_, index) => <FollowersListSkeleton key={index} />)
-            ) : userFollowers.length > 0 ? (
-              userFollowers.map((item) => (
+            ) : filteredFollowers.length > 0 ? (
+              filteredFollowers.map((item) => (
                 <Box
                   display="flex"
                   gap="0 20px"

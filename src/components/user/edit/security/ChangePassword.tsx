@@ -46,7 +46,8 @@ const ChangePassword: FC<Props> = ({ open, onClose }) => {
     <Modal open={open} onClose={handleClose}>
       <Paper
         sx={{
-          width: '450px',
+          maxWidth: '500px',
+          width: '90%',
           position: 'absolute',
           top: '50%',
           left: '50%',

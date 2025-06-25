@@ -38,6 +38,12 @@ const ProfileSection = ({
         mb="32px"
         p="16px"
         borderRadius="16px"
+        sx={{
+          '@media (max-width:1600px)': {
+            flexDirection: 'column',
+            alignItems: 'center',
+          },
+        }}
       >
         <Box display="flex">
           <Avatar

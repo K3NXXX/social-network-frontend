@@ -6,12 +6,15 @@ import { PAGES } from '../../constants/pages.constants';
 import { useTheme } from '../../contexts/ThemeContext';
 import { authService } from '../../services/authService';
 import type { User } from '../../types/auth';
+import Logo from '../../ui/Logo';
+import { useGlobalStore } from '../../zustand/stores/globalStore';
 
 export default function Header() {
   const [user, setUser] = useState<User | null>(null);
   const { theme } = useTheme();
   const { t } = useTranslation();
   const location = useLocation();
+  const { toggleBurger } = useGlobalStore();
 
   const pathnames = location.pathname.split('/').filter((x) => x);
   const isPublicProfile = location.pathname.startsWith('/user/profile/');
@@ -59,12 +62,7 @@ export default function Header() {
         overflow: 'visible',
       }}
     >
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems={{ xs: 'flex-start', sm: 'center' }}
-        gap={1}
-      >
+      <Box display="flex" justifyContent="space-between" alignItems="center" gap={1}>
         <Breadcrumbs
           aria-label="breadcrumb"
           sx={{
@@ -72,6 +70,9 @@ export default function Header() {
             fontSize: { xs: '15px', sm: '17px' },
             color: theme === 'light' ? '#626166' : '#ffffff',
             flexWrap: 'wrap',
+            '@media (max-width:500px)': {
+              display: 'none',
+            },
           }}
         >
           <MUILink
@@ -145,7 +146,14 @@ export default function Header() {
           )}
         </Breadcrumbs>
 
-        <Box textAlign="right">
+        <Box
+          sx={{
+            '@media (max-width:500px)': {
+              display: 'none',
+            },
+          }}
+          textAlign="right"
+        >
           <Link to={PAGES.PROFILE} style={{ textDecoration: 'none' }}>
             <Typography
               sx={{
@@ -159,6 +167,41 @@ export default function Header() {
               {t('welcome')} {user.firstName}!
             </Typography>
           </Link>
+        </Box>
+
+        <Box
+          sx={{
+            display: 'none',
+            '@media (max-width:500px)': {
+              display: 'flex',
+            },
+          }}
+        >
+          <Logo />
+        </Box>
+
+        <Box
+          onClick={() => toggleBurger()}
+          sx={{
+            display: 'none',
+            flexDirection: 'column',
+            gap: '7px 0',
+            '@media (max-width:500px)': {
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '7px 0',
+            },
+          }}
+        >
+          <Box
+            sx={{ width: '35px', height: '3px', borderRadius: '12px', backgroundColor: '#9885f4' }}
+          ></Box>
+          <Box
+            sx={{ width: '35px', height: '3px', borderRadius: '12px', backgroundColor: '#9885f4' }}
+          ></Box>
+          <Box
+            sx={{ width: '35px', height: '3px', borderRadius: '12px', backgroundColor: '#9885f4' }}
+          ></Box>
         </Box>
       </Box>
     </Card>

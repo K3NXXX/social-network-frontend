@@ -20,11 +20,14 @@ import { AuthProvider } from './services/AuthContext';
 import FullPostPage from './pages/FullPostPage';
 import NotificationProvider from './utils/NotificationProvider.tsx';
 import ArchivePage from './pages/ArchivePage.tsx';
+import { useGlobalStore } from './zustand/stores/globalStore.ts';
+import SidebarMobile from './components/Sidebar/SidebarMobile.tsx';
 
 function App() {
   const { pathname } = useLocation();
   const hideLayout = pathname === PAGES.LOGIN || pathname === PAGES.REGISTER;
   const [searchSidebarCollapsed, setSearchSidebarCollapsed] = useState<boolean>(true);
+  const { isBurgerOpen } = useGlobalStore();
 
   return (
     <ThemeProvider>
@@ -37,6 +40,9 @@ function App() {
                 searchSidebarCollapsed={searchSidebarCollapsed}
                 setSearchSidebarCollapsed={setSearchSidebarCollapsed}
               />
+              {isBurgerOpen && (
+                <SidebarMobile setSearchSidebarCollapsed={setSearchSidebarCollapsed} />
+              )}
               <SearchSidebar
                 isCollapsed={searchSidebarCollapsed}
                 setSearchSidebarCollapsed={setSearchSidebarCollapsed}
