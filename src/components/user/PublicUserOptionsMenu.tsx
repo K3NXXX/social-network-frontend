@@ -71,6 +71,7 @@ export default function PublicUserOptionsMenu({
                   width: '100%',
                   borderBottom: '1px solid #2c2a4a',
                   outline: 'none',
+                  textTransform: 'none',
                 }}
               >
                 <Typography
@@ -155,7 +156,17 @@ export default function PublicUserOptionsMenu({
           onClose={() => setIsConfirmBlockingUser(false)}
         >
           <Box display="flex" flexDirection="column">
-            <Box padding="0 40px" marginBottom="30px" marginTop="30px">
+            <Box
+              sx={{
+                '@media (max-width:440px)': {
+                  fontSize: 16,
+                  padding: '0 15px',
+                },
+              }}
+              padding="0 40px"
+              marginBottom="30px"
+              marginTop="30px"
+            >
               <Typography
                 sx={{
                   color: 'white',
@@ -165,6 +176,9 @@ export default function PublicUserOptionsMenu({
                   userSelect: 'none',
                   textAlign: 'center',
                   marginBottom: '10px',
+                  '@media (max-width:440px)': {
+                    fontSize: 16,
+                  },
                 }}
               >
                 {t('profile.block')}
@@ -205,6 +219,7 @@ export default function PublicUserOptionsMenu({
                   fontWeight: 500,
                   userSelect: 'none',
                   textAlign: 'center',
+                  textTransform: 'none',
                 }}
               >
                 {t('profile.block')}
@@ -226,6 +241,7 @@ export default function PublicUserOptionsMenu({
                   fontWeight: 500,
                   userSelect: 'none',
                   textAlign: 'center',
+                  textTransform: 'none',
                 }}
               >
                 {t('profile.cancel')}
