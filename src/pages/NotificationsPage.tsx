@@ -66,13 +66,11 @@ export default function NotificationPage() {
     <Card
       sx={{
         maxWidth: 965,
-        mx: 'auto',
-        mt: 4,
-        mb: 6,
+        mx: { xs: 1.5, md: 'auto' },
         py: 4,
         backgroundColor: 'var(--secondary-color)',
         borderRadius: '12px',
-        m: { xs: 1.5, sm: 3 },
+        my: { xs: 2.5, sm: 3 },
       }}
     >
       <Box
