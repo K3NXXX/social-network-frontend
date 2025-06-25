@@ -32,7 +32,7 @@ export default function ArchivePage() {
         maxWidth: '965px',
         py: 4,
         mx: 'auto',
-        padding: '30px 0 0 0',
+        padding: '30px 15px 0 15px',
         marginTop: '30px',
         marginBottom: '50px',
       }}
