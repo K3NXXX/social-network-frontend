@@ -72,6 +72,7 @@ export default function NotificationPage() {
         py: 4,
         backgroundColor: 'var(--secondary-color)',
         borderRadius: '12px',
+        m: { xs: 1.5, sm: 3 },
       }}
     >
       <Box
@@ -108,7 +109,20 @@ export default function NotificationPage() {
         </Button>
       </Box>
 
-      <Box sx={{ px: 3, display: 'flex', gap: 3, mb: 1 }}>
+      <Box
+        sx={{
+          px: 3,
+          display: 'flex',
+          gap: 3,
+          mb: 1,
+          overflowX: 'auto',
+          whiteSpace: 'nowrap',
+          scrollbarWidth: 'none',
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+        }}
+      >
         {Object.keys(filterTypeMap).map((label) => {
           const isActive = label === activeFilter;
           return (
@@ -168,7 +182,10 @@ export default function NotificationPage() {
               style={{ textDecoration: 'none', marginRight: 16 }}
             >
               <Avatar
-                sx={{ width: 60, height: 60 }}
+                sx={{
+                  width: { xs: 48, sm: 60 },
+                  height: { xs: 48, sm: 60 },
+                }}
                 src={notification.sender.avatarUrl ?? undefined}
               >
                 {notification.sender.firstName.charAt(0)}
@@ -183,6 +200,7 @@ export default function NotificationPage() {
               >
                 <Typography
                   sx={{
+                    fontSize: { xs: 14, sm: 16 },
                     fontFamily: 'Ubuntu, sans-serif',
                     fontWeight: 500,
                     color: 'var(--text-color)',
