@@ -17,7 +17,11 @@ import { useGlobalStore } from '../../zustand/stores/globalStore';
 import { useNotificationStore } from '../../zustand/stores/notificationStore';
 import SidebarListItem from './SidebarListItem';
 
-const SidebarMobile: React.FC = () => {
+interface SidebarMobileProps {
+  setSearchSidebarCollapsed: (value: boolean) => void;
+}
+
+const SidebarMobile: React.FC<SidebarMobileProps> = ({ setSearchSidebarCollapsed }) => {
   const { pathname } = useLocation();
   const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
@@ -122,7 +126,10 @@ const SidebarMobile: React.FC = () => {
 
             return (
               <SidebarListItem
-                onClickCallback={undefined}
+                onClickCallback={() => {
+                  setSearchSidebarCollapsed(false);
+                  setBurgerOpen(false);
+                }}
                 backgroundColor={isActive ? '#2a2340' : ''}
                 key={item.id}
                 item={item}

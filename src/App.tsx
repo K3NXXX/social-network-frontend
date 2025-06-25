@@ -40,7 +40,9 @@ function App() {
                 searchSidebarCollapsed={searchSidebarCollapsed}
                 setSearchSidebarCollapsed={setSearchSidebarCollapsed}
               />
-              {isBurgerOpen && <SidebarMobile />}
+              {isBurgerOpen && (
+                <SidebarMobile setSearchSidebarCollapsed={setSearchSidebarCollapsed} />
+              )}
               <SearchSidebar
                 isCollapsed={searchSidebarCollapsed}
                 setSearchSidebarCollapsed={setSearchSidebarCollapsed}
