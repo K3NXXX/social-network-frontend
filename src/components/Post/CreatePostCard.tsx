@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Card,
-  CardContent,
-  CardActions,
-  Avatar,
-  TextField,
-  Button,
-  Stack,
-  Divider,
-  Box,
-} from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import ClearIcon from '@mui/icons-material/Clear';
-import { postService } from '../../services/postService';
-import type { PostType } from '../../types/post';
+import SendIcon from '@mui/icons-material/Send';
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Divider,
+  Stack,
+  TextField,
+} from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NoOutlineButton } from '../../ui/NoOutlineButton';
-import type { User } from '../../types/auth';
+import { postService } from '../../services/postService';
 import { userService } from '../../services/userService';
+import type { User } from '../../types/auth';
+import type { PostType } from '../../types/post';
+import { NoOutlineButton } from '../../ui/NoOutlineButton';
 
 type Props = {
   onPostCreated: (post: PostType) => void;
@@ -30,6 +30,7 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -51,6 +52,9 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
     try {
       const createdPost = await postService.createPost(content, imageFile);
       onPostCreated(createdPost);
@@ -59,6 +63,8 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
       setPreviewUrl(null);
     } catch (error) {
       console.error('Error creating post:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -182,6 +188,7 @@ const CreatePostCard: React.FC<Props> = ({ onPostCreated }) => {
           </label>
         </Box>
         <NoOutlineButton
+          disabled={isSubmitting || content.trim() === ''}
           variant="contained"
           endIcon={<SendIcon />}
           onClick={handleSubmit}
