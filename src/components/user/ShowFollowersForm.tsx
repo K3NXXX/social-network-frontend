@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import FollowersListSkeleton from '../../ui/skeletons/FollowersListSkeleton';
-import { Avatar, Box, Dialog, InputAdornment, TextField, Typography } from '@mui/material';
-import { authService } from '../../services/authService';
-import { userService } from '../../services/userService';
-import { NoOutlineButton } from '../../ui/NoOutlineButton';
-import { customScrollBar } from '../../ui/customScrollBar';
-import { PAGES } from '../../constants/pages.constants';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
+import { Avatar, Box, Dialog, InputAdornment, TextField, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { PAGES } from '../../constants/pages.constants';
+import { authService } from '../../services/authService';
+import { userService } from '../../services/userService';
 import type { User } from '../../types/auth';
 import type { UserFollowers } from '../../types/user';
+import { NoOutlineButton } from '../../ui/NoOutlineButton';
+import { customScrollBar } from '../../ui/customScrollBar';
+import FollowersListSkeleton from '../../ui/skeletons/FollowersListSkeleton';
 
 interface IShowFollowersFormProps {
   isOpened: boolean;
@@ -207,7 +207,11 @@ export default function ShowFollowersForm({
                   gap="0 20px"
                   alignItems="center"
                   justifyContent="space-between"
+                  position="relative"
                   key={item.id}
+                  sx={{
+                    minHeight: '47px',
+                  }}
                 >
                   <Link
                     to={`${PAGES.VIEW_PUBLIC_PROFILE}/${item.id}`}
@@ -236,17 +240,28 @@ export default function ShowFollowersForm({
                     </Box>
                   </Link>
                   {currentUser && currentUser.id !== item.id && !isUserBlocked(item.id) && (
-                    <NoOutlineButton
-                      variant="contained"
-                      size="small"
-                      onClick={() => handleFollowToggle(item.id)}
+                    <Box
                       sx={{
-                        backgroundColor: item.isFollowed ? '#747474' : 'var(--primary-color)',
-                        color: '#fff',
+                        position: 'absolute',
+                        top: '5px',
+                        right: 0,
+                        backgroundColor: '#181424',
+                        padding: '3px',
+                        borderRadius: '12px',
                       }}
                     >
-                      {item.isFollowed ? t('profile.followingLabel') : t('profile.followLabel')}
-                    </NoOutlineButton>
+                      <NoOutlineButton
+                        variant="contained"
+                        size="small"
+                        onClick={() => handleFollowToggle(item.id)}
+                        sx={{
+                          backgroundColor: item.isFollowed ? '#747474' : 'var(--primary-color)',
+                          color: '#fff',
+                        }}
+                      >
+                        {item.isFollowed ? t('profile.followingLabel') : t('profile.followLabel')}
+                      </NoOutlineButton>
+                    </Box>
                   )}
                 </Box>
               ))

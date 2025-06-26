@@ -2,6 +2,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Box, CircularProgress, Fab, Typography, Zoom } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../contexts/ThemeContext.tsx';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver.tsx';
 import { usePosts } from '../../hooks/usePosts.tsx';
 import { postService } from '../../services/postService.ts';
@@ -20,10 +21,11 @@ type Props = {
 const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData, isSavedPosts }) => {
   const { t } = useTranslation();
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const { theme } = useTheme();
 
   const postFetcher = isPublicProfile
     ? (page: number, take: number) =>
-      postService.fetchPublicUserPosts(publicUserData?.id ?? '', page, take)
+        postService.fetchPublicUserPosts(publicUserData?.id ?? '', page, take)
     : (page: number, take: number) => postService.fetchUserPosts(page, take);
 
   const { posts, setPosts, loading, loaderRef, page, totalPages, fetchPosts } = usePosts(
@@ -84,7 +86,7 @@ const UserPosts: React.FC<Props> = ({ isPublicProfile, publicUserData, isSavedPo
       <Box textAlign="center" mt={4}>
         <Typography
           variant="body1"
-          color="text.secondary"
+          color={theme === 'light' ? 'black' : 'white'}
           sx={{ fontStyle: 'italic', opacity: 0.8 }}
         >
           {t('posts.emptyPostsLabel')}

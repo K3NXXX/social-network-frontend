@@ -1,4 +1,5 @@
 import { Close } from '@mui/icons-material';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, InputAdornment, TextField, Typography } from '@mui/material';
 import debounce from 'lodash/debounce';
@@ -7,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { userService } from '../../services/userService';
 import type { SearchUsers } from '../../types/user';
 import SearchItem from '../../ui/SearchItem';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 interface SearchSidebarProps {
   isCollapsed: boolean;
@@ -54,8 +54,49 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
         transition: 'width 0.3s ease',
         overflow: 'hidden',
         borderLeft: isCollapsed ? '' : '2px solid #9885f4',
+        '@media (max-width:1400px)': {
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          zIndex: 1500,
+          borderLeft: 'none',
+          paddingTop: '30px',
+        },
+        '@media (max-width:370px)': {
+          width: isCollapsed ? '0px' : '300px',
+        },
       }}
     >
+      <Box
+        onClick={() => {
+          setSearchSidebarCollapsed(true);
+        }}
+        sx={{
+          cursor: 'pointer',
+          p: 1.5,
+          borderRadius: '16px',
+          transition: 'background-color 0.3s ease',
+          '&:hover': { backgroundColor: '#2a2340' },
+          display: 'none',
+          justifyContent: 'center',
+
+          '@media (max-width:1400px)': {
+            display: 'flex',
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+          },
+        }}
+      >
+        <ArrowForwardIosIcon
+          sx={{
+            color: 'white',
+            fontSize: 14,
+            transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.3s ease',
+          }}
+        />
+      </Box>
       <Box
         sx={{
           width: '100%',
@@ -67,12 +108,18 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
           cursor: 'pointer',
         }}
         onClick={() => setSearchSidebarCollapsed(true)}
-      >
-        <ArrowBackIosIcon sx={{ color: 'white', fontSize: 18 }} />
-      </Box>
+      ></Box>
 
-      <Typography sx={{ color: 'white', marginTop: '22px', fontSize: '20px', fontWeight: 'bold' }}>
-        Search
+      <Typography
+        sx={{
+          color: 'white',
+          marginTop: '22px',
+          fontSize: '20px',
+          fontWeight: 'bold',
+          marginBottom: '5px',
+        }}
+      >
+        {t('sidebar.search')}
       </Typography>
 
       <TextField
@@ -115,6 +162,9 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
               borderWidth: '1px',
             },
             width: '300px',
+            '@media (max-width:370px)': {
+              width: isCollapsed ? '0px' : '250px',
+            },
             '& input': {
               padding: '1.5px 0px',
             },
@@ -142,6 +192,9 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
             zIndex: 1000,
             maxHeight: '700px',
             overflowY: 'auto',
+            '@media (max-width:1400px)': {
+              top: '180px',
+            },
           }}
         >
           <Typography sx={{ color: 'white', fontWeight: 'bold', marginBottom: '5px' }}>

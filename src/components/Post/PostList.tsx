@@ -4,6 +4,7 @@ import { Box, Typography } from '@mui/material';
 import type { PostType } from '../../types/post';
 import PostSkeleton from '../../ui/skeletons/PostSkeleton';
 import Post from './Post';
+import { useTheme } from '../../contexts/ThemeContext';
 
 type Props = {
   posts: PostType[];
@@ -14,6 +15,7 @@ type Props = {
 
 const PostsList: React.FC<Props> = ({ posts, loading, onDelete, onPostPrivacyChange }) => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   if (!posts.length && loading) {
     return (
@@ -30,7 +32,7 @@ const PostsList: React.FC<Props> = ({ posts, loading, onDelete, onPostPrivacyCha
       <Box textAlign="center" mt={4}>
         <Typography
           variant="body1"
-          color="text.secondary"
+          color={theme === 'light' ? 'black' : 'white'}
           sx={{ fontStyle: 'italic', opacity: 0.8 }}
         >
           {t('posts.emptyPostsLabel')}
