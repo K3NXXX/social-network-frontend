@@ -43,7 +43,7 @@
     "showAnswers": "Show answers",
     "commentReply": "Reply",
     "commentCancel": "Cancel",
-    "emptyPostsLabel": "No posts here yet.",
+    "emptyPostsLabel": "No posts here yet",
     "feedEndDiscoverLabel": "That’s all from people you follow — here’s something else you might like:",
     "sharePost": "Share post",
     "editPost": "Edit post",
@@ -195,7 +195,9 @@
       "COMMENT": "{{name}} commented on your post",
       "NEW_FOLLOWER": "{{name}} followed you",
       "LIKE": "{{name}} liked your post"
-    }
+    },
+    "read": "notification is read",
+    "unread": "notification is unread"
   },
   "server": {
     "timeout": "Server is not responding. Please try later.",
